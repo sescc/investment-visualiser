@@ -1,4 +1,4 @@
-// Minimal static file server + refresh API for the SG Invest Visualiser site.
+// Minimal static file server + refresh API for the SGInvest Visualiser site.
 // No dependencies beyond node:http/fs/path; the scraper is invoked in-process
 // (run() from scraper/index.js), so refreshing never shells out.
 import http from 'node:http';
@@ -163,5 +163,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`SG Invest Visualiser server: http://${HOST}:${PORT}`);
+  console.log(`SGInvest Visualiser server: http://${HOST}:${PORT}`);
 });

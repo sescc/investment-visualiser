@@ -1,4 +1,4 @@
-# SG Invest Visualiser
+# SGInvest Visualiser
 
 A visual-heavy static website that explains investing in Singapore to laymen:
 **products** (what you buy), **methods** (how/through which channel you invest) and **broker types**

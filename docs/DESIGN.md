@@ -1,4 +1,4 @@
-# Design spec — SG Invest Visualiser
+# Design spec — SGInvest Visualiser
 
 Audience: Singapore residents who have never invested. Tone: friendly, calm, confident, zero jargon.
 The site should feel like a well-designed field guide / map, not a trading terminal.
@@ -16,7 +16,7 @@ The site should feel like a well-designed field guide / map, not a trading termi
 - Motion: subtle (150–250ms), respect `prefers-reduced-motion`.
 
 ## Global chrome (every page)
-- Sticky top bar: logo mark (red dot + "SG Invest Map"), nav tabs Products · Methods · Brokers · Compare, theme toggle, data-freshness pill ("Data as of 22 Sep 2026 · 18/24 live") that opens a freshness panel listing each adapter's status. "Refresh data" button inside that panel, shown only when `location.protocol` is http(s) and `GET /api/health` answers.
+- Sticky top bar: logo mark (red dot + "SGInvest Visualiser"), nav tabs Products · Methods · Brokers · Compare, theme toggle, data-freshness pill ("Data as of 22 Sep 2026 · 18/24 live") that opens a freshness panel listing each adapter's status. "Refresh data" button inside that panel, shown only when `location.protocol` is http(s) and `GET /api/health` answers.
 - Disclaimer strip under the bar: "Educational only — not financial advice. Fees change; always confirm on the provider's site." (dismissible per session, try/catch storage).
 - Footer: sources list link, generatedAt, glossary link.
 

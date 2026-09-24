@@ -36,6 +36,8 @@ code { background: var(--surface-2); border-radius: 4px; padding: .1em .4em; fon
 .bar-inner { max-width: var(--maxw); margin: 0 auto; padding: 10px var(--gutter); display: flex; align-items: center; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; }
 .brand-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--sg-red); flex: none; }
+.brand { min-width: 0; }
+.brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .nav { display: flex; gap: 4px; margin-left: 8px; flex: 1; flex-wrap: wrap; }
 .nav-link { text-decoration: none; padding: 8px 12px; border-radius: var(--radius-sm); font-weight: 600; font-size: .92rem; color: var(--ink-2); }
 .nav-link:hover { background: var(--surface-2); color: var(--ink); }

@@ -1,4 +1,4 @@
-# Architecture map — SG Invest Visualiser
+# Architecture map — SGInvest Visualiser
 
 High-level §4 map (FRAMEWORK.md). Detail lives in each component folder; decisions in [DECISIONS.md](DECISIONS.md).
 

@@ -5,7 +5,7 @@ schema: spec-driven
 # Internal objects/morphisms live in docs/<component>/ARCHITECTURE.md.
 
 context: |
-  SG Invest Visualiser: static site + Node scraper. Read CLAUDE.md and docs/DECISIONS.md first.
+  SGInvest Visualiser: static site + Node scraper. Read CLAUDE.md and docs/DECISIONS.md first.
   HARD RULE: fee numbers come only from the scraper; never hand-type a fee, rate or yield into data/ or site/.
   Architecture method: FRAMEWORK.md (Dat / Trn / Loc / Trm + §4.5 coherence laws).
   Every claim must name its object, morphism, location or transmission and map to a

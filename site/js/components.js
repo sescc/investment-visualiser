@@ -110,9 +110,9 @@ export async function renderChrome(activeHref, data) {
   if (header) {
     header.innerHTML = h`
       <div class="bar-inner">
-        <a class="brand" href="index.html" aria-label="SG Invest Map — home">
+        <a class="brand" href="index.html" aria-label="SGInvest Visualiser — home">
           <span class="brand-dot" aria-hidden="true"></span>
-          <span class="brand-name">SG Invest Map</span>
+          <span class="brand-name">SGInvest Visualiser</span>
         </a>
         <nav class="nav" aria-label="Main">
           ${NAV_ITEMS.map(n => h`<a href="${n.href}" class="nav-link${n.href === activeHref ? ' is-active' : ''}"${n.href === activeHref ? ' aria-current="page"' : ''}>${n.label}</a>`).join('')}

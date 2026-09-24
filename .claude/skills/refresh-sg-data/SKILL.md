@@ -1,6 +1,6 @@
 ---
 name: refresh-sg-data
-description: Refresh the SG Invest Visualiser fee data by running the scraper, reading its report, and fixing or adding source adapters. Use when asked to update fees/rates, when the site shows stale or missing fees, or when a provider changed its pricing page.
+description: Refresh the SGInvest Visualiser fee data by running the scraper, reading its report, and fixing or adding source adapters. Use when asked to update fees/rates, when the site shows stale or missing fees, or when a provider changed its pricing page.
 ---
 
 # Refresh SG fee data

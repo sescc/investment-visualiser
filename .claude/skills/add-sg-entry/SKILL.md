@@ -1,6 +1,6 @@
 ---
 name: add-sg-entry
-description: Add or edit an investment product, investing method, broker type, or provider in the SG Invest Visualiser (data/baseline/*.json), wire up its fee scraping, and verify it renders. Use when asked to add a new product/robo-advisor/broker/bank or correct pros, cons or sign-up steps.
+description: Add or edit an investment product, investing method, broker type, or provider in the SGInvest Visualiser (data/baseline/*.json), wire up its fee scraping, and verify it renders. Use when asked to add a new product/robo-advisor/broker/bank or correct pros, cons or sign-up steps.
 ---
 
 # Add or edit an entry

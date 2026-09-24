@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "SG Invest Visualiser — scraper + static site server",
+  "description": "SGInvest Visualiser — scraper + static site server",
   "scripts": {
     "scrape": "node scraper/index.js",
     "serve": "node server.js",
