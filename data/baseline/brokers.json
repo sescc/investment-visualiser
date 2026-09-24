@@ -1,0 +1,552 @@
+{
+  "dataset": "brokers",
+  "entries": [
+    {
+      "id": "b-cdp-local",
+      "name": "CDP-Linked Local Brokers",
+      "category": "Local",
+      "icon": "landmark",
+      "summary": "Traditional Singapore brokerages that settle SGX trades straight into your own name at the Central Depository (CDP), so you hold shares directly rather than through the broker.",
+      "analogy": "Like registering a car in your own name at the land transport authority, instead of leasing it under the dealer's name.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 4,
+      "complexity": 3,
+      "pros": [
+        "Shares are registered in your own name at CDP — dividends and voting rights (e.g. AGM invites) come directly to you",
+        "Long-established players regulated by MAS, with decades of track record",
+        "Access to IPOs, rights issues and corporate actions handled directly via CDP",
+        "Full range of order types and, for many, access to remisier/full-service support"
+      ],
+      "cons": [
+        "Commissions for cash accounts are typically higher than app-based custodian brokers",
+        "Opening a CDP account is an extra step compared to custodian brokers",
+        "Platforms can feel dated compared to newer mobile-first apps",
+        "Custody/settlement fees may apply if you trade infrequently"
+      ],
+      "bestFor": "Investors who want SGX shares registered in their own name and don't mind a slightly higher cost for that.",
+      "eligibility": "18 years or older with a CDP Securities account; a Singapore bank account is generally required for CDP's direct crediting service.",
+      "relatedIds": ["m-diy-broker", "p-sgx-stocks", "p-reit", "p-corp-bond", "b-full-service", "b-bank-integrated"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "poems",
+          "name": "POEMS (Phillip Securities)",
+          "officialLink": "https://www.poems.com.sg",
+          "tags": ["CDP-linked", "SG", "US", "HK", "Custodian option"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.poems.com.sg/pricing/", "hint": "Online SGX share/ETF commission rate (%) and minimum commission, by account tier", "adapter": "poems" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://www.poems.com.sg/pricing/", "hint": "Online US share commission rate for POEMS", "adapter": "poems" },
+            { "type": "per_trade_pct", "market": "HK", "sourceUrl": "https://www.poems.com.sg/pricing/", "hint": "Online HK share commission rate (%) and minimum commission in HKD", "adapter": "poems" }
+          ],
+          "fees": [],
+          "steps": [
+            { "title": "Apply online via Singpass MyInfo", "detail": "Open a Cash Plus or Cash Management account directly on the POEMS website.", "link": "https://www.poems.com.sg" },
+            { "title": "Link or open a CDP account", "detail": "Choose CDP-linked if you want SGX shares in your own name.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+            { "title": "Fund your account", "detail": "Transfer funds via PayNow or FAST before you start trading.", "link": "https://www.poems.com.sg" }
+          ]
+        },
+        {
+          "id": "dbs-vickers",
+          "name": "DBS Vickers",
+          "officialLink": "https://www.dbsvickers.com",
+          "tags": ["CDP-linked", "Bank-integrated", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing", "hint": "SGX online commission rate (%) and minimum, Individual Trading Account fee schedule", "adapter": "dbs-vickers" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing", "hint": "US market online commission rate for DBS Vickers", "adapter": "dbs-vickers" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc-securities",
+          "name": "OCBC Securities",
+          "officialLink": "https://www.iocbc.com",
+          "tags": ["CDP-linked", "Bank-integrated", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page", "hint": "\"Online commission rates and fees\" table — SGX commission % and minimum", "adapter": "ocbc-securities" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page", "hint": "US market online commission % and minimum in USD", "adapter": "ocbc-securities" },
+            { "type": "per_trade_pct", "market": "HK", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page", "hint": "HK market online commission % and minimum", "adapter": "ocbc-securities" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "uob-kay-hian",
+          "name": "UOB Kay Hian",
+          "officialLink": "https://uobkh.com.sg",
+          "tags": ["CDP-linked", "SG", "US", "HK", "Custodian option"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://uobkh.com.sg/en/faq/article/equities", "hint": "Cash/Margin Account SGX commission % tiers by contract value, and minimum commission", "adapter": "uob-kay-hian" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://uobkh.com.sg/en/faq/article/equities", "hint": "US Cash Account commission % and minimum in USD", "adapter": "uob-kay-hian" },
+            { "type": "per_trade_pct", "market": "HK", "sourceUrl": "https://uobkh.com.sg/en/faq/article/equities", "hint": "HK Cash Account commission % tiers and minimum in HKD", "adapter": "uob-kay-hian" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "maybank-securities",
+          "name": "Maybank Securities",
+          "officialLink": "https://www.maybank.com/investment-banking/sg/index.page",
+          "tags": ["CDP-linked", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page", "hint": "Singapore market online/mobile commission % tiers by contract value, and minimum in SGD", "adapter": "maybank-securities" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page", "hint": "United States market online commission % and minimum in USD", "adapter": "maybank-securities" },
+            { "type": "per_trade_pct", "market": "HK", "sourceUrl": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page", "hint": "Hong Kong market online commission % tiers and minimum in HKD", "adapter": "maybank-securities" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "cgs-international",
+          "name": "CGS International Securities (CGS iTrade)",
+          "officialLink": "https://www.cgsi.com.sg",
+          "tags": ["CDP-linked", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://itrade.cgsi.com.sg/app/help.client.services.z?cat=01&subcat=01_05", "hint": "CGS iTrade Singapore online commission % and minimum for SGX trades", "adapter": "cgs-international" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Compare providers and account types", "detail": "Weigh commission rates, minimums and platform features across CDP-linked brokers.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Open a CDP Securities account", "detail": "Apply via Singpass MyInfo, or the paper form if you're not a Citizen/PR.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Apply for a trading account with your chosen broker", "detail": "Most brokers let you apply online and link your CDP account during onboarding.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Fund your account", "detail": "Transfer via PayNow, FAST or GIRO depending on the broker.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Place your first trade", "detail": "Start with a small position while you get familiar with the platform.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" }
+      ],
+      "officialLink": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account"
+    },
+    {
+      "id": "b-custodian-app",
+      "name": "Custodian / App-Based Brokers",
+      "category": "App-based",
+      "icon": "phone",
+      "summary": "Mobile-first brokers that hold your shares in a custodian (trust) structure rather than in your own CDP name, usually with lower fees and faster account opening.",
+      "analogy": "Like keeping valuables in a bank's safe deposit box under the bank's custodial arrangement — convenient and low-cost, just not titled directly to you at the registry.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 4,
+      "complexity": 2,
+      "pros": [
+        "Often the lowest commissions and platform fees among SG-accessible brokers",
+        "Fast, fully digital account opening — usually minutes, not days",
+        "Fractional share investing available on some platforms for US stocks",
+        "Slick mobile apps with built-in charting, news and community features"
+      ],
+      "cons": [
+        "Shares are held in the broker's custodian/trust structure, not your own CDP name",
+        "Corporate action handling (rights issues, AGM votes) may be less direct than CDP-linked",
+        "Newer entrants have a shorter regulatory track record than the established local brokers",
+        "Promotional zero-commission periods often revert to standard fees after a set time"
+      ],
+      "bestFor": "Cost-conscious, mobile-first investors comfortable with a custodian holding structure.",
+      "eligibility": "18 years or older; account opening usually via Singpass MyInfo or passport/ID upload.",
+      "relatedIds": ["m-diy-broker", "p-sgx-stocks", "p-us-hk-stocks", "p-etf", "b-cdp-local", "b-international"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "moomoo-sg",
+          "name": "moomoo SG",
+          "officialLink": "https://www.moomoo.com/sg",
+          "tags": ["Custodian", "App-based", "SG", "US", "HK", "China"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.moomoo.com/sg/support/topic5_118", "hint": "SG stocks/ETFs/REITs Commission % + Platform Fee % and minimums (Help Center Fee Schedule, not the marketing pricing page)", "adapter": "moomoo-sg" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://www.moomoo.com/sg/support/topic5_118", "hint": "Combined Commission + Platform Fee minimum per order, SGD", "adapter": "moomoo-sg" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://www.moomoo.com/sg/support/topic5_76", "hint": "US stocks/ETFs Platform Fee per order in USD (commission is $0, permanent zero-commission policy)", "adapter": "moomoo-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "tiger-brokers-sg",
+          "name": "Tiger Brokers SG",
+          "officialLink": "https://www.itiger.com/sg",
+          "tags": ["Custodian", "App-based", "SG", "US", "HK", "Australia"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.itiger.com/sg/commissions", "hint": "SG stock commission % per order (excludes separate Platform Fee), with minimum in SGD", "adapter": "tiger-brokers-sg" },
+            { "type": "per_trade_min", "market": "US", "sourceUrl": "https://www.itiger.com/sg/commissions", "hint": "US stock commission minimum per order in USD (per-share pricing, excludes separate Platform Fee)", "adapter": "tiger-brokers-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "webull-sg",
+          "name": "Webull SG",
+          "officialLink": "https://www.webull.com.sg",
+          "tags": ["Custodian", "App-based", "SG", "US"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.webull.com.sg/pricing", "hint": "Standard SG stock commission % and minimum after any first-year promotion", "adapter": "webull-sg" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://www.webull.com.sg/pricing", "hint": "US stock/ETF commission and platform fee for Webull SG", "adapter": "webull-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "usmart-sg",
+          "name": "uSMART SG",
+          "officialLink": "https://www.usmart.sg",
+          "tags": ["Custodian", "App-based", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.usmart.sg/pricing", "hint": "SG Stock Fees table: uSMART SG Commission % (Online Rate, no minimum)", "adapter": "usmart-sg" },
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.usmart.sg/pricing", "hint": "SG Stock Fees table: uSMART SG Platform Fee % (Online Rate, no minimum)", "adapter": "usmart-sg" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://www.usmart.sg/pricing", "hint": "US Stock Fees table: Commission for stock price >= USD 40 (Online Rate, ASEAN/Japan/Korea/Taiwan tier)", "adapter": "usmart-sg" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://www.usmart.sg/pricing", "hint": "US Stock Fees table: Platform Fee for stock price >= USD 40 (Online Rate, fixed per order)", "adapter": "usmart-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "longbridge-sg",
+          "name": "Longbridge SG",
+          "officialLink": "https://longbridge.com/sg",
+          "tags": ["Custodian", "App-based", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_flat", "market": "SG", "sourceUrl": "https://longbridge.com/sg/pricing", "hint": "Singapore card: Commission ($0, \"Lifetime Free\")", "adapter": "longbridge-sg" },
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://longbridge.com/sg/pricing", "hint": "Singapore card: Platform Fee % (wait for hydration — the % briefly shows a placeholder 0% before the real rate loads)", "adapter": "longbridge-sg" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://longbridge.com/sg/pricing", "hint": "Singapore card: Platform Fee minimum per order (SGD)", "adapter": "longbridge-sg" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://longbridge.com/sg/pricing", "hint": "United States card: Commission ($0, \"Lifetime Free\")", "adapter": "longbridge-sg" },
+            { "type": "per_trade_min", "market": "US", "sourceUrl": "https://longbridge.com/sg/pricing", "hint": "United States card: Platform Fee minimum per order (USD, per-share pricing)", "adapter": "longbridge-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "syfe-trade",
+          "name": "Syfe Trade",
+          "officialLink": "https://www.syfe.com/trade",
+          "tags": ["Custodian", "App-based", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.syfe.com/pricing", "hint": "SG brokerage commission % and minimum, Blue (base) tier, on the combined Syfe pricing page", "adapter": "syfe" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://www.syfe.com/pricing", "hint": "SG brokerage minimum per trade, Blue (base) tier", "adapter": "syfe" },
+            { "type": "per_trade_flat", "market": "US", "sourceUrl": "https://www.syfe.com/pricing", "hint": "US stock/ETF commission ($0 commission and $0 platform fee on all US trades)", "adapter": "syfe" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Download the app and sign up", "detail": "Registration is usually fully digital, via Singpass MyInfo or ID upload.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Verify your identity", "detail": "Upload NRIC/passport and proof of address if not using MyInfo.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Fund your account", "detail": "Link a local bank account via PayNow or FAST transfer.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "For US shares, submit a W-8BEN form", "detail": "Usually completed digitally within the app before you can trade US stocks.", "link": "https://www.irs.gov/forms-pubs/about-form-w-8-ben" },
+        { "title": "Place your first trade", "detail": "Check whether shares are custodian-held before deciding position size.", "link": "https://eservices.mas.gov.sg/fid" }
+      ],
+      "officialLink": "https://www.moomoo.com/sg"
+    },
+    {
+      "id": "b-international",
+      "name": "International Brokers",
+      "category": "International",
+      "icon": "globe",
+      "summary": "Large global brokers offering access to dozens of exchanges worldwide from a single account, popular with investors who trade beyond SG/US/HK or want institutional-grade tools.",
+      "analogy": "Like a universal travel adapter — one account plugs you into markets all over the world.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 4,
+      "complexity": 4,
+      "pros": [
+        "Access to a very wide range of global exchanges and instruments from one account",
+        "Generally very competitive commissions, especially for active or larger traders",
+        "Sophisticated trading tools, order types and research",
+        "Strong regulatory pedigree with operations across many jurisdictions"
+      ],
+      "cons": [
+        "Interfaces can be overwhelming for a first-time investor",
+        "Inactivity or account-level fees may apply depending on the tier",
+        "Customer support is less localised than a Singapore-based broker",
+        "Currency conversion and multi-currency account management add a layer of complexity"
+      ],
+      "bestFor": "Investors who want global market access and are comfortable with a more complex platform.",
+      "eligibility": "18 years or older; account opening via online application with identity verification.",
+      "relatedIds": ["m-diy-broker", "p-us-hk-stocks", "p-etf", "p-options-cfd", "b-custodian-app"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "interactive-brokers-sg",
+          "name": "Interactive Brokers Singapore",
+          "officialLink": "https://www.interactivebrokers.com.sg",
+          "tags": ["International", "SG", "US", "HK", "Global"],
+          "feeSpecs": [
+            { "type": "per_trade_min", "market": "US", "sourceUrl": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php", "hint": "IBKR Pro Fixed plan per-share commission minimum per order for US stocks (Singapore tab)", "adapter": "interactive-brokers-sg" },
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php", "hint": "IBKR Pro Fixed plan SGX commission % and minimum for Interactive Brokers Singapore (Singapore SGD tab)", "adapter": "interactive-brokers-sg" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php", "hint": "IBKR Pro Fixed plan SGX minimum per order, SGD", "adapter": "interactive-brokers-sg" },
+            { "type": "fx_spread_pct", "market": "ALL", "sourceUrl": "https://www.interactivebrokers.com.sg/en/pricing/commissions-spot-currencies.php", "hint": "Auto currency conversion markup % (display-only; manual FX is bps with a minimum and is not stored)", "adapter": "interactive-brokers-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "saxo-markets-sg",
+          "name": "Saxo Markets Singapore",
+          "officialLink": "https://www.home.saxo/en-sg",
+          "tags": ["International", "SG", "US", "HK", "Global"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions", "hint": "Singapore Exchange row, Classic tier commission % and minimum in SGD", "adapter": "saxo-markets-sg" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions", "hint": "Singapore Exchange row, Classic tier minimum in SGD", "adapter": "saxo-markets-sg" },
+            { "type": "per_trade_pct", "market": "US", "sourceUrl": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions", "hint": "NASDAQ row, Classic tier commission % and minimum in USD", "adapter": "saxo-markets-sg" },
+            { "type": "per_trade_min", "market": "US", "sourceUrl": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions", "hint": "NASDAQ row, Classic tier minimum in USD", "adapter": "saxo-markets-sg" },
+            { "type": "fx_spread_pct", "market": "ALL", "sourceUrl": "https://www.help.saxo/hc/en-sg/articles/360019476437-What-are-the-currency-conversion-fees-for-account-transfers", "hint": "Conversion fee % included in Saxo's conversion rate (display-only)", "adapter": "saxo-markets-sg" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Compare account tiers", "detail": "Check whether a simplified (e.g. Lite-style) or full-feature tier suits you, and any account minimums.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Apply online", "detail": "Complete the application with identity and financial background information.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Complete suitability/appropriateness checks", "detail": "MAS requires brokers to assess your understanding before enabling certain products.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Fund your account", "detail": "Wire or transfer funds; note any currency conversion involved.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "For US shares, submit a W-8BEN form", "detail": "Required before trading US-listed securities.", "link": "https://www.irs.gov/forms-pubs/about-form-w-8-ben" }
+      ],
+      "officialLink": "https://www.interactivebrokers.com.sg"
+    },
+    {
+      "id": "b-bank-integrated",
+      "name": "Bank-Integrated Brokers",
+      "category": "Bank",
+      "icon": "bank",
+      "summary": "Brokerage accounts run by or tightly integrated with your everyday bank (DBS, OCBC, UOB), so you can view holdings and trade within the same banking app you already use.",
+      "analogy": "Like having a savings account and a trading account under the same roof, viewable on one login.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 4,
+      "complexity": 2,
+      "pros": [
+        "Single login to view banking, savings and investments together",
+        "Trusted, familiar brand if you already bank with them",
+        "Funding and withdrawals are usually instant between your bank and trading accounts",
+        "Branch support available if you prefer speaking to someone in person"
+      ],
+      "cons": [
+        "Commissions can be higher than dedicated app-based custodian brokers",
+        "Product range may nudge you toward the bank's own funds and structured products",
+        "Trading platform is often less feature-rich than specialist brokers",
+        "Account opening may require an existing deposit account with the bank"
+      ],
+      "bestFor": "Existing bank customers who value convenience and a single view of banking plus investments.",
+      "eligibility": "Typically requires an active deposit/internet banking account with the bank.",
+      "relatedIds": ["m-diy-broker", "m-bank-rsp", "p-sgx-stocks", "p-unit-trust", "b-cdp-local"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "dbs-vickers-digibank",
+          "name": "DBS Vickers via digibank",
+          "officialLink": "https://www.dbsvickers.com",
+          "tags": ["Bank-integrated", "CDP-linked", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing", "hint": "SGX online commission % and minimum for DBS Vickers accounts linked to digibank", "adapter": "dbs-vickers-digibank" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc-securities-bank",
+          "name": "OCBC Securities (Online Equities Account)",
+          "officialLink": "https://www.ocbc.com/personal-banking/investments/online-equities-account.page",
+          "tags": ["Bank-integrated", "CDP-linked", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page", "hint": "SGX online commission % and minimum for OCBC's Online Equities Account", "adapter": "ocbc-securities-bank" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "uob-kay-hian-tmrw",
+          "name": "UOB Kay Hian via UOB TMRW",
+          "officialLink": "https://uobkh.com.sg",
+          "tags": ["Bank-integrated", "CDP-linked", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://uobkh.com.sg/en/faq/article/equities", "hint": "SGX commission % tiers accessible through UOB's banking app integration", "adapter": "uob-kay-hian-tmrw" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Confirm you have the bank's deposit/internet banking account", "detail": "Bank-integrated trading typically requires an existing account with that bank.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Apply for the linked trading account", "detail": "Apply in-app or online; many banks let existing customers skip re-verification.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Link or open a CDP account", "detail": "Needed if you want SGX shares registered in your own name.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Fund your trading account", "detail": "Transfers between your bank account and trading account are usually instant.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Place your first trade", "detail": "Trade directly from the banking app or a linked broker portal.", "link": "https://eservices.mas.gov.sg/fid" }
+      ],
+      "officialLink": "https://www.dbsvickers.com"
+    },
+    {
+      "id": "b-full-service",
+      "name": "Full-Service / Remisier Brokers",
+      "category": "Specialist",
+      "icon": "handshake",
+      "summary": "A human remisier or dealer manages your trades and gives market commentary, typically through one of the established local brokerages, for a higher commission than self-directed online trading.",
+      "analogy": "Like using a travel agent instead of booking flights yourself — more personal service, at a higher cost.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "pros": [
+        "A dedicated remisier/dealer to call for trade execution and market updates",
+        "Useful for investors less comfortable navigating an online platform themselves",
+        "Can provide access to IPO allocations and research the remisier curates",
+        "Offered as an option by most established CDP-linked brokers, so due diligence overlaps"
+      ],
+      "cons": [
+        "Commissions are meaningfully higher than self-directed online trading",
+        "Quality and incentives vary a lot by individual remisier",
+        "Slower execution than placing your own online order",
+        "Less transparency into why a particular trade is recommended unless you ask"
+      ],
+      "bestFor": "Investors who want a personal relationship and are willing to pay more for guided execution.",
+      "eligibility": "18 years or older with a CDP Securities account; opened through the remisier's brokerage firm.",
+      "relatedIds": ["m-diy-broker", "m-financial-adviser", "p-sgx-stocks", "b-cdp-local"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Choose a brokerage and ask to be assigned a remisier", "detail": "Most CDP-linked brokers (POEMS, UOB Kay Hian, DBS Vickers and others) offer this alongside online trading.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Open a CDP Securities account", "detail": "Needed so trades settle into your own name.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Open the brokerage account under your remisier", "detail": "Complete the firm's standard account opening process, noting the remisier's code.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Fund your account", "detail": "Transfer funds via PayNow, FAST or GIRO as instructed by the firm.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Place trades via phone or your remisier's guidance", "detail": "Confirm each order's price and quantity clearly before it's placed.", "link": "https://eservices.mas.gov.sg/fid" }
+      ],
+      "officialLink": "https://eservices.mas.gov.sg/fid"
+    },
+    {
+      "id": "b-fund-platform",
+      "name": "Fund Platforms",
+      "category": "Specialist",
+      "icon": "basket",
+      "summary": "Broker-adjacent platforms specialised in unit trusts and funds across many fund houses, often bundled with advisory or robo-style portfolio options on the same account.",
+      "analogy": "Like a fund supermarket where every aisle is a different fund manager, all checked out at one till.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "pros": [
+        "Very wide fund shelf across many fund houses in one account",
+        "Often lower sales charges than buying the same fund via a bank branch",
+        "Some platforms combine self-directed fund buying with advisory portfolios",
+        "Can consolidate cash, SRS and sometimes CPF fund holdings in one place"
+      ],
+      "cons": [
+        "Platform fees apply even where sales charges are discounted or waived",
+        "Primarily funds — not the venue for buying individual stocks directly",
+        "Choice overload without a clear plan for what to buy",
+        "Some products require extra risk acknowledgements before purchase"
+      ],
+      "bestFor": "Investors who want broad fund selection and lower sales charges than a bank branch.",
+      "eligibility": "18 years or older; account opening via Singpass MyInfo or manual verification.",
+      "relatedIds": ["m-fund-platform", "m-robo", "p-unit-trust", "p-etf"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "fsmone-platform",
+          "name": "FSMOne (FSM Global)",
+          "officialLink": "https://fsm.global/sg/home",
+          "tags": ["Fund platform", "SG", "US", "HK", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://fsm.global/sg/pricing-structure", "hint": "Permanent sales charge % (headline: \"permanent 0% sales charge\")", "adapter": "fsmone" },
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://fsm.global/sg/pricing-structure", "hint": "Funds tab: \"All other funds\" quarterly platform fee % (annualise x4) — non-Diamond-tier, non-CPF rate", "adapter": "fsmone" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "endowus-platform",
+          "name": "Endowus",
+          "officialLink": "https://endowus.com",
+          "tags": ["Fund platform", "Robo-advisor", "SG", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://endowus.com/pricing", "hint": "Access fee (%) tiers, Cash — Long-Term Wealth (\"All Endowus Fees at a Glance\" table)", "adapter": "endowus" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Open an account online", "detail": "Sign up via Singpass MyInfo or upload identification documents.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Complete the Customer Knowledge Assessment", "detail": "Required before you can transact in unit trusts and other complex products.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Fund your account", "detail": "Transfer cash, or link SRS/CPF if supported.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Compare and select funds", "detail": "Use fund fact sheets and expense ratios to compare options across fund houses.", "link": "https://fsm.global/sg/home" },
+        { "title": "Place your order", "detail": "Buy as a lump sum or set up a regular savings plan.", "link": "https://fsm.global/sg/home" }
+      ],
+      "officialLink": "https://fsm.global/sg/home"
+    },
+    {
+      "id": "b-crypto-exchange",
+      "name": "MAS-Licensed Crypto Exchanges",
+      "category": "Specialist",
+      "icon": "warning",
+      "summary": "Platforms licensed by MAS as Major Payment Institutions to offer Digital Payment Token (DPT) services, letting you buy, sell and hold cryptocurrencies. Crypto is highly volatile and not suitable for most beginner portfolios.",
+      "analogy": "Like a currency exchange counter for a currency that can swing wildly in value overnight — the counter being licensed doesn't make the currency itself safe.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 5,
+      "liquidity": 4,
+      "complexity": 4,
+      "pros": [
+        "MAS licensing means the exchange itself meets baseline anti-money-laundering and operational standards",
+        "24/7 market access and near-instant transfers between exchanges/wallets",
+        "Wide range of digital assets available compared to traditional brokers",
+        "Licensing is checkable directly on the MAS Financial Institutions Directory"
+      ],
+      "cons": [
+        "Extreme price volatility — cryptocurrency values can fall sharply and rapidly",
+        "MAS licensing regulates the exchange's conduct, not the safety of the underlying asset — you can still lose most or all of your money",
+        "Not covered by SDIC deposit insurance or the same investor protections as securities",
+        "Common target for scams — always transact only through the exchange's own licensed app or site"
+      ],
+      "bestFor": "Only experienced investors who understand and accept the risk of losing their entire investment; not a starting point for beginners.",
+      "eligibility": "18 years or older; identity verification required. Always confirm current licensing status on the MAS Financial Institutions Directory before transacting, as licences and entities can change.",
+      "relatedIds": ["p-crypto", "m-diy-broker"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "coinbase-sg",
+          "name": "Coinbase Singapore",
+          "officialLink": "https://www.coinbase.com/en-sg",
+          "tags": ["MAS-licensed", "MPI", "DPT", "SG", "Global"],
+          "feeSpecs": [
+            { "type": "other", "market": "SG", "sourceUrl": "https://help.coinbase.com/en/coinbase/trading-and-funding/pricing-and-fees/fees", "hint": "Coinbase / Coinbase Advanced Trade maker-taker fee schedule (%), label as 'Trading fee'", "adapter": "coinbase-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "coinhako",
+          "name": "Coinhako",
+          "officialLink": "https://www.coinhako.com",
+          "tags": ["MAS-licensed", "MPI", "DPT", "SG"],
+          "feeSpecs": [
+            { "type": "other", "market": "SG", "sourceUrl": "https://help.coinhako.com/portal/en/kb/articles/coinhako-fees", "hint": "Coinhako spot trade, limit order and recurring buy fee percentages, label as 'Trading fee'", "adapter": "coinhako" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "gemini-sg",
+          "name": "Gemini Digital Payments Singapore",
+          "officialLink": "https://www.gemini.com",
+          "tags": ["MAS-licensed", "MPI", "DPT", "SG", "Global"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "ALL", "sourceUrl": "https://www.gemini.com/fees/activetrader-fee-schedule", "hint": "Gemini ActiveTrader taker fee (%) at the entry (>= $0 volume) tier", "adapter": "gemini-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "independent-reserve-sg",
+          "name": "Independent Reserve SG",
+          "officialLink": "https://www.independentreserve.com",
+          "tags": ["MAS-licensed", "MPI", "DPT", "SG"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "ALL", "sourceUrl": "https://www.independentreserve.com/fees", "hint": "Independent Reserve trading fee (%) at the entry (0 volume) tier", "adapter": "independent-reserve-sg" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "upbit-sg",
+          "name": "Upbit Singapore",
+          "officialLink": "https://sg.upbit.com",
+          "tags": ["MAS-licensed", "MPI", "DPT", "SG"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "ALL", "sourceUrl": "https://sg.upbit.com/service_center/guide", "hint": "Trading Fee table, SGD market row (maker/taker %, GST inclusive)", "adapter": "upbit-sg" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Verify the exchange's current MAS licence", "detail": "Search the exchange's legal entity name on the MAS Financial Institutions Directory before you sign up — licences and entities can change.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Only use official apps/sites", "detail": "Bookmark the exchange's official URL directly; phishing sites impersonating licensed exchanges are common.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Complete identity verification (KYC)", "detail": "Upload NRIC/passport and proof of address as required by anti-money-laundering rules.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Fund your account", "detail": "Deposit via PayNow, FAST transfer or the methods the exchange supports.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Start with a small amount you can afford to lose fully", "detail": "Crypto can lose most or all of its value; never invest money you need for essential expenses.", "link": "https://www.moneysense.gov.sg/" }
+      ],
+      "officialLink": "https://eservices.mas.gov.sg/fid"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods — how to invest | SG Invest Map</title>
+<meta name="description" content="Ways to invest in Singapore — robo-advisors, regular savings plans, CPFIS, SRS and more — with real provider fees.">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to content</a>
+<header class="topbar" id="app-header"></header>
+<div class="disclaimer" id="app-disclaimer" hidden></div>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h1><span class="chip" style="background:var(--world-methods-soft); color:var(--world-methods)">How to invest</span></h1>
+        <h2 style="margin-top:4px">Methods</h2>
+        <p class="muted">The channel your money flows through before it becomes an investment — and which account it
+          comes from.</p>
+      </div>
+
+      <div class="diagram-card">
+        <svg class="diagram-svg" viewBox="0 0 900 260" role="img" aria-labelledby="flow-title">
+          <title id="flow-title">Money flows from cash, CPF Ordinary Account or SRS, through a method, into a product.</title>
+          <defs>
+            <marker id="arrow-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="fill-muted"></path>
+            </marker>
+          </defs>
+          <path d="M150 50 H330" class="diagram-arrow" marker-end="url(#arrow-m)"></path>
+          <path d="M150 130 H330" class="diagram-arrow" marker-end="url(#arrow-m)"></path>
+          <path d="M150 210 H330" class="diagram-arrow" marker-end="url(#arrow-m)"></path>
+          <path d="M540 130 H700" class="diagram-arrow" marker-end="url(#arrow-m)"></path>
+
+          <g><rect x="10" y="20" width="140" height="60" rx="14" class="fill-surface-2 diagram-node-box"></rect><text x="80" y="55" text-anchor="middle" class="diagram-label" font-size="14">Cash</text></g>
+          <g><rect x="10" y="100" width="140" height="60" rx="14" class="fill-surface-2 diagram-node-box"></rect><text x="80" y="135" text-anchor="middle" class="diagram-label" font-size="13">CPF Ordinary Account</text></g>
+          <g><rect x="10" y="180" width="140" height="60" rx="14" class="fill-surface-2 diagram-node-box"></rect><text x="80" y="215" text-anchor="middle" class="diagram-label" font-size="14">SRS</text></g>
+
+          <g><rect x="335" y="80" width="205" height="100" rx="16" class="fill-methods-soft diagram-node-box"></rect>
+            <text x="437" y="122" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-methods)">Method</text>
+            <text x="437" y="145" text-anchor="middle" class="diagram-label-muted" font-size="11">robo · RSP · CPFIS · SRS-linked</text>
+          </g>
+
+          <a href="products.html" aria-label="Go to Products">
+            <g><rect x="705" y="95" width="185" height="70" rx="16" class="fill-products-soft diagram-node-box"></rect>
+              <text x="797" y="135" text-anchor="middle" class="diagram-label-lg" font-size="15" style="fill:var(--world-products)">Product</text>
+            </g>
+          </a>
+        </svg>
+      </div>
+
+      <div id="methods-empty"></div>
+      <div id="methods-list" style="margin-top:24px; display:grid; gap:20px"></div>
+
+      <div class="section-head" style="margin-top:40px">
+        <h2>Fee-drag calculator</h2>
+        <p class="muted">Estimate total fees across method providers for a given investing scenario.</p>
+      </div>
+      <div id="calc-mount"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"wrap\" style=\"padding:24px 16px\"><div class=\"empty-panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module" src="js/methods.js"></script>
+</body>
+</html>

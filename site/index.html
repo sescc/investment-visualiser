@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SG Invest Map — Your map to investing in Singapore</title>
+<meta name="description" content="A visual, jargon-free guide to investment products, methods and brokers in Singapore. Not financial advice.">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to content</a>
+<header class="topbar" id="app-header"></header>
+<div class="disclaimer" id="app-disclaimer" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Hero -->
+  <section class="section hero">
+    <div class="wrap">
+      <div class="section-head" style="max-width:640px">
+        <h1>Your map to investing in Singapore</h1>
+        <p class="muted">Three simple questions: what do you buy, how do you invest, and who executes it? This site
+          answers all three in plain English, with real fee data — no jargon, no sales pitch.</p>
+      </div>
+
+      <div class="diagram-card" aria-label="How investing works, in one picture">
+        <svg class="diagram-svg" viewBox="0 0 920 200" role="img" aria-labelledby="hero-diagram-title">
+          <title id="hero-diagram-title">You choose a method, go through a broker or platform, and end up owning a product. Click any box to learn more.</title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="fill-muted"></path>
+            </marker>
+          </defs>
+          <path d="M120 100 H205" class="diagram-arrow" marker-end="url(#arrow)"></path>
+          <path d="M415 100 H500" class="diagram-arrow" marker-end="url(#arrow)"></path>
+          <path d="M710 100 H795" class="diagram-arrow" marker-end="url(#arrow)"></path>
+
+          <g class="diagram-node">
+            <rect x="10" y="60" width="110" height="80" rx="16" class="fill-surface-2 diagram-node-box"></rect>
+            <text x="65" y="94" text-anchor="middle" class="diagram-label-lg" font-size="16">You</text>
+            <text x="65" y="114" text-anchor="middle" class="diagram-label-muted" font-size="11">cash · CPF · SRS</text>
+          </g>
+
+          <a href="methods.html" aria-label="Methods: how you invest">
+            <g class="diagram-node">
+              <rect x="210" y="45" width="200" height="110" rx="16" class="fill-methods-soft diagram-node-box"></rect>
+              <text x="310" y="85" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-methods)">Method</text>
+              <text x="310" y="106" text-anchor="middle" class="diagram-label-muted" font-size="11">how you invest</text>
+              <text x="310" y="124" text-anchor="middle" class="diagram-label-muted" font-size="11">robo · RSP · CPFIS</text>
+            </g>
+          </a>
+
+          <a href="brokers.html" aria-label="Brokers: who executes it">
+            <g class="diagram-node">
+              <rect x="505" y="45" width="200" height="110" rx="16" class="fill-brokers-soft diagram-node-box"></rect>
+              <text x="605" y="85" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-brokers)">Broker / platform</text>
+              <text x="605" y="106" text-anchor="middle" class="diagram-label-muted" font-size="11">who executes it</text>
+              <text x="605" y="124" text-anchor="middle" class="diagram-label-muted" font-size="11">CDP-linked · custodian</text>
+            </g>
+          </a>
+
+          <a href="products.html" aria-label="Products: what you buy">
+            <g class="diagram-node">
+              <rect x="800" y="60" width="110" height="80" rx="16" class="fill-products-soft diagram-node-box"></rect>
+              <text x="855" y="94" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-products)">Product</text>
+              <text x="855" y="114" text-anchor="middle" class="diagram-label-muted" font-size="11">what you buy</text>
+            </g>
+          </a>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Quiz -->
+  <section class="section" id="quiz-section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Which path suits me?</h2>
+        <p class="muted">Five quick questions. We'll suggest a product mix, a method and a broker type — and load
+          them straight into the Compare page.</p>
+      </div>
+      <div id="quiz-mount"></div>
+    </div>
+  </section>
+
+  <!-- 3. Risk vs return map -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Risk vs. access map</h2>
+        <p class="muted">Every product, plotted. Left-right is risk, bottom-top is how quickly you can get your
+          money back, bubble size is how complex it is to understand, and colour shows whether returns lean toward
+          growth (teal) or income (amber). Click a bubble to see the product.</p>
+      </div>
+      <div id="bubble-mount">
+        <div class="chart-wrap"><canvas id="bubble-canvas" aria-label="Risk versus liquidity bubble chart of all products"></canvas></div>
+        <div id="bubble-table-mount"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. World cards -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Start exploring</h2>
+      </div>
+      <div class="grid grid-3" id="world-cards"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer" id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"wrap\" style=\"padding:24px 16px\"><div class=\"empty-panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module" src="js/index.js"></script>
+</body>
+</html>

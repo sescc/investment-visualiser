@@ -1,0 +1,705 @@
+{
+  "dataset": "methods",
+  "entries": [
+    {
+      "id": "m-diy-broker",
+      "name": "Do-It-Yourself Investing",
+      "category": "Do it yourself",
+      "icon": "chart",
+      "summary": "Open a brokerage account yourself and buy individual stocks, ETFs or bonds directly, deciding exactly what to hold and when to trade. You do your own research and pay the broker's trading costs directly.",
+      "analogy": "Like cooking your own meal instead of ordering a set menu — more control over every ingredient, but you do the work.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 4,
+      "complexity": 4,
+      "pros": [
+        "Full control over exactly which stocks, ETFs or bonds you own",
+        "Usually the lowest-cost way to invest since you're not paying for advice or portfolio management",
+        "CDP-linked accounts put shares in your own name — dividends and voting rights come straight to you",
+        "Widest range of products across SGX, US, HK and other markets"
+      ],
+      "cons": [
+        "You do all the research, timing and rebalancing yourself",
+        "No automatic diversification — concentration risk if you buy too few names",
+        "Choosing between CDP-linked and custodian accounts can be confusing at first",
+        "Easy to make emotional decisions (panic-selling, chasing hype) without a plan"
+      ],
+      "bestFor": "People who want to pick their own stocks/ETFs and are willing to spend time learning the basics.",
+      "eligibility": "18 years or older. A Singapore bank account is needed for CDP-linked accounts; custodian brokers generally also accept foreigners with just a passport and proof of address.",
+      "relatedIds": ["b-cdp-local", "b-custodian-app", "b-international", "b-bank-integrated", "p-sgx-stocks", "p-us-hk-stocks", "p-etf", "p-reit", "p-corp-bond"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Decide: CDP-linked or custodian account", "detail": "CDP-linked brokers register SGX shares in your own name at the Central Depository; custodian brokers (often cheaper, more app-based) hold shares in trust on your behalf. Compare both in the Brokers guide.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Open a CDP Securities account (if going CDP-linked)", "detail": "Apply online via Singpass MyInfo in a few minutes, or use the paper form if you're not a Singapore Citizen or PR.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Choose a broker", "detail": "Compare CDP-linked, custodian, bank-integrated and international brokers, and confirm any broker is MAS-licensed before you apply.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Verify your identity", "detail": "Most brokers let you apply online via Singpass MyInfo; non-residents upload a passport and proof of address instead.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Fund your account", "detail": "Transfer money in via PayNow or bank transfer, or link a Cash Upfront/custodian wallet, depending on the broker.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "For US shares, submit a W-8BEN form", "detail": "Your broker will ask you to file this US tax form (usually digitally) before you can trade US-listed stocks and ETFs.", "link": "https://www.irs.gov/forms-pubs/about-form-w-8-ben" },
+        { "title": "Place your first trade", "detail": "Start small, consider limit orders while you learn, and keep a record of why you bought what you bought.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" }
+      ],
+      "officialLink": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account"
+    },
+    {
+      "id": "m-robo",
+      "name": "Robo-Advisors",
+      "category": "Hands-off",
+      "icon": "robot",
+      "summary": "Answer a few questions about your goals and risk appetite, and an algorithm builds and automatically rebalances a diversified portfolio of ETFs or funds for you. You just fund it regularly and let it run.",
+      "analogy": "Like a set-and-forget slow cooker — you choose the recipe once, and it does the mixing for you.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 1,
+      "pros": [
+        "Instant diversification across many stocks/bonds in one portfolio",
+        "Automatic rebalancing — no need to monitor markets yourself",
+        "Very low minimums, and most let you start a monthly regular savings plan",
+        "Good for CPF/SRS money since several platforms accept these accounts too"
+      ],
+      "cons": [
+        "You give up choosing individual holdings",
+        "Ongoing management fee applies every year, on top of the underlying fund costs",
+        "Portfolios can differ a lot between providers — compare methodology, not just marketing",
+        "Less control if you want to react quickly to news or tax-loss harvest yourself"
+      ],
+      "bestFor": "Beginners who want a diversified, professionally-rebalanced portfolio without picking stocks themselves.",
+      "eligibility": "18 years or older with a Singapore bank account for funding; CPF/SRS acceptance varies by provider.",
+      "relatedIds": ["p-etf", "p-unit-trust", "p-reit", "p-cpf-topup", "m-srs", "m-cpfis-oa", "b-fund-platform"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "syfe",
+          "name": "Syfe",
+          "officialLink": "https://www.syfe.com",
+          "tags": ["Robo-advisor", "SG", "US", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.syfe.com/pricing", "hint": "Annual management fee (%) tiers by portfolio balance, e.g. Blue/Black/Gold/Platinum/Diamond tiers, for Syfe's managed portfolios", "adapter": "syfe" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "stashaway",
+          "name": "StashAway",
+          "officialLink": "https://www.stashaway.sg",
+          "tags": ["Robo-advisor", "SG", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.stashaway.sg/pricing", "hint": "Annual management fee (%) tiered by invested amount for StashAway General Investing portfolios", "adapter": "stashaway" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "endowus",
+          "name": "Endowus",
+          "officialLink": "https://endowus.com",
+          "tags": ["Robo-advisor", "SG", "CPF", "SRS", "Fund platform"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://endowus.com/pricing", "hint": "Access fee (%) tiers for Cash, CPF and SRS advised portfolios", "adapter": "endowus" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "dbs-digiportfolio",
+          "name": "DBS digiPortfolio",
+          "officialLink": "https://www.dbs.com.sg/personal/investments/other-investments/dbs-digiportfolio",
+          "tags": ["Robo-advisor", "Bank", "SG", "US", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.dbs.com.sg/personal/investments/other-investments/dbs-digiportfolio", "hint": "Annual portfolio management fee (% p.a.) shown in Portfolio Statistics for each digiPortfolio", "adapter": "dbs-digiportfolio" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc-roboinvest",
+          "name": "OCBC RoboInvest",
+          "officialLink": "https://www.ocbc.com/personal-banking/investments/roboinvest",
+          "tags": ["Robo-advisor", "Bank", "SG", "US"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/roboinvest", "hint": "\"Fees and charges\" section — annual management fee (% of AUM) charged monthly", "adapter": "ocbc-roboinvest" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "uobam-invest",
+          "name": "UOBAM Invest",
+          "officialLink": "https://www.uobam.com.sg/uobaminvest/individual/index.html",
+          "tags": ["Robo-advisor", "Bank", "SG"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.uobam.com.sg/uobaminvest/digital-adviser.html", "hint": "\"Fees charged to Investors\" table — Annual fee (% p.a., inclusive of GST) for S$25,000 and below vs above S$25,000 tiers", "adapter": "uobam-invest" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "kristal-ai",
+          "name": "Kristal.AI",
+          "officialLink": "https://www.kristal.ai",
+          "tags": ["Robo-advisor", "SG", "Global", "CMS licence"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://www.kristal.ai", "hint": "Management fee (% p.a.) tiers by invested amount for Kristal.AI Automated Portfolios", "adapter": "kristal-ai" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Complete the risk profile questionnaire", "detail": "Each platform asks about your goals, horizon and comfort with losses to recommend a portfolio.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Choose a provider and portfolio", "detail": "Compare fee tiers and portfolio approach (indexed, thematic, income-focused) using the calculator on this site.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Verify your identity", "detail": "Sign up via Singpass MyInfo or upload NRIC/passport, depending on the provider.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Fund your account", "detail": "Make a lump-sum transfer and/or set up a monthly standing instruction (GIRO or card).", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Link CPF or SRS if offered", "detail": "Some providers accept CPF Ordinary Account or SRS funds — check CPFIS/SRS eligibility first.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" }
+      ],
+      "officialLink": "https://www.syfe.com"
+    },
+    {
+      "id": "m-bank-rsp",
+      "name": "Bank Regular Savings Plans",
+      "category": "Hands-off",
+      "icon": "piggy",
+      "summary": "Set up a monthly standing instruction with your bank or broker to automatically buy a fixed dollar amount of chosen stocks, ETFs or unit trusts on a set date each month — classic dollar-cost averaging.",
+      "analogy": "Like a gym membership that auto-deducts monthly — the discipline is built in, so you don't have to remember.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 1,
+      "pros": [
+        "Automates dollar-cost averaging, removing the temptation to time the market",
+        "Low monthly minimums make it accessible to new investors",
+        "No need to actively monitor prices — the plan buys on a fixed schedule",
+        "Offered directly by banks you may already use, so setup is familiar"
+      ],
+      "cons": [
+        "Limited to a curated list of counters/funds, not the full market",
+        "Purchases happen on a fixed date regardless of price that day",
+        "Selling or switching counters may cost more than buying",
+        "Choice of instruments is narrower than a full brokerage account"
+      ],
+      "bestFor": "Beginners who want to start investing a fixed amount monthly without picking a moment to trade.",
+      "eligibility": "Usually requires an active account or internet banking with the bank or broker running the plan; check each provider's monthly minimum on its official page.",
+      "relatedIds": ["p-etf", "p-unit-trust", "p-sgx-stocks", "m-bank-unit-trust", "b-bank-integrated"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "posb-invest-saver",
+          "name": "POSB/DBS Invest-Saver",
+          "officialLink": "https://www.posb.com.sg/personal/investments/other-investments/invest-saver",
+          "tags": ["Bank", "RSP", "SG", "ETF", "Unit trust"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "SG", "sourceUrl": "https://www.dbs.com.sg/ibanking/help/faq/exchange-traded-fund-regular-savings-plan-sales-charge.html", "hint": "\"Exchange Traded Fund Net sales charge (monthly) for Internet Banking transaction\" table — per-counter %, explicitly noted as applying to POSB Invest-Saver", "adapter": "posb-invest-saver" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc-bcip",
+          "name": "OCBC Blue Chip Investment Plan",
+          "officialLink": "https://www.ocbc.com/personal-banking/investments/blue-chip-investment-plan",
+          "tags": ["Bank", "RSP", "SG", "Stocks", "ETF"],
+          "feeSpecs": [
+            { "type": "per_trade_pct", "market": "SG", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/blue-chip-investment-plan", "hint": "Transaction fee % of investment amount per monthly purchase", "adapter": "ocbc-bcip" },
+            { "type": "per_trade_min", "market": "SG", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/blue-chip-investment-plan", "hint": "Minimum S$ per counter (whichever is higher)", "adapter": "ocbc-bcip" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "phillip-sbp",
+          "name": "Phillip Share Builders Plan",
+          "officialLink": "https://www.poems.com.sg/share-builders-plan/",
+          "tags": ["Broker", "RSP", "SG"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "SG", "sourceUrl": "https://www.poems.com.sg/pricing/", "hint": "SBP Monthly Handling Fee — % per annum of Total Portfolio Value, with a monthly minimum and cap, on the POEMS pricing page's RSP & SBP row", "adapter": "phillip-sbp" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "fsmone-rsp",
+          "name": "FSMOne Regular Savings Plan",
+          "officialLink": "https://fsm.global/sg/home",
+          "tags": ["Fund platform", "RSP", "SG", "US", "HK"],
+          "feeSpecs": [
+            { "type": "per_trade_flat", "market": "ALL", "sourceUrl": "https://fsm.global/sg/regular-savings-plan", "hint": "Note under the RSP hero section confirming the ETF RSP Buy Order processing fee waiver ($0)", "adapter": "fsmone" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Open the required account", "detail": "You'll typically need an internet banking or brokerage account with the provider first.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Pick your counters or funds", "detail": "Choose from the plan's approved list of stocks, ETFs or unit trusts.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Set your monthly amount", "detail": "Decide how much to invest each month — most plans start from a low fixed sum.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Set up the standing instruction / GIRO", "detail": "Authorise automatic monthly deduction from your bank account.", "link": "https://www.abs.org.sg/" },
+        { "title": "Monitor and adjust periodically", "detail": "Review your counters yearly; you can usually add, remove or pause instructions online.", "link": "https://www.posb.com.sg/personal/investments/other-investments/invest-saver" }
+      ],
+      "officialLink": "https://www.posb.com.sg/personal/investments/other-investments/invest-saver"
+    },
+    {
+      "id": "m-bank-unit-trust",
+      "name": "Bank Unit Trust Investing",
+      "category": "Hands-off",
+      "icon": "bank",
+      "summary": "Buy unit trusts (professionally managed pooled funds) as a lump sum or top-up directly through your bank's app, internet banking or a branch, using cash, SRS or CPF money.",
+      "analogy": "Like buying a slice of a big fruitcake that a professional baker already assembled, instead of gathering every ingredient yourself.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "pros": [
+        "Access to professionally managed, diversified funds across asset classes and regions",
+        "Can invest using cash, SRS or CPF Ordinary Account savings",
+        "Familiar channel if you already bank with DBS/OCBC/UOB",
+        "Wide fund shelf including bonds, equities and multi-asset funds"
+      ],
+      "cons": [
+        "Sales charges and ongoing fund expense ratios reduce net returns",
+        "Bank fund shelves are usually smaller than independent fund platforms",
+        "Advice given at the branch may steer you toward house funds",
+        "Switching between funds can itself incur a fee"
+      ],
+      "bestFor": "Existing bank customers who want diversified fund exposure without opening a separate brokerage account.",
+      "eligibility": "Must hold a deposit account with the bank; CPF/SRS unit trust investing has its own eligibility rules.",
+      "relatedIds": ["p-unit-trust", "p-cpf-topup", "m-cpfis-oa", "m-srs", "b-fund-platform"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "dbs-unit-trusts",
+          "name": "DBS/POSB Unit Trusts",
+          "officialLink": "https://www.dbs.com.sg/personal/investments/unit-trusts/get-to-know-unit-trusts",
+          "tags": ["Bank", "Unit trust", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://www.dbs.com.sg/personal/investments/unit-trusts/why-invest", "hint": "\"There will be an online sales charge of X% per transaction on any investment amount.\"", "adapter": "dbs-unit-trusts" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc-unit-trusts",
+          "name": "OCBC Unit Trusts",
+          "officialLink": "https://www.ocbc.com/personal-banking/investments/unit-trusts/why-invest-with-us",
+          "tags": ["Bank", "Unit trust", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://www.ocbc.com/personal-banking/investments/unit-trusts/why-invest-with-us", "hint": "Unit trust sales charge (%) for OCBC unit trust purchases", "adapter": "ocbc-unit-trusts" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "uob-unit-trusts",
+          "name": "UOB Unit Trusts",
+          "officialLink": "https://www.uob.com.sg/personal/invest/unit-trusts/index.page",
+          "tags": ["Bank", "Unit trust", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://www.uob.com.sg/personal/invest/unit-trusts/index.page", "hint": "Unit trust sales charge (%) for UOB unit trust purchases", "adapter": "uob-unit-trusts" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Open/use your bank deposit account", "detail": "A deposit account with the bank is usually required before you can invest.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Complete the Customer Knowledge Assessment (CKA)", "detail": "Banks must assess you understand unit trusts before you can transact in them.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Browse and select funds", "detail": "Compare fund fact sheets, risk ratings and past performance on the bank's fund list.", "link": "https://www.dbs.com.sg/personal/investments/unit-trusts/get-to-know-unit-trusts" },
+        { "title": "Choose your funding source", "detail": "Pay by cash, SRS or (if CPFIS-approved) CPF Ordinary Account savings.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" },
+        { "title": "Place your order via app, internet banking or branch", "detail": "Confirm the fund, amount and sales charge before submitting.", "link": "https://www.ocbc.com/personal-banking/investments/unit-trusts/why-invest-with-us" }
+      ],
+      "officialLink": "https://www.dbs.com.sg/personal/investments/unit-trusts/get-to-know-unit-trusts"
+    },
+    {
+      "id": "m-atm-internet-banking",
+      "name": "SSB / T-bills via ATM or Internet Banking",
+      "category": "Do it yourself",
+      "icon": "landmark",
+      "summary": "Apply for Singapore Savings Bonds, Treasury Bills or Singapore Government Securities directly through your bank's ATM, internet banking portal or app — no brokerage account needed for SSBs.",
+      "analogy": "Like buying a government-backed fixed deposit at the same machine you use to check your balance.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 1,
+      "liquidity": 3,
+      "complexity": 1,
+      "pros": [
+        "Backed by the Singapore Government — among the lowest-risk options available",
+        "No brokerage or CDP account needed to apply for Singapore Savings Bonds",
+        "Familiar channel — the same ATM or internet banking you already use",
+        "Simple, standardised application process every issuance cycle"
+      ],
+      "cons": [
+        "T-bills and SGS bonds need a CDP Securities account to hold",
+        "Applications have cut-off times before each auction/issuance date",
+        "Cannot cash out instantly — SSBs redeem the following month, T-bills/SGS bonds only at maturity unless sold",
+        "Rates are fixed at issuance, so you can't chase a mid-cycle rate change"
+      ],
+      "bestFor": "Conservative investors and CPF/SRS-free cash park-and-forget savers who want a government-backed, low-risk instrument.",
+      "eligibility": "18 years or older with a bank account at DBS/POSB, OCBC or UOB; SGS bonds and T-bills additionally require a CDP Securities account.",
+      "relatedIds": ["p-ssb", "p-tbill", "p-sgs-bond", "p-fixed-deposit", "p-cash-mgmt"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "dbs",
+          "name": "DBS/POSB",
+          "officialLink": "https://www.dbs.com.sg",
+          "tags": ["Bank", "ATM", "Internet banking", "SG"],
+          "feeSpecs": [
+            { "type": "transaction_flat", "market": "SG", "sourceUrl": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy", "hint": "Per-application transaction fee charged by the bank for SSB/T-bill/SGS bond applications", "adapter": "mas-ssb-fee" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "ocbc",
+          "name": "OCBC",
+          "officialLink": "https://www.ocbc.com",
+          "tags": ["Bank", "ATM", "Internet banking", "SG"],
+          "feeSpecs": [
+            { "type": "transaction_flat", "market": "SG", "sourceUrl": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy", "hint": "Per-application transaction fee charged by the bank for SSB/T-bill/SGS bond applications", "adapter": "mas-ssb-fee" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "uob",
+          "name": "UOB",
+          "officialLink": "https://www.uob.com.sg",
+          "tags": ["Bank", "ATM", "Internet banking", "SG"],
+          "feeSpecs": [
+            { "type": "transaction_flat", "market": "SG", "sourceUrl": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy", "hint": "Per-application transaction fee charged by the bank for SSB/T-bill/SGS bond applications", "adapter": "mas-ssb-fee" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Check the issuance calendar", "detail": "SSBs are issued monthly; T-bills and SGS bonds follow the MAS auction calendar.", "link": "https://www.mas.gov.sg/bonds-and-bills/auctions-and-issuance-calendar" },
+        { "title": "For SGS bonds/T-bills, open a CDP Securities account first", "detail": "SSBs don't need one, but T-bills and SGS bonds are credited to your CDP account.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" },
+        { "title": "Apply via ATM, internet banking or your bank's app", "detail": "Choose DBS/POSB, OCBC or UOB and follow the bond/bill application flow before the cut-off time.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy" },
+        { "title": "Pay for your application", "detail": "Funds are deducted from your linked bank account; unsuccessful/excess bids are refunded after allotment.", "link": "https://www.mas.gov.sg/bonds-and-bills" },
+        { "title": "Track your holdings", "detail": "View your SSB holdings on the MAS SSB portal, or your T-bills/SGS bonds via your CDP account.", "link": "https://eservices.mas.gov.sg/ssb/" }
+      ],
+      "officialLink": "https://www.mas.gov.sg/bonds-and-bills"
+    },
+    {
+      "id": "m-srs",
+      "name": "Supplementary Retirement Scheme (SRS)",
+      "category": "Tax & retirement accounts",
+      "icon": "umbrella",
+      "summary": "A voluntary account that gives you dollar-for-dollar income tax relief on what you contribute (up to a yearly cap), while the funds can be invested in stocks, ETFs, unit trusts, SSBs and more.",
+      "analogy": "Like a tax-advantaged wallet — money you put in shields part of your income from tax, and it can still be invested to grow.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 2,
+      "complexity": 2,
+      "pros": [
+        "Dollar-for-dollar income tax relief on contributions up to the annual cap (differs for Citizens/PRs vs foreigners — see IRAS/MOF for the exact figure)",
+        "SRS funds can be invested across a wide range of products, not just left as cash",
+        "Withdrawals at the statutory retirement age get a meaningful tax concession compared to withdrawing early (see IRAS for exact terms)",
+        "One SRS account can be opened with any of the three local banks"
+      ],
+      "cons": [
+        "Early withdrawal before the statutory retirement age is taxed in full and attracts an extra penalty (see IRAS for exact terms)",
+        "You can only hold one SRS account at a time",
+        "Uninvested SRS cash earns a very low interest rate",
+        "Contribution cap and withdrawal rules can change — always check the official page"
+      ],
+      "bestFor": "Higher-income earners who want to lower their tax bill this year while building a separate, investable retirement pot.",
+      "eligibility": "18 years or older with taxable income in Singapore; the annual contribution cap and tax relief are set by IRAS/MOF.",
+      "relatedIds": ["p-cpf-topup", "p-unit-trust", "p-etf", "p-ssb", "m-cpfis-oa", "m-bank-unit-trust", "m-robo"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "dbs",
+          "name": "DBS/POSB (SRS operator)",
+          "officialLink": "https://www.dbs.com.sg/i-bank/investments/srs-and-cpf/supplementary-retirement-scheme",
+          "tags": ["Bank", "SRS operator", "SG"],
+          "feeSpecs": [],
+          "fees": []
+        },
+        {
+          "id": "ocbc",
+          "name": "OCBC (SRS operator)",
+          "officialLink": "https://www.ocbc.com/personal-banking/investments/supplementary-retirement-scheme-account",
+          "tags": ["Bank", "SRS operator", "SG"],
+          "feeSpecs": [],
+          "fees": []
+        },
+        {
+          "id": "uob",
+          "name": "UOB (SRS operator)",
+          "officialLink": "https://www.uob.com.sg/personal/invest/srs-account.page",
+          "tags": ["Bank", "SRS operator", "SG"],
+          "feeSpecs": [],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Understand the tax relief", "detail": "Read IRAS's official explanation of how SRS contributions reduce your assessable income.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/special-tax-schemes/srs-contributions" },
+        { "title": "Check the annual contribution cap", "detail": "The cap differs for Singapore Citizens/PRs and foreigners and is set by the Ministry of Finance.", "link": "https://www.mof.gov.sg/news-resources/supplementary-retirement-scheme/" },
+        { "title": "Open an SRS account with one bank", "detail": "Choose DBS/POSB, OCBC or UOB — you can only hold one SRS account at a time.", "link": "https://www.uob.com.sg/personal/invest/srs-account.page" },
+        { "title": "Contribute before 31 December", "detail": "Transfer cash into the account via internet banking, the bank's app, cheque or at a branch, up to the annual cap.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/special-tax-schemes/srs-contributions" },
+        { "title": "Invest the SRS funds", "detail": "Use SRS money to buy stocks, ETFs, unit trusts, SSBs and more through your broker or the bank's platform.", "link": "https://www.dbs.com.sg/i-bank/investments/srs-and-cpf/supplementary-retirement-scheme" }
+      ],
+      "officialLink": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/special-tax-schemes/srs-contributions"
+    },
+    {
+      "id": "m-cpfis-oa",
+      "name": "CPF Investment Scheme — Ordinary Account (CPFIS-OA)",
+      "category": "Tax & retirement accounts",
+      "icon": "shield",
+      "summary": "Invest part of your CPF Ordinary Account savings — above a set amount that must stay untouched — in CPFIS-approved stocks, ETFs, unit trusts, bonds and more, aiming to beat the OA interest rate.",
+      "analogy": "Like taking a portion of a low-interest savings jar and putting it to work in approved investments, while keeping a safety cushion behind.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 2,
+      "complexity": 4,
+      "pros": [
+        "Potential to earn more than the OA's guaranteed interest rate over the long run",
+        "Wide range of CPFIS-approved products — stocks, ETFs, unit trusts, bonds, gold",
+        "No extra cash needed — uses CPF savings you already have",
+        "Can be combined with cash/SRS investing for a fuller picture in the Compare tool"
+      ],
+      "cons": [
+        "You must set aside a minimum amount in your OA before investing the rest (see official CPF page for the exact figure)",
+        "Investment returns must beat the OA interest rate after fees to be worthwhile — many CPFIS investors underperform",
+        "Caps apply on how much of your investible savings can go into stocks vs gold (see official CPF page for exact limits)",
+        "Requires completing the CPFIS Self-Awareness Questionnaire and comes with sales charges/brokerage on top"
+      ],
+      "bestFor": "CPF members confident they can beat the OA interest rate after fees, over a long investment horizon.",
+      "eligibility": "18 years or older, not an undischarged bankrupt, OA savings above the required set-aside amount, and completion of the CPFIS Self-Awareness Questionnaire.",
+      "relatedIds": ["p-unit-trust", "p-etf", "p-sgx-stocks", "p-gold-silver", "m-cpfis-sa", "b-cdp-local", "m-bank-unit-trust"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Check your OA balance and set-aside amount", "detail": "You can only invest OA savings above the amount CPF requires you to keep aside.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" },
+        { "title": "Complete the CPFIS Self-Awareness Questionnaire", "detail": "A one-time online quiz confirming you understand CPFIS risks before you can invest.", "link": "https://www.cpf.gov.sg/member/infohub/educational-resources/cpf-investment-scheme-what-you-need-to-know-about-cpfis" },
+        { "title": "Open a CPF Investment Account", "detail": "Apply through one of the CPFIS agent banks (DBS/POSB, OCBC or UOB) linked to your CPF account.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" },
+        { "title": "Choose CPFIS-approved products", "detail": "Only products on the official CPFIS-included list qualify — check before you buy.", "link": "https://www.cpf.gov.sg/member/infohub/educational-resources/cpf-investment-scheme-what-you-need-to-know-about-cpfis" },
+        { "title": "Place your order via your agent bank or broker", "detail": "Instructions typically go through the bank that holds your CPF Investment Account.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" }
+      ],
+      "officialLink": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings"
+    },
+    {
+      "id": "m-cpfis-sa",
+      "name": "CPF Investment Scheme — Special Account (CPFIS-SA)",
+      "category": "Tax & retirement accounts",
+      "icon": "shield",
+      "summary": "Invest part of your CPF Special Account savings — above a set amount that must stay untouched — in a narrower list of lower-risk, CPFIS-SA-approved products. Only available to members below age 55.",
+      "analogy": "Like the more cautious sibling of CPFIS-OA — a smaller, safer menu of investments for money meant for retirement.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 1,
+      "complexity": 4,
+      "pros": [
+        "Access to a curated, lower-risk list of CPFIS-SA-approved investments",
+        "Potential to earn more than the SA's guaranteed interest rate over the long run",
+        "No extra cash needed — uses CPF savings you already have",
+        "Can sit alongside CPFIS-OA and cash/SRS investing for a full retirement plan"
+      ],
+      "cons": [
+        "Only available to CPF members below age 55 — the Special Account closes at 55 and folds into the Retirement Account (see official CPF page)",
+        "You must set aside a minimum amount in your SA before investing the rest (see official CPF page for the exact figure)",
+        "SA's own interest rate is relatively high, so the bar to beat it after fees is higher than for OA",
+        "Narrower product list than CPFIS-OA — mainly unit trusts and select bonds"
+      ],
+      "bestFor": "CPF members under 55 with SA savings well above the set-aside amount, who are confident of beating the SA interest rate after fees.",
+      "eligibility": "Below age 55, not an undischarged bankrupt, SA savings above the required set-aside amount, and completion of the CPFIS Self-Awareness Questionnaire.",
+      "relatedIds": ["p-unit-trust", "p-corp-bond", "m-cpfis-oa", "m-bank-unit-trust"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Check your SA balance, set-aside amount and age", "detail": "CPFIS-SA is only open to members below 55 with SA savings above the required set-aside amount.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" },
+        { "title": "Complete the CPFIS Self-Awareness Questionnaire", "detail": "The same one-time questionnaire required for CPFIS-OA also covers CPFIS-SA eligibility.", "link": "https://www.cpf.gov.sg/member/infohub/educational-resources/cpf-investment-scheme-what-you-need-to-know-about-cpfis" },
+        { "title": "Use your existing CPF Investment Account", "detail": "The same CPFIS agent-bank account used for CPFIS-OA can be used for SA investments.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" },
+        { "title": "Choose CPFIS-SA-approved products", "detail": "Only the narrower CPFIS-SA-included list qualifies — check before you buy.", "link": "https://www.cpf.gov.sg/member/infohub/educational-resources/cpf-investment-scheme-what-you-need-to-know-about-cpfis" },
+        { "title": "Place your order via your agent bank", "detail": "Instructions go through the bank that holds your CPF Investment Account.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings" }
+      ],
+      "officialLink": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/investing-your-cpf-savings"
+    },
+    {
+      "id": "m-insurance",
+      "name": "Insurance-Linked Investing (ILPs & Endowments)",
+      "category": "Through an adviser",
+      "icon": "umbrella",
+      "summary": "Insurance policies that bundle protection with investment — Investment-Linked Plans (ILPs) invest your premiums in sub-funds, while endowments pay a target sum after a fixed term. Bought through an insurer or adviser.",
+      "analogy": "Like a phone plan bundle — you're paying for protection and investment together, so it's harder to see each cost separately.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 1,
+      "complexity": 4,
+      "pros": [
+        "Combines insurance protection with an investment component in one policy",
+        "Endowments offer a defined savings target for goals like education or retirement",
+        "Premiums are often structured to build a savings discipline automatically",
+        "Some ILPs let you switch between sub-funds as your risk appetite changes"
+      ],
+      "cons": [
+        "Bundling insurance and investment usually costs more than buying each separately",
+        "Early surrender often means getting back less than what you paid in",
+        "ILP investment returns are not guaranteed despite the insurance wrapper",
+        "Fee structures (insurance charges, fund charges, distribution costs) can be hard to compare across policies"
+      ],
+      "bestFor": "People who specifically want insurance protection bundled with a savings/investment target, understanding the extra cost.",
+      "eligibility": "Varies by insurer and policy; medical underwriting may apply for the insurance component.",
+      "relatedIds": ["p-endowment", "p-ilp", "p-unit-trust", "m-financial-adviser"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Clarify your goal", "detail": "Decide whether you primarily need protection, savings, or both — this affects which policy type fits.", "link": "https://www.moneysense.gov.sg/" },
+        { "title": "Check the adviser/insurer is licensed", "detail": "Confirm the person or firm selling you the policy is MAS-licensed or an appointed representative.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Request a Benefit Illustration", "detail": "MAS requires insurers to show projected returns at standard rates so you can compare policies fairly.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Use the free-look period", "detail": "Most policies give you a set number of days after issuance to cancel for a full refund if you change your mind.", "link": "https://www.moneysense.gov.sg/" },
+        { "title": "Apply and complete underwriting", "detail": "Submit the application with your adviser or insurer and complete any required health declarations.", "link": "https://www.moneysense.gov.sg/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/"
+    },
+    {
+      "id": "m-financial-adviser",
+      "name": "Licensed Financial Adviser",
+      "category": "Through an adviser",
+      "icon": "handshake",
+      "summary": "Work with a MAS-licensed financial adviser or representative who assesses your full financial picture and recommends specific products, for a fee and/or commission.",
+      "analogy": "Like hiring a personal trainer instead of following a workout app — more tailored guidance, at a higher cost.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "pros": [
+        "Personalised advice that considers your full financial situation, not just investments",
+        "Can help with complex needs — estate planning, insurance gaps, retirement projections",
+        "A human to talk to during volatile markets, which can prevent panic decisions",
+        "Some advisers charge a flat fee instead of commission, aligning incentives more closely"
+      ],
+      "cons": [
+        "Commission-based advisers may be incentivised to recommend higher-fee products",
+        "Advisory and platform fees add up over time compared to DIY investing",
+        "Quality varies widely between advisers — always check their licence and track record",
+        "You still need to understand what you're buying — advice doesn't replace your own diligence"
+      ],
+      "bestFor": "People with complex finances, or who want a professional relationship to guide major financial decisions.",
+      "eligibility": "No special eligibility; check that the adviser or representative is licensed with MAS before engaging.",
+      "relatedIds": ["p-unit-trust", "p-endowment", "p-ilp", "m-insurance", "m-fund-platform"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Check the adviser is MAS-licensed", "detail": "Search the MAS Financial Institutions Directory to confirm the firm and representative are properly licensed.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Ask how they are paid", "detail": "Understand whether they earn commission, a flat fee, or both, and how that could affect recommendations.", "link": "https://www.moneysense.gov.sg/" },
+        { "title": "Share your full financial picture", "detail": "Provide income, expenses, existing policies and goals so the advice is properly tailored.", "link": "https://www.moneysense.gov.sg/" },
+        { "title": "Review the recommendations independently", "detail": "Compare suggested products against fees and alternatives before committing.", "link": "https://eservices.mas.gov.sg/fid" },
+        { "title": "Sign up through the adviser's licensed firm", "detail": "Applications for any product go through the firm's own compliant onboarding process.", "link": "https://eservices.mas.gov.sg/fid" }
+      ],
+      "officialLink": "https://eservices.mas.gov.sg/fid"
+    },
+    {
+      "id": "m-fund-platform",
+      "name": "Independent Fund Platforms",
+      "category": "Do it yourself",
+      "icon": "basket",
+      "summary": "Buy unit trusts, ETFs and sometimes stocks directly from an independent platform (not a bank) with a wide fund shelf, often at lower sales charges than buying through a bank branch.",
+      "analogy": "Like shopping at a big supermarket with every brand on the shelf, instead of the one brand your usual corner store carries.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "pros": [
+        "Much wider fund shelf than a single bank, across many fund houses",
+        "Often lower or zero sales charges compared to buying the same fund via a bank branch",
+        "Can consolidate cash, SRS and sometimes CPF investments in one account",
+        "Research tools and fund fact sheets to compare options side by side"
+      ],
+      "cons": [
+        "Platform fees still apply, even where sales charges are waived",
+        "Overwhelming choice for a first-time investor without a plan",
+        "Customer support is typically online/phone-based rather than in-branch",
+        "Some products require extra risk acknowledgements before you can buy them"
+      ],
+      "bestFor": "Investors who want to shop across fund houses and often pay less than going through a bank branch.",
+      "eligibility": "18 years or older; account opening via Singpass MyInfo or manual verification.",
+      "relatedIds": ["p-unit-trust", "p-etf", "p-cpf-topup", "m-bank-unit-trust", "m-robo", "b-fund-platform"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [
+        {
+          "id": "fsmone",
+          "name": "FSMOne (FSM Global)",
+          "officialLink": "https://fsm.global/sg/home",
+          "tags": ["Fund platform", "SG", "US", "HK", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://fsm.global/sg/pricing-structure", "hint": "Permanent sales charge % (headline: \"permanent 0% sales charge\")", "adapter": "fsmone" },
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://fsm.global/sg/pricing-structure", "hint": "Funds tab: \"All other funds\" quarterly platform fee % (annualise x4) — non-Diamond-tier, non-CPF rate", "adapter": "fsmone" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "endowus-fund-smart",
+          "name": "Endowus Fund Smart",
+          "officialLink": "https://endowus.com",
+          "tags": ["Fund platform", "SG", "CPF", "SRS"],
+          "feeSpecs": [
+            { "type": "aum_annual_pct", "market": "ALL", "sourceUrl": "https://endowus.com/pricing", "hint": "Access fee (%) tiers for self-directed Fund Smart (single fund, Cash), as distinct from advised portfolios", "adapter": "endowus" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "dollardex",
+          "name": "dollarDEX (GROW with Singlife)",
+          "officialLink": "https://singlife.com/en/dollardex",
+          "tags": ["Fund platform", "SG"],
+          "feeSpecs": [
+            { "type": "platform_flat_annual", "market": "ALL", "sourceUrl": "https://singlife.com/en/dollardex", "hint": "Platform fee (if any) and sales charge for dollarDEX unit trust purchases", "adapter": "dollardex" }
+          ],
+          "fees": []
+        },
+        {
+          "id": "poems-funds",
+          "name": "POEMS Funds (Phillip)",
+          "officialLink": "https://www.poems.com.sg",
+          "tags": ["Fund platform", "Broker", "SG"],
+          "feeSpecs": [
+            { "type": "sales_charge_pct", "market": "ALL", "sourceUrl": "https://www.poems.com.sg/pricing/", "hint": "Unit trust sales charge (%) for funds bought through POEMS", "adapter": "poems" }
+          ],
+          "fees": []
+        }
+      ],
+      "steps": [
+        { "title": "Open an account online", "detail": "Sign up via Singpass MyInfo or upload identification documents.", "link": "https://www.singpass.gov.sg/main/" },
+        { "title": "Complete the Customer Knowledge Assessment", "detail": "Required before you can transact in unit trusts and other complex products.", "link": "https://www.mas.gov.sg/regulation" },
+        { "title": "Fund your account", "detail": "Transfer cash, or link SRS/CPF if the platform supports it.", "link": "https://www.abs.org.sg/consumer-banking/pay-now" },
+        { "title": "Research and select funds", "detail": "Compare fund fact sheets, expense ratios and past performance across fund houses.", "link": "https://fsm.global/sg/home" },
+        { "title": "Place your order", "detail": "Buy as a lump sum or set up a regular savings plan.", "link": "https://fsm.global/sg/home" }
+      ],
+      "officialLink": "https://fsm.global/sg/home"
+    },
+    {
+      "id": "m-employee-shares",
+      "name": "Employee Share Schemes",
+      "category": "Through a bank",
+      "icon": "briefcase",
+      "summary": "Some employers let staff buy company shares at a discount (ESPP) or grant shares/options as part of compensation (ESOP/RSU). Shares are usually held via a plan administrator chosen by your employer.",
+      "analogy": "Like getting a staff discount, but the 'purchase' is shares in the company you work for.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 4,
+      "liquidity": 2,
+      "complexity": 3,
+      "pros": [
+        "Discounted purchase price (for ESPPs) creates an immediate paper gain if the share price holds",
+        "Aligns your financial interest with your employer's performance",
+        "Often deducted automatically from payroll, building a saving habit",
+        "No brokerage account needed to participate — the employer's plan handles this"
+      ],
+      "cons": [
+        "Concentration risk — your income and a chunk of your investments depend on the same company",
+        "Vesting schedules and blackout periods restrict when you can sell",
+        "Tax treatment of gains/options can be complex — check IRAS guidance",
+        "Illiquid until shares vest and any company-imposed holding period ends"
+      ],
+      "bestFor": "Employees at companies offering share plans, as a supplement to — not a replacement for — a diversified portfolio.",
+      "eligibility": "Set by your employer; typically requires a minimum tenure before you can participate or before shares vest.",
+      "relatedIds": ["p-sgx-stocks", "p-us-hk-stocks", "b-custodian-app"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Read your plan documents", "detail": "Understand the vesting schedule, discount (if any), and any holding period before you can sell.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/employment-income/gains-from-the-exercise-of-stock-options" },
+        { "title": "Check the tax treatment", "detail": "Gains from ESOPs/ESPPs are generally taxable — IRAS explains how and when.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/employment-income/gains-from-the-exercise-of-stock-options" },
+        { "title": "Enrol during the offering window", "detail": "ESPPs typically have fixed enrolment periods set by your employer's plan administrator.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/employment-income/gains-from-the-exercise-of-stock-options" },
+        { "title": "Track vesting and any blackout periods", "detail": "You usually can't sell freely — check your plan administrator's portal for open trading windows.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/employment-income/gains-from-the-exercise-of-stock-options" },
+        { "title": "Decide whether to diversify after vesting", "detail": "Consider gradually selling vested shares into a broker account to avoid over-concentration.", "link": "https://www.sgx.com/securities/retail-investor/apply-cdp-securities-account" }
+      ],
+      "officialLink": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/what-is-taxable-what-is-not/employment-income/gains-from-the-exercise-of-stock-options"
+    }
+  ]
+}

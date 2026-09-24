@@ -1,0 +1,864 @@
+{
+  "dataset": "products",
+  "entries": [
+    {
+      "id": "p-sgx-stocks",
+      "name": "SGX-Listed Shares",
+      "category": "Shares & funds",
+      "icon": "chart",
+      "summary": "Buying individual company shares listed on the Singapore Exchange, like banks, telcos or industrials, gives you a small ownership stake. You make money if the share price rises or the company pays dividends.",
+      "analogy": "Like buying a slice of a local bakery — you own a piece of the business and share in its profits or losses.",
+      "minAmount": "No fixed minimum — buy in board lots of 100 shares (or odd lots via some brokers), so cost depends on the share price",
+      "riskLevel": 3,
+      "liquidity": 5,
+      "complexity": 2,
+      "growthVsDividend": 45,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Direct ownership recorded in your own name at CDP (if CDP-linked), not just on a broker's books",
+        "Highly liquid — trade any business day during market hours",
+        "Many SGX blue chips pay regular dividends alongside potential price growth",
+        "Wide range of familiar local sectors: banks, REITs, telcos, industrials"
+      ],
+      "cons": [
+        "Concentrated in one company — a single bad result can hit your capital hard",
+        "No guaranteed income; dividends can be cut in a downturn",
+        "Requires you to research individual companies, which takes time and knowledge",
+        "Smaller, less-traded counters can have wide bid-ask spreads"
+      ],
+      "bestFor": "Beginners who want to learn stock-picking basics and are comfortable researching individual Singapore companies.",
+      "eligibility": "18 years old and above, with a Singapore bank account and a CDP account (or a custodian brokerage account).",
+      "relatedIds": ["m-diy-broker", "b-cdp-local", "b-custodian-app", "p-etf", "p-reit"],
+      "feeSpecs": [
+        {
+          "type": "per_trade_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.moomoo.com/sg/support/topic5_118",
+          "hint": "SGX clearing fee % for SGX-listed securities, from moomoo SG's fee schedule ('1.3 Other Fees'), cross-checked against Maybank Securities' schedule (sgx.com never renders for automated browsers)",
+          "adapter": "sgx-clearing-fee"
+        },
+        {
+          "type": "per_trade_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
+          "hint": "SGX trading fee % for SGX-listed securities ('Other Fees for Trades done in Singapore market'), cross-checked against moomoo SG's schedule",
+          "adapter": "sgx-clearing-fee"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Open a CDP account", "detail": "Set up a free Central Depository account (Singpass MyInfo makes this quick) to hold SGX shares in your own name.", "link": "https://investors.sgx.com/cdp-account-opening/" },
+        { "title": "Open a brokerage account", "detail": "Choose an SGX member broker — CDP-linked or custodian — and complete their online account opening.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Fund your account", "detail": "Transfer money via PayNow, FAST or GIRO into your brokerage account before you can place orders.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Research and pick a stock", "detail": "Check the company's financials, dividend history and business before buying.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Place your order", "detail": "Search the stock's SGX ticker, choose the number of shares (a board lot of 100, or an odd lot) and submit a buy order during market hours.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Track your holdings", "detail": "View your shareholdings and statements through the CDP Internet portal.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/"
+    },
+    {
+      "id": "p-us-hk-stocks",
+      "name": "US & Hong Kong-Listed Shares",
+      "category": "Shares & funds",
+      "icon": "globe",
+      "summary": "Buying shares of companies listed on US exchanges or the Hong Kong Stock Exchange through a Singapore broker with international market access, giving exposure to global giants not available on SGX.",
+      "analogy": "Like ordering from an overseas online store — you get access to a much bigger range, but pay a currency-conversion 'shipping fee' along the way.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 4,
+      "liquidity": 5,
+      "complexity": 3,
+      "growthVsDividend": 75,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Access to global sectors and companies not listed in Singapore, such as large technology names",
+        "US market has deep liquidity and evening trading hours in Singapore time",
+        "Diversifies your portfolio beyond the small Singapore market",
+        "Many brokers now offer fractional shares, lowering the entry cost"
+      ],
+      "cons": [
+        "Currency conversion (SGD to USD/HKD) adds an FX spread cost on every trade",
+        "Shares are usually held in the broker's name (custodian/nominee), not directly in your own name",
+        "US market hours fall late at night in Singapore",
+        "Foreign withholding tax may apply to dividends"
+      ],
+      "bestFor": "Investors who want exposure to global companies and are comfortable with currency risk and custodian (rather than CDP) share holding.",
+      "eligibility": "18 years old and above; a brokerage account with international market access (custodian or CDP-linked broker offering US/HK trading).",
+      "relatedIds": ["m-diy-broker", "b-custodian-app", "b-international", "p-etf"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Open a brokerage account with US/HK market access", "detail": "Pick a custodian broker (or CDP-linked broker with foreign market access) and complete online onboarding.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Fund your account and convert currency", "detail": "Move SGD into your account, then convert to USD or HKD, or fund directly in foreign currency if supported.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Research the company", "detail": "Overseas companies report under different accounting and disclosure standards from SGX-listed firms — read up before buying.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Place your order during local market hours", "detail": "US and HK markets have their own trading hours, which differ from SGX and from each other.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Understand tax and dividend withholding differences", "detail": "Foreign dividends may have withholding tax deducted before you receive them.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/"
+    },
+    {
+      "id": "p-etf",
+      "name": "Exchange-Traded Funds (ETFs)",
+      "category": "Shares & funds",
+      "icon": "basket",
+      "summary": "A basket of many stocks or bonds bundled into a single fund that trades on the exchange just like a share, giving instant diversification in one purchase. Most ETFs track an index, so fees are usually lower than actively managed funds.",
+      "analogy": "Like buying a fruit basket instead of picking one fruit at a time — you get a mix in a single purchase.",
+      "minAmount": "Price of 1 unit — many popular Singapore-listed ETFs trade under S$300 per unit",
+      "riskLevel": 3,
+      "liquidity": 5,
+      "complexity": 2,
+      "growthVsDividend": 55,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Instant diversification across many companies or bonds in one trade",
+        "Generally lower ongoing fees than actively managed unit trusts",
+        "Trades throughout the day like a stock, so you can buy or sell anytime the market is open",
+        "Good building block for beginners who don't want to pick individual stocks"
+      ],
+      "cons": [
+        "Still moves with the market — an index ETF falls when the index falls",
+        "Some ETFs use derivatives (synthetic replication), which adds extra counterparty risk",
+        "Trading costs (brokerage plus spread) apply on every buy/sell, which adds up for small frequent trades",
+        "Not principal-guaranteed — you can still lose money"
+      ],
+      "bestFor": "Beginners who want diversified market exposure without researching individual companies.",
+      "eligibility": "18 years old and above with a CDP or brokerage account; some ETFs (classified as SIPs) may require a Customer Knowledge Assessment.",
+      "relatedIds": ["m-diy-broker", "m-robo", "b-cdp-local", "p-sgx-stocks", "p-unit-trust"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Learn how ETFs work", "detail": "Understand index tracking and the difference between cash-based (physical) and synthetic replication.", "link": "https://www.moneysense.gov.sg/guide-to-etfs-understanding-exchange-traded-funds/" },
+        { "title": "Pick an index or theme", "detail": "Common starting points are broad market indices, such as the Straits Times Index or a global index.", "link": "https://www.moneysense.gov.sg/guide-to-etfs-understanding-exchange-traded-funds/" },
+        { "title": "Open a CDP or brokerage account", "detail": "You'll need this to hold SGX-listed ETFs in your name or via your broker.", "link": "https://investors.sgx.com/cdp-account-opening/" },
+        { "title": "Check the ETF's expense ratio and tracking error", "detail": "Lower ongoing costs and tighter index tracking are generally better for a beginner.", "link": "https://www.moneysense.gov.sg/guide-to-etfs-understanding-exchange-traded-funds/" },
+        { "title": "Place your buy order", "detail": "Search the ETF's ticker and buy through your broker just like a normal stock.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/guide-to-etfs-understanding-exchange-traded-funds/"
+    },
+    {
+      "id": "p-reit",
+      "name": "Singapore REITs (S-REITs)",
+      "category": "Shares & funds",
+      "icon": "building",
+      "summary": "Real Estate Investment Trusts pool money from many investors to own income-producing properties like malls, offices or warehouses, and are required by regulation to distribute most of their taxable income to unitholders regularly.",
+      "analogy": "Like being a landlord for a shopping mall or office tower without ever having to fix a leaking pipe — a professional manager runs the property for you.",
+      "minAmount": "Price of 1 board lot (100 units) — varies by REIT",
+      "riskLevel": 3,
+      "liquidity": 4,
+      "complexity": 2,
+      "growthVsDividend": 30,
+      "returnDrivers": ["dividends", "capital-growth"],
+      "pros": [
+        "Regular, often quarterly or half-yearly, cash distributions",
+        "Exposure to real estate without the large capital needed to buy property directly",
+        "Traded on SGX, so much more liquid than owning physical property",
+        "Professionally managed — no landlord duties for you"
+      ],
+      "cons": [
+        "Sensitive to interest rates — rising rates can pressure REIT prices and borrowing costs",
+        "Distributions are not guaranteed and can be cut if rental income or occupancy falls",
+        "Concentration risk if a REIT depends heavily on one property type or tenant",
+        "Some REITs use significant leverage (gearing), which adds risk"
+      ],
+      "bestFor": "Beginners seeking regular income and property exposure without the capital and hassle of direct property ownership.",
+      "eligibility": "18 years old and above with a CDP or brokerage account.",
+      "relatedIds": ["m-diy-broker", "b-cdp-local", "p-property", "p-sgx-stocks"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Learn how REITs are structured", "detail": "Understand the roles of the trustee, manager and sponsor, and how the distribution policy works.", "link": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/" },
+        { "title": "Check the REIT's property portfolio and gearing", "detail": "Look at what kind of properties it owns and how much debt it carries.", "link": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/" },
+        { "title": "Open a CDP or brokerage account", "detail": "Needed to hold SGX-listed REIT units.", "link": "https://investors.sgx.com/cdp-account-opening/" },
+        { "title": "Review the distribution yield and history", "detail": "Check how consistent past distributions have been, not just the latest headline yield.", "link": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/" },
+        { "title": "Place your buy order for a board lot", "detail": "Buy 100 units (one board lot) or more through your broker, just like a stock.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/"
+    },
+    {
+      "id": "p-unit-trust",
+      "name": "Unit Trusts / Mutual Funds",
+      "category": "Shares & funds",
+      "icon": "briefcase",
+      "summary": "A professionally managed fund that pools your money with other investors to buy a diversified portfolio of stocks, bonds or other assets, priced once a day at its net asset value rather than traded continuously like a stock.",
+      "analogy": "Like joining a group tour where a professional guide (the fund manager) picks the itinerary for everyone's pooled money, and charges a fee for the service.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 2,
+      "growthVsDividend": 50,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Professional fund manager makes the buy/sell decisions for you",
+        "Diversification across many holdings in a single purchase",
+        "Wide choice of strategies — regional, sector, income-focused and more",
+        "Regular savings plans let you invest small fixed amounts monthly"
+      ],
+      "cons": [
+        "Sales charges and annual management fees reduce your net return, whether the fund gains or loses",
+        "Actively managed funds often underperform a comparable low-cost index ETF after fees",
+        "Priced only once a day, so you can't react to intraday price moves",
+        "Not principal-guaranteed — you can lose money"
+      ],
+      "bestFor": "Beginners who prefer a professionally managed, diversified option and are comfortable paying for that management.",
+      "eligibility": "18 years old and above; available via banks, fund platforms and financial advisers, or with CPF/SRS funds subject to approved fund lists.",
+      "relatedIds": ["m-fund-platform", "m-bank-unit-trust", "m-financial-adviser", "p-etf", "p-cash-mgmt"],
+      "feeSpecs": [
+        {
+          "type": "other",
+          "market": "SG",
+          "sourceUrl": "https://www.moneysense.gov.sg/unit-trusts-guide/",
+          "hint": "Typical initial sales/subscription charge % range and annual management fee % range for unit trusts quoted in the guide",
+          "adapter": "unit-trust-fees"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Understand how unit trusts are priced and charged", "detail": "Learn about net asset value (NAV) pricing, sales charge and annual management fee.", "link": "https://www.moneysense.gov.sg/unit-trusts-guide/" },
+        { "title": "Clarify your investment objective and risk appetite", "detail": "Match the fund's strategy — equity, bond or balanced — to your own goals.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" },
+        { "title": "Compare funds and platforms", "detail": "Fees for the same fund can differ across bank, platform or adviser channels.", "link": "https://www.moneysense.gov.sg/unit-trusts-guide/" },
+        { "title": "Read the fund's Product Highlights Sheet and factsheet", "detail": "Check past performance, top holdings and the total expense ratio before investing.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" },
+        { "title": "Open an account with a fund platform, bank or adviser", "detail": "Some platforms also accept Supplementary Retirement Scheme (SRS) funds.", "link": "https://www.moneysense.gov.sg/unit-trusts-guide/" },
+        { "title": "Invest a lump sum or set up a regular savings plan", "detail": "Regular plans let you invest a fixed amount monthly, smoothing out price swings over time.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/"
+    },
+    {
+      "id": "p-ssb",
+      "name": "Singapore Savings Bonds (SSB)",
+      "category": "Bonds & cash",
+      "icon": "shield",
+      "summary": "A government-backed bond you can buy in small amounts and redeem any month without penalty, with interest that steps up the longer you hold it. It's designed as a safe, flexible way for individuals to save.",
+      "analogy": "Like a savings account from the government that pays a bit more the longer you leave your money untouched, and you can take it out anytime.",
+      "minAmount": "S$500 minimum, in multiples of S$500; maximum S$200,000 per individual (mas.gov.sg)",
+      "riskLevel": 1,
+      "liquidity": 3,
+      "complexity": 1,
+      "growthVsDividend": 0,
+      "returnDrivers": ["interest"],
+      "pros": [
+        "Backed by the Singapore Government — among the safest investments available",
+        "Redeem in any month with no penalty and get back your full principal plus accrued interest",
+        "Low S$500 entry point, accessible to almost any beginner",
+        "Interest step-up rewards you for holding longer, without locking you in"
+      ],
+      "cons": [
+        "Returns are modest compared to stocks or REITs — pure capital preservation, no growth",
+        "A transaction fee is charged for every application, whether or not you're allotted",
+        "Popular issues can be oversubscribed, so you may not get your full applied amount",
+        "An individual holding cap limits how much you can park here"
+      ],
+      "bestFor": "Beginners building an emergency fund or safe base, and anyone wanting a no-lock-in alternative to fixed deposits.",
+      "eligibility": "Individuals 18 years old and above, including non-residents; requires a CDP account (for cash) or an SRS account (for SRS funds).",
+      "relatedIds": ["m-atm-internet-banking", "m-srs", "b-cdp-local", "p-tbill", "p-fixed-deposit"],
+      "feeSpecs": [
+        {
+          "type": "transaction_flat",
+          "market": "SG",
+          "sourceUrl": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy",
+          "hint": "Non-refundable transaction fee charged by the bank for each SSB application, shown in the 'Fees' row of the Key Details table",
+          "adapter": "mas-ssb-fee"
+        },
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://eservices.mas.gov.sg/statistics/fdanet/StepUpInterest.aspx",
+          "hint": "Latest SSB issue's 10-year average return / first-year interest rate, from the SSB Interest Rates eService (the mas.gov.sg overview page has no live rate table)",
+          "adapter": "mas-ssb-yield"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Open a CDP account with Direct Crediting Service", "detail": "Needed so SSB interest is paid straight into your bank account.", "link": "https://investors.sgx.com/cdp-account-opening/" },
+        { "title": "Check this month's bond details", "detail": "Each month's SSB has its own 10-year step-up interest schedule; check the latest issue before applying.", "link": "https://www.mas.gov.sg/bonds-and-bills/singapore-savings-bonds" },
+        { "title": "Apply via ATM or internet banking", "detail": "Apply through DBS/POSB, OCBC or UOB during the monthly application window, which opens on the 1st business day and closes on the 4th-last business day of the month.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy" },
+        { "title": "Wait for allotment", "detail": "Results are posted around the 3rd-last business day of the month; oversubscribed months may be pro-rated so you don't get your full applied amount.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy" },
+        { "title": "Track and redeem anytime", "detail": "Use the My Savings Bonds portal or your bank to redeem; funds are returned the following month with no penalty.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy" }
+      ],
+      "officialLink": "https://www.mas.gov.sg/bonds-and-bills/singapore-savings-bonds"
+    },
+    {
+      "id": "p-tbill",
+      "name": "Singapore T-Bills (6-Month & 1-Year)",
+      "category": "Bonds & cash",
+      "icon": "bill",
+      "summary": "Short-term Singapore Government debt sold at a discount to face value — you get the full face value back at maturity, either 6 months or 1 year later. They're bought at auction and the return is locked in once you're allotted.",
+      "analogy": "Like buying a S$100 government IOU for S$98 today, and getting the full S$100 back in 6 months or a year — the S$2 gap is your return.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 1,
+      "liquidity": 2,
+      "complexity": 2,
+      "growthVsDividend": 0,
+      "returnDrivers": ["interest"],
+      "pros": [
+        "Backed by the Singapore Government — extremely low default risk",
+        "Short 6-month or 1-year tenor gives flexibility to reinvest often",
+        "Can be bought with cash, SRS or CPFIS-OA funds",
+        "Yield is locked in at auction, so you know your return upfront if held to maturity"
+      ],
+      "cons": [
+        "Money is tied up until maturity — selling early on the secondary market may fetch a lower price",
+        "Yields move with each auction, so you can't predict future T-bill returns",
+        "No capital growth — return is limited to the fixed discount",
+        "Bidding too high a yield risks not being fully allotted"
+      ],
+      "bestFor": "Beginners who want a short-term, safe place to park cash with a known return, rolling over every few months.",
+      "eligibility": "Individuals 18 years old and above with a CDP/bank account; also usable with SRS or CPFIS-OA funds.",
+      "relatedIds": ["m-atm-internet-banking", "m-cpfis-oa", "m-srs", "p-ssb", "p-sgs-bond"],
+      "feeSpecs": [
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://eservices.mas.gov.sg/statistics/fdanet/TreasuryBillAuctions.aspx",
+          "hint": "Cut-off yield (%) of the most recent 6-month T-bill auction result",
+          "adapter": "mas-tbill-yield"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Check the auction calendar", "detail": "6-month T-bills are auctioned roughly every 2 weeks and 1-year T-bills quarterly.", "link": "https://www.mas.gov.sg/bonds-and-bills/singapore-government-t-bills-information-for-individuals" },
+        { "title": "Decide cash, SRS or CPFIS-OA", "detail": "Each route needs a different account and bank, and different in-person or online application steps.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-government-securities/buy-sgs-bonds-and-t-bills-at-auction-for-individuals" },
+        { "title": "Submit a non-competitive or competitive bid", "detail": "Non-competitive bids accept the auction's average yield; competitive bids set your own minimum acceptable yield.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-government-securities/buy-sgs-bonds-and-t-bills-at-auction-for-individuals" },
+        { "title": "Wait for the auction result", "detail": "Check the cut-off yield and whether your bid was allotted.", "link": "https://www.mas.gov.sg/bonds-and-bills/auctions-and-issuance-calendar/auction-t-bill" },
+        { "title": "Hold to maturity or sell on the secondary market", "detail": "You receive the face value at maturity, or you can sell earlier through your bank.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-government-securities/buy-sgs-bonds-and-t-bills-at-auction-for-individuals" }
+      ],
+      "officialLink": "https://www.mas.gov.sg/bonds-and-bills/singapore-government-t-bills-information-for-individuals"
+    },
+    {
+      "id": "p-sgs-bond",
+      "name": "Singapore Government Securities (SGS) Bonds",
+      "category": "Bonds & cash",
+      "icon": "landmark",
+      "summary": "Longer-dated Singapore Government bonds, from 2 to 50 years, that pay a fixed coupon every 6 months until maturity, when you get your principal back. They're the longer-term cousin of T-bills.",
+      "analogy": "Like lending money to the government for a set number of years in exchange for a fixed twice-yearly interest payment, with your original sum returned at the end.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 2,
+      "complexity": 3,
+      "growthVsDividend": 5,
+      "returnDrivers": ["coupon"],
+      "pros": [
+        "Backed by the Singapore Government — very low default risk",
+        "Fixed coupon gives predictable income over the bond's life",
+        "Range of tenors, from 2 to 50 years, to match different time horizons",
+        "Can be bought with cash, SRS or CPFIS funds"
+      ],
+      "cons": [
+        "Bond prices fall if interest rates rise, so selling before maturity may mean a loss",
+        "Longer tenors lock up your capital for a long time",
+        "Fixed coupon means no upside if rates or inflation later rise",
+        "Less flexible than SSB, which allows penalty-free monthly redemption"
+      ],
+      "bestFor": "Investors wanting predictable, long-term income with very low credit risk, who plan to hold to maturity.",
+      "eligibility": "Individuals 18 years old and above; can use cash, SRS or CPFIS (OA/SA) funds depending on the purchase channel.",
+      "relatedIds": ["m-cpfis-oa", "m-cpfis-sa", "m-srs", "p-tbill", "p-corp-bond"],
+      "feeSpecs": [
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://eservices.mas.gov.sg/statistics/fdanet/BondAuctions.aspx",
+          "hint": "Latest SGS bond auction cut-off yield, for whichever tenor was most recently auctioned",
+          "adapter": "mas-sgs-yield"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Learn how SGS bonds work", "detail": "Understand coupon payments, tenor and the price-yield relationship.", "link": "https://www.mas.gov.sg/bonds-and-bills/singapore-government-bonds-information-for-individuals" },
+        { "title": "Check the issuance calendar", "detail": "SGS bonds are auctioned periodically across different tenors throughout the year.", "link": "https://www.mas.gov.sg/bonds-and-bills/auctions-and-issuance-calendar" },
+        { "title": "Apply via your bank or CPFIS/SRS operator", "detail": "Cash, SRS and CPFIS-OA/SA each have their own application channel and bank.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-government-securities/buy-sgs-bonds-and-t-bills-at-auction-for-individuals" },
+        { "title": "Decide competitive or non-competitive bidding", "detail": "Non-competitive bids accept the auction average; competitive bids set a minimum yield you're willing to accept.", "link": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-government-securities/buy-sgs-bonds-and-t-bills-at-auction-for-individuals" },
+        { "title": "Hold to collect coupons, or trade on the secondary market", "detail": "You can also buy or sell existing SGS bonds through your bank before maturity.", "link": "https://www.mas.gov.sg/bonds-and-bills/singapore-government-bonds-information-for-individuals" }
+      ],
+      "officialLink": "https://www.mas.gov.sg/bonds-and-bills/singapore-government-bonds-information-for-individuals"
+    },
+    {
+      "id": "p-corp-bond",
+      "name": "Corporate & Retail Bonds",
+      "category": "Bonds & cash",
+      "icon": "bill",
+      "summary": "Bonds issued by companies rather than the government, paying a fixed or floating coupon. Some are listed on SGX in retail-friendly board lots as small as S$1,000; others are sold only to institutions with higher minimums.",
+      "analogy": "Like lending money directly to a company in exchange for regular interest payments — your risk depends on how likely that company is to repay you.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 3,
+      "complexity": 3,
+      "growthVsDividend": 10,
+      "returnDrivers": ["coupon"],
+      "pros": [
+        "Generally pays a higher coupon than government bonds, to compensate for extra risk",
+        "SGX-listed retail bonds can be bought in small lots through a normal brokerage account",
+        "Regular, predictable coupon income if the issuer stays solvent",
+        "Bond ETFs offer instant diversification across many issuers for a lower entry cost"
+      ],
+      "cons": [
+        "Credit risk — the company could default and you may lose part or all of your capital",
+        "Fewer retail-accessible corporate bonds are listed on SGX compared to stocks",
+        "Bond prices can fall if interest rates rise or the issuer's credit quality worsens",
+        "A higher-yielding bond usually signals higher risk, not a 'free' extra return"
+      ],
+      "bestFor": "Investors comfortable assessing credit risk who want more income than government bonds, as part of a diversified fixed-income allocation.",
+      "eligibility": "18 years old and above with a CDP/brokerage account for SGX-listed retail bonds; some corporate bonds are restricted to accredited or institutional investors.",
+      "relatedIds": ["m-diy-broker", "b-cdp-local", "p-sgs-bond", "p-unit-trust"],
+      "feeSpecs": [
+        {
+          "type": "per_trade_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.moomoo.com/sg/support/topic5_118",
+          "hint": "SGX clearing fee % for SGX-listed securities incl. retail bonds, from moomoo SG's fee schedule, cross-checked against Maybank Securities' schedule (sgx.com never renders for automated browsers)",
+          "adapter": "sgx-clearing-fee"
+        },
+        {
+          "type": "per_trade_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
+          "hint": "SGX trading fee % for SGX-listed securities incl. retail bonds, cross-checked against moomoo SG's schedule",
+          "adapter": "sgx-clearing-fee"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Learn the basics of bonds and credit risk", "detail": "Understand coupons, credit ratings and default risk before buying.", "link": "https://www.moneysense.gov.sg/understanding-bonds/" },
+        { "title": "Check which retail bonds or bond ETFs are listed on SGX", "detail": "Retail bonds trade in board lots, often S$1,000; bond ETFs trade in single units.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Assess the issuer's credit quality", "detail": "Look at the issuer's credit rating and financial health, not just the headline coupon rate.", "link": "https://www.moneysense.gov.sg/understanding-bonds/" },
+        { "title": "Buy through your CDP-linked brokerage account", "detail": "Place an order for the bond or bond ETF just like a stock.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Hold for coupons or trade before maturity", "detail": "Track coupon payment dates and the bond's price on the secondary market.", "link": "https://www.moneysense.gov.sg/understanding-bonds/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/understanding-bonds/"
+    },
+    {
+      "id": "p-fixed-deposit",
+      "name": "Fixed Deposits",
+      "category": "Bonds & cash",
+      "icon": "bank",
+      "summary": "Locking a lump sum with a bank for a fixed period in exchange for a guaranteed interest rate, with your principal protected by Singapore's deposit insurance scheme up to the coverage limit.",
+      "analogy": "Like agreeing not to touch a chunk of your savings for a set number of months, and the bank pays you a small thank-you in return.",
+      "minAmount": "Varies — see official page (banks each set their own minimum placement amount)",
+      "riskLevel": 1,
+      "liquidity": 2,
+      "complexity": 1,
+      "growthVsDividend": 0,
+      "returnDrivers": ["interest"],
+      "pros": [
+        "Principal is protected under the SDIC Deposit Insurance Scheme, up to the coverage limit per bank",
+        "Interest rate is guaranteed and known upfront for the full tenor",
+        "Very simple to open, often instantly via internet banking",
+        "Wide range of tenors, from 1 month to a few years, to match your needs"
+      ],
+      "cons": [
+        "Breaking the deposit early usually forfeits most or all of the promised interest",
+        "Returns don't always keep pace with inflation",
+        "Foreign-currency fixed deposits are not covered by SDIC insurance",
+        "No capital growth potential — purely a place to earn interest safely"
+      ],
+      "bestFor": "Beginners parking a lump sum they won't need for a fixed period and want a guaranteed, simple return.",
+      "eligibility": "Available to anyone with a bank account at a participating bank; some promotional rates require new funds or a minimum tenor.",
+      "relatedIds": ["m-bank-rsp", "b-bank-integrated", "p-ssb", "p-cash-mgmt"],
+      "feeSpecs": [
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.dbs.com.sg/personal/rates-online/fixed-deposit-rate-singapore-dollar.page",
+          "hint": "DBS New Placements board-rate table, 12 mths row, smallest (S$1,000-S$9,999) tier",
+          "adapter": "fixed-deposit-boards"
+        },
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.ocbc.com/personal-banking/deposits/fixed-deposit-sgd-interest-rates.page",
+          "hint": "OCBC SGD Time Deposit board-rate table, 12-month row, S$5,000-S$20,000 tier",
+          "adapter": "fixed-deposit-boards"
+        },
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.uob.com.sg/personal/online-rates/singapore-dollar-time-fixed-deposit-rates.page",
+          "hint": "UOB \"Board Rates\" table (distinct from the Promotion table above it), 12-month row, Below S$50,000 tier",
+          "adapter": "fixed-deposit-boards"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Compare rates across banks", "detail": "Fixed deposit rates vary by bank, tenor and promotion, so it pays to shop around.", "link": "https://eservices.mas.gov.sg/Statistics/msb/InterestRatesOfBanksAndFinanceCompanies.aspx" },
+        { "title": "Check the deposit insurance coverage", "detail": "Confirm the bank is a Deposit Insurance Scheme member and understand the per-bank coverage limit.", "link": "https://www.sdic.org.sg/di_faq/" },
+        { "title": "Choose your tenor and amount", "detail": "Match the lock-in period to when you'll actually need the money.", "link": "https://www.sdic.org.sg/di_faq/" },
+        { "title": "Open the fixed deposit", "detail": "Apply via your bank's internet banking, mobile app, or at a branch.", "link": "https://eservices.mas.gov.sg/Statistics/msb/InterestRatesOfBanksAndFinanceCompanies.aspx" },
+        { "title": "Track maturity and renew or withdraw", "detail": "Decide whether to roll over into a new fixed deposit or withdraw at maturity.", "link": "https://www.sdic.org.sg/di_faq/" }
+      ],
+      "officialLink": "https://www.sdic.org.sg/di_faq/"
+    },
+    {
+      "id": "p-cash-mgmt",
+      "name": "Cash Management Accounts",
+      "category": "Bonds & cash",
+      "icon": "wallet",
+      "summary": "Accounts offered by robo-advisors, banks and brokerages that invest your idle cash into low-risk money market or short-term bond funds, aiming for a better return than a savings account while staying easy to withdraw.",
+      "analogy": "Like parking your spare cash with a slightly more hardworking cousin of a savings account — a bit more return, a very small amount of extra risk.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 4,
+      "complexity": 2,
+      "growthVsDividend": 5,
+      "returnDrivers": ["interest"],
+      "pros": [
+        "Typically no lock-in — withdraw within a few business days",
+        "Historically higher yield than a basic bank savings account",
+        "Low minimum investment, often S$1 or S$0 to start",
+        "Diversified across many short-term, high-quality debt instruments"
+      ],
+      "cons": [
+        "Not principal-guaranteed and not covered by SDIC deposit insurance, unlike a bank fixed deposit",
+        "Yield can fall as interest rates fall, unlike a fixed deposit's locked-in rate",
+        "The underlying fund could in theory face liquidity stress in extreme market conditions",
+        "Marketed as 'cash-like' but is technically a market investment, not a deposit"
+      ],
+      "bestFor": "Beginners wanting a flexible, higher-yielding home for emergency funds or cash waiting to be invested.",
+      "eligibility": "18 years old and above; available through robo-advisor, bank or brokerage platforms offering these accounts.",
+      "relatedIds": ["m-robo", "m-fund-platform", "p-fixed-deposit", "p-unit-trust"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Understand what's under the hood", "detail": "These accounts invest in money market or short-term bond funds, which are unit trusts, not bank deposits.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" },
+        { "title": "Compare providers' yields and access speed", "detail": "Check the fund's recent yield and how many business days withdrawals typically take.", "link": "https://www.moneysense.gov.sg/unit-trusts-guide/" },
+        { "title": "Check whether it's SDIC-insured", "detail": "Most cash management accounts are investments, not insured bank deposits — confirm before assuming protection.", "link": "https://www.sdic.org.sg/di_faq/" },
+        { "title": "Open the account via the provider's app or website", "detail": "Sign up and fund the account, usually via instant bank transfer or PayNow.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" },
+        { "title": "Monitor and withdraw as needed", "detail": "Track your balance and yield; withdrawals typically settle within a few business days.", "link": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/understanding-unit-trusts/"
+    },
+    {
+      "id": "p-cpf-topup",
+      "name": "CPF Voluntary Cash Top-Ups (RSTU)",
+      "category": "CPF & retirement",
+      "icon": "piggy",
+      "summary": "Voluntarily adding cash into your own or a loved one's CPF Special/Retirement Account under the Retirement Sum Topping-Up Scheme, to grow retirement savings faster and potentially reduce your income tax.",
+      "analogy": "Like putting extra cash into a locked, government-backed retirement piggy bank that also gives you a tax rebate.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 1,
+      "liquidity": 1,
+      "complexity": 2,
+      "growthVsDividend": 0,
+      "returnDrivers": ["interest"],
+      "pros": [
+        "CPF interest rates are generally higher than most bank savings or fixed deposit rates",
+        "Cash top-ups to yourself or eligible family members can qualify for income tax relief",
+        "The Government matches top-ups for lower-income seniors under the Matched Retirement Savings Scheme",
+        "Boosts future CPF LIFE monthly payouts in retirement"
+      ],
+      "cons": [
+        "Money is locked in CPF until the eligible withdrawal age — not accessible for emergencies",
+        "Top-ups are irreversible once made",
+        "Tax relief has an annual cap, so large top-ups don't get unlimited tax benefit",
+        "Less flexible than other investments — no capital growth, purely interest-based"
+      ],
+      "bestFor": "Singapore Citizens/PRs confident they won't need the cash before retirement, who want a low-risk way to boost retirement income and reduce this year's tax bill.",
+      "eligibility": "Singapore Citizens and Permanent Residents with a CPF account; topping up a loved one requires their CPF account details.",
+      "relatedIds": ["m-cpfis-oa", "m-cpfis-sa", "p-ssb", "p-sgs-bond"],
+      "feeSpecs": [
+        {
+          "type": "yield_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
+          "hint": "Current CPF Ordinary, Special, MediSave and Retirement Account interest rates shown in the rates table",
+          "adapter": "cpf-interest-rates"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Understand your CPF accounts", "detail": "OA funds housing/education/investment, SA/RA are for retirement and earn a higher interest rate, and MA is for healthcare.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest" },
+        { "title": "Check your top-up limits", "detail": "You can top up your own or a loved one's Special Account (below age 55) or Retirement Account (55 and above) up to the current limit.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/saving-more-with-cpf/top-up-to-enjoy-higher-retirement-payouts" },
+        { "title": "Log in and choose who to top up", "detail": "Use Singpass to log in to the CPF website or app and select 'top up my own' or 'top up a loved one's' CPF.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/saving-more-with-cpf/top-up-to-enjoy-higher-retirement-payouts" },
+        { "title": "Make a one-time or recurring top-up", "detail": "Choose a single transfer or set up a recurring monthly top-up.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/saving-more-with-cpf/top-up-to-enjoy-higher-retirement-payouts" },
+        { "title": "Claim your tax relief when filing taxes", "detail": "Cash top-ups to yourself or eligible family members qualify for tax relief up to the annual cap.", "link": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/central-provident-fund-(cpf)-cash-top-up-relief" },
+        { "title": "Track your projected retirement payouts", "detail": "Use the CPF Retirement Dashboard to see how your top-ups affect future payouts.", "link": "https://www.cpf.gov.sg/member/growing-your-savings/saving-more-with-cpf/top-up-to-enjoy-higher-retirement-payouts" }
+      ],
+      "officialLink": "https://www.cpf.gov.sg/member/growing-your-savings/saving-more-with-cpf/top-up-to-enjoy-higher-retirement-payouts"
+    },
+    {
+      "id": "p-endowment",
+      "name": "Endowment Plans",
+      "category": "Insurance-linked",
+      "icon": "umbrella",
+      "summary": "A savings insurance plan where you pay premiums over a fixed term in exchange for a lump-sum payout at maturity, combining a small amount of life insurance with a mostly guaranteed-plus-bonus savings component.",
+      "analogy": "Like a forced-savings jar with a lock timer and a bit of insurance glued on — you can't easily open it early without losing money.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 2,
+      "liquidity": 1,
+      "complexity": 2,
+      "growthVsDividend": 20,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Combines disciplined saving with a small life insurance payout",
+        "Guaranteed portion gives more certainty than pure market investing",
+        "Encourages long-term saving through fixed premium commitments",
+        "Participating plans may pay bonuses on top of the guaranteed amount"
+      ],
+      "cons": [
+        "Cashing out early usually returns less than what you paid in (surrender loss)",
+        "Non-guaranteed bonuses are not certain and can end up lower than illustrated",
+        "Returns are typically lower than investing directly in stocks or ETFs over the long run",
+        "Locks up your money for years with limited flexibility",
+        "Insurance and distribution charges reduce your net return versus a pure investment"
+      ],
+      "bestFor": "Risk-averse savers who want a guaranteed savings discipline for a specific goal, such as a child's education, and don't mind lower expected returns.",
+      "eligibility": "Available to most adults through licensed insurers or financial advisers; medical underwriting may apply.",
+      "relatedIds": ["m-insurance", "m-financial-adviser", "p-ilp", "p-fixed-deposit"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Understand what you're buying", "detail": "Endowment plans mix insurance and savings — read the Product Summary and Product Highlights Sheet before committing.", "link": "https://www.moneysense.gov.sg/understanding-endowment-insurance/" },
+        { "title": "Compare guaranteed vs non-guaranteed portions", "detail": "Ask your adviser to show the guaranteed return separately from projected (non-guaranteed) bonuses.", "link": "https://www.moneysense.gov.sg/understanding-endowment-insurance/" },
+        { "title": "Check the surrender value schedule", "detail": "See how much you'd get back if you stop paying early — it's often much less than premiums paid.", "link": "https://www.moneysense.gov.sg/understanding-endowment-insurance/" },
+        { "title": "Speak to a licensed financial adviser or insurer", "detail": "Compare plans across insurers for the premium term and payout structure that fits your goal.", "link": "https://www.moneysense.gov.sg/understanding-endowment-insurance/" },
+        { "title": "Apply and start your premium payments", "detail": "Complete the application with your chosen insurer, either directly or via a financial adviser.", "link": "https://www.moneysense.gov.sg/understanding-endowment-insurance/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/understanding-endowment-insurance/"
+    },
+    {
+      "id": "p-ilp",
+      "name": "Investment-Linked Policies (ILPs)",
+      "category": "Insurance-linked",
+      "icon": "shield",
+      "summary": "A policy that bundles life insurance with an investment in sub-funds of your choice — your premiums buy fund units, some of which are sold each month to pay for insurance and other charges.",
+      "analogy": "Like a two-in-one gadget that's both an umbrella and an investment account — convenient, but neither job is done as cheaply as buying them separately.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 4,
+      "liquidity": 2,
+      "complexity": 4,
+      "growthVsDividend": 55,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Combines life insurance coverage with market-linked investment growth potential",
+        "You can usually switch between sub-funds as your goals or risk appetite change",
+        "A single monthly premium covers both protection and investing",
+        "Useful for long-term goals where you specifically want insurance and investing bundled together"
+      ],
+      "cons": [
+        "No guaranteed cash value — you can lose a significant part or all of your investment",
+        "Insurance and fund charges reduce the amount actually invested, especially in early years",
+        "Buying insurance and investments separately is usually cheaper overall",
+        "Complex to compare across insurers due to layered charges",
+        "MAS classifies ILPs as complex products requiring extra care before purchase"
+      ],
+      "bestFor": "Investors with a long horizon who specifically want insurance and investment bundled in one policy and understand the extra layer of charges.",
+      "eligibility": "Available to most adults through licensed insurers or financial advisers; involves a needs analysis and sometimes a Customer Knowledge Assessment.",
+      "relatedIds": ["m-insurance", "m-financial-adviser", "p-endowment", "p-unit-trust"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Understand the structure", "detail": "Premiums buy sub-fund units; some are sold each month to pay for insurance charges and other fees.", "link": "https://www.moneysense.gov.sg/understanding-investment-linked-insurance-policies/" },
+        { "title": "Review the fee breakdown", "detail": "Ask for the Product Summary showing insurance charges, fund management fees and other deductions.", "link": "https://www.moneysense.gov.sg/investment-linked-policies-guide-to-fees-and-pricing/" },
+        { "title": "Choose your sub-funds", "detail": "Pick sub-funds that match your risk appetite — equity, bond or mixed.", "link": "https://www.moneysense.gov.sg/understanding-investment-linked-insurance-policies/" },
+        { "title": "Complete any required suitability checks", "detail": "Your adviser or insurer will assess your needs; complex products may require extra checks before you can proceed.", "link": "https://www.moneysense.gov.sg/investments/understanding-specified-investment-products/" },
+        { "title": "Apply through a licensed insurer or adviser", "detail": "Complete the application and start your premium payments.", "link": "https://www.moneysense.gov.sg/understanding-investment-linked-insurance-policies/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/understanding-investment-linked-insurance-policies/"
+    },
+    {
+      "id": "p-gold-silver",
+      "name": "Gold & Silver",
+      "category": "Alternatives",
+      "icon": "gold",
+      "summary": "Buying physical gold/silver, a bank gold or silver savings account, or a gold-backed ETF as a store of value that tends to hold up when stocks and currencies wobble. It pays no income — you only gain if the price rises.",
+      "analogy": "Like keeping a chunk of your wealth in a form that doesn't rely on any company or government promise — the flip side is it doesn't pay you rent or dividends while you hold it.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 3,
+      "liquidity": 4,
+      "complexity": 2,
+      "growthVsDividend": 100,
+      "returnDrivers": ["capital-growth"],
+      "pros": [
+        "Historically holds value during high inflation or market stress",
+        "Gold/silver savings accounts and ETFs let you invest without storing physical metal",
+        "Easy to buy and sell through major banks or on the exchange",
+        "Diversifies a portfolio that is otherwise all stocks and bonds"
+      ],
+      "cons": [
+        "Pays no dividend or interest — your only return is price appreciation",
+        "Prices can still be volatile in the short term",
+        "Unallocated savings accounts are not covered by SDIC deposit insurance",
+        "Converting to physical bars or coins incurs an extra fee, plus storage and security to think about"
+      ],
+      "bestFor": "Investors who want a small portfolio hedge against inflation or market shocks, not as a primary income-generating holding.",
+      "eligibility": "18 years old and above; gold/silver savings accounts require an account with the offering bank.",
+      "relatedIds": ["m-bank-rsp", "b-bank-integrated", "p-crypto"],
+      "feeSpecs": [
+        {
+          "type": "aum_annual_pct",
+          "market": "SG",
+          "sourceUrl": "https://www.uob.com.sg/personal/invest/gold-and-silver.page",
+          "hint": "Monthly/annual service charge % p.a. for the UOB Gold Savings Account, based on the highest gold balance recorded each month (and the equivalent Silver Savings Account charge)",
+          "adapter": "uob-gold"
+        },
+        {
+          "type": "transaction_flat",
+          "market": "SG",
+          "sourceUrl": "https://www.uob.com.sg/personal/invest/gold-and-silver.page",
+          "hint": "Fee in S$ charged per 100g when converting a Gold Savings Account balance to a physical gold cast bar",
+          "adapter": "uob-gold"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Decide your format", "detail": "Choose between a bank gold/silver savings account ('paper' gold), a gold ETF on SGX, or physical bars and coins.", "link": "https://www.uob.com.sg/personal/invest/gold-and-silver.page" },
+        { "title": "Open a gold/silver savings account, if going that route", "detail": "Apply online or at a branch with a bank offering a Gold or Silver Savings Account.", "link": "https://www.uob.com.sg/personal/invest/gold-and-silver.page" },
+        { "title": "Fund and buy", "detail": "Buy gold or silver in grams or ounces through internet banking or the bank's app.", "link": "https://www.uob.com.sg/personal/invest/gold-and-silver.page" },
+        { "title": "Track the live price before trading", "detail": "Check the daily buy/sell prices before placing an order.", "link": "https://www.uob.com.sg/personal/invest/gold-and-silver.page" },
+        { "title": "Decide if and when to convert to physical", "detail": "You can convert savings account balances to physical bars for a fee, subject to availability.", "link": "https://www.uob.com.sg/personal/invest/gold-and-silver.page" }
+      ],
+      "officialLink": "https://www.uob.com.sg/personal/invest/gold-and-silver.page"
+    },
+    {
+      "id": "p-crypto",
+      "name": "Cryptocurrency (via MAS-Licensed Exchanges)",
+      "category": "Alternatives",
+      "icon": "coin",
+      "summary": "Buying digital tokens like Bitcoin or Ethereum through an exchange licensed by MAS under the Payment Services Act. Prices are extremely volatile and, unlike bank deposits, your holdings are not protected if the exchange fails.",
+      "analogy": "Like betting on a highly speculative, fast-moving asset with no safety net — using a licensed platform reduces some risks, but it does not protect your capital.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 5,
+      "liquidity": 4,
+      "complexity": 4,
+      "growthVsDividend": 100,
+      "returnDrivers": ["capital-growth"],
+      "pros": [
+        "Using a MAS-licensed exchange reduces, but does not eliminate, counterparty and fraud risk",
+        "24/7 trading and easy access via app",
+        "Potential for large gains during bull markets",
+        "Wide range of tokens and growing mainstream acceptance"
+      ],
+      "cons": [
+        "MAS explicitly warns this is high risk and unsuitable for most retail investors",
+        "Your holdings are NOT protected — MAS cannot help you recover losses if a platform collapses or is hacked",
+        "Extreme price volatility; you can lose your entire investment",
+        "Unlicensed platforms actively target Singapore users — always check the MAS register first",
+        "No dividends or interest; returns depend purely on price speculation"
+      ],
+      "bestFor": "Only investors who fully understand and can afford to lose the amount invested, as a small speculative slice of a diversified portfolio.",
+      "eligibility": "18 years old and above; must use a platform licensed by MAS to serve Singapore retail customers.",
+      "relatedIds": ["b-crypto-exchange", "p-options-cfd"],
+      "feeSpecs": [
+        {
+          "type": "per_trade_pct",
+          "market": "ALL",
+          "sourceUrl": "https://help.coinhako.com/portal/en/kb/articles/coinhako-fees",
+          "hint": "Spot trading fee % for SGD/USD wallet trades on Coinhako, a MAS-licensed Digital Payment Token exchange",
+          "adapter": "coinhako"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Check the platform is MAS-licensed", "detail": "Search the MAS Financial Institutions Directory to confirm the exchange holds a Digital Payment Token Service licence.", "link": "https://eservices.mas.gov.sg/fid/institution?sector=Payments&category=Major+Payment+Institution&activity=Digital+Payment+Token+Service" },
+        { "title": "Read the risk warnings", "detail": "Understand that your crypto holdings are not protected like bank deposits, even on a licensed platform.", "link": "https://www.moneysense.gov.sg/risks-of-trading-payment-token-derivatives/" },
+        { "title": "Sign up and complete verification", "detail": "Register with your NRIC/passport and complete the exchange's identity checks.", "link": "https://eservices.mas.gov.sg/fid/institution?sector=Payments&category=Major+Payment+Institution&activity=Digital+Payment+Token+Service" },
+        { "title": "Fund your account", "detail": "Transfer SGD via PayNow or bank transfer, or top up with an existing token.", "link": "https://www.moneysense.gov.sg/risks-of-trading-payment-token-derivatives/" },
+        { "title": "Only invest what you can afford to lose", "detail": "Treat this as a small, high-risk slice of your overall portfolio, not a core holding.", "link": "https://www.moneysense.gov.sg/risks-of-trading-payment-token-derivatives/" },
+        { "title": "Recheck the MAS Investor Alert List before using any platform", "detail": "Cross-check that the platform is not flagged as unlicensed or suspicious before you trade.", "link": "https://eservices.mas.gov.sg/fid/institution?sector=Payments&category=Major+Payment+Institution&activity=Digital+Payment+Token+Service" }
+      ],
+      "officialLink": "https://eservices.mas.gov.sg/fid/institution?sector=Payments&category=Major+Payment+Institution&activity=Digital+Payment+Token+Service"
+    },
+    {
+      "id": "p-options-cfd",
+      "name": "Options & CFDs (Advanced, High Risk)",
+      "category": "Alternatives",
+      "icon": "warning",
+      "summary": "Leveraged instruments that let you speculate on price moves using a fraction of the position's value, magnifying both gains and losses. These are classified as Specified Investment Products and require passing a knowledge assessment before you can trade them.",
+      "analogy": "Like using a loan to bet on a race — a small win becomes a bigger win, but a small loss can become a bigger loss than you put in.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 5,
+      "liquidity": 4,
+      "complexity": 5,
+      "growthVsDividend": 100,
+      "returnDrivers": ["capital-growth"],
+      "pros": [
+        "Leverage means you can gain a large exposure with a smaller upfront outlay",
+        "Can be used to hedge existing stock positions against price falls",
+        "Wide range of markets accessible — indices, forex, commodities, single stocks",
+        "Flexible — can potentially profit from both rising and falling prices"
+      ],
+      "cons": [
+        "You can lose more than your original deposit, especially with CFDs",
+        "Most retail accounts trading CFDs lose money, according to industry-wide risk disclosures",
+        "Requires passing a Customer Knowledge Assessment (CKA) or Customer Account Review (CAR) first",
+        "Margin calls can force you to top up funds quickly or have your position closed at a loss",
+        "Not suitable for beginners — no dividend or income component, pure speculation"
+      ],
+      "bestFor": "Experienced investors who understand leverage and margin — not first-time investors.",
+      "eligibility": "18 years old and above; must pass a Customer Knowledge Assessment (unlisted SIPs) or Customer Account Review (listed SIPs) with your broker before trading.",
+      "relatedIds": ["b-international", "m-diy-broker", "p-crypto"],
+      "feeSpecs": [],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Learn what a Specified Investment Product is", "detail": "Understand why options and CFDs need extra safeguards before you can trade them.", "link": "https://www.moneysense.gov.sg/investments/understanding-specified-investment-products/" },
+        { "title": "Understand leverage and CFD-specific risks", "detail": "Read how leverage magnifies both gains and losses, and how margin calls work.", "link": "https://www.moneysense.gov.sg/investments/understanding-contracts-for-difference/" },
+        { "title": "Complete the CKA/CAR assessment", "detail": "Your broker will assess your knowledge and experience before letting you open an options or CFD account.", "link": "https://www.moneysense.gov.sg/investments/understanding-specified-investment-products/" },
+        { "title": "Open a derivatives-enabled trading account", "detail": "Apply with a broker that offers options or CFD trading.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Start small and understand margin requirements", "detail": "Know your margin call and stop-loss rules before you place your first trade.", "link": "https://www.moneysense.gov.sg/investments/understanding-contracts-for-difference/" }
+      ],
+      "officialLink": "https://www.moneysense.gov.sg/investments/understanding-contracts-for-difference/"
+    },
+    {
+      "id": "p-property",
+      "name": "Physical Property vs REITs",
+      "category": "Alternatives",
+      "icon": "home",
+      "summary": "Buying physical residential or commercial property directly gives you full control and mortgage leverage, but ties up large capital and incurs taxes and upkeep — compared with buying REITs, which gives diversified property exposure from as little as one lot with far more liquidity.",
+      "analogy": "Owning physical property is like buying a whole apartment block; owning a REIT is like buying a few shares in a company that owns many apartment blocks for you.",
+      "minAmount": "Varies — see official page",
+      "riskLevel": 4,
+      "liquidity": 1,
+      "complexity": 4,
+      "growthVsDividend": 55,
+      "returnDrivers": ["capital-growth", "dividends"],
+      "pros": [
+        "Direct property lets you use mortgage leverage to amplify potential gains",
+        "Full control over the asset — renovate, rent out, or occupy as you wish",
+        "A tangible asset that can also serve as your own home",
+        "Rental income plus potential capital appreciation over the long term"
+      ],
+      "cons": [
+        "Very high capital outlay, plus Buyer's Stamp Duty and possibly Additional Buyer's Stamp Duty",
+        "Illiquid — selling a property can take months and involves large transaction costs",
+        "Concentrated risk in a single asset and location",
+        "REITs offer similar property exposure with far smaller capital, instant liquidity and professional management, but you give up direct control"
+      ],
+      "bestFor": "Those with substantial capital and a long horizon who want direct control; beginners wanting property exposure with small capital should consider S-REITs instead.",
+      "eligibility": "Property purchase is subject to eligibility rules (citizenship, existing property count) and financing approval. REITs are open to any investor with a CDP/brokerage account.",
+      "relatedIds": ["p-reit", "m-diy-broker"],
+      "feeSpecs": [
+        {
+          "type": "other",
+          "market": "SG",
+          "sourceUrl": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
+          "hint": "Buyer's Stamp Duty (BSD) marginal rate table by purchase price tier for residential and non-residential property",
+          "adapter": "iras-bsd",
+          "label": "Buyer's Stamp Duty (BSD)"
+        }
+      ],
+      "fees": [],
+      "providers": [],
+      "steps": [
+        { "title": "Compare the two paths", "detail": "Decide whether you want direct control (property) or diversified, liquid exposure (REITs).", "link": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/" },
+        { "title": "If buying property, check eligibility and budget", "detail": "Confirm your eligibility, loan quantum and total costs, including stamp duties.", "link": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)" },
+        { "title": "Account for Buyer's (and Additional Buyer's) Stamp Duty", "detail": "These taxes are due within 14 days of signing the sale and purchase agreement.", "link": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)" },
+        { "title": "If choosing REITs instead, open a CDP/brokerage account", "detail": "Buy REIT units on SGX just like a stock, with far less capital than direct property.", "link": "https://www.moneysense.gov.sg/investments/a-step-by-step-guide-to-start-trading/" },
+        { "title": "Review a REIT's distribution policy and gearing before buying", "detail": "Understand how the REIT is funded and how much of its income it pays out.", "link": "https://www.moneysense.gov.sg/investments/understanding-real-estate-investment-trusts-reits/" }
+      ],
+      "officialLink": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)"
+    }
+  ]
+}

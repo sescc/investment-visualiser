@@ -1,0 +1,90 @@
+/* Design tokens — the only place colours are defined. See docs/DESIGN.md */
+:root {
+  --font-head: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface-2: #efece4;
+  --ink: #1c2230;
+  --ink-2: #4a5263;
+  --muted: #8a909c;
+  --line: #e0dcd2;
+
+  --world-products: #0f8b8d;
+  --world-products-soft: #d7efee;
+  --world-methods: #d98a12;
+  --world-methods-soft: #faebd2;
+  --world-brokers: #6c4fd1;
+  --world-brokers-soft: #e6e0fa;
+
+  --good: #1f9d55;
+  --good-soft: #dcf3e5;
+  --warn: #c77700;
+  --warn-soft: #fbecd3;
+  --bad: #c2362f;
+  --sg-red: #ef3340;
+  --focus: #2563eb;
+
+  /* growth ↔ income diverging scale */
+  --income: #d98a12;
+  --growth: #0f8b8d;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(28, 34, 48, .06), 0 6px 20px rgba(28, 34, 48, .07);
+  --gutter: 16px;
+  --maxw: 1180px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c;
+    --surface: #1a1f29;
+    --surface-2: #232937;
+    --ink: #eef0f4;
+    --ink-2: #b7bdc9;
+    --muted: #7f8795;
+    --line: #2d3442;
+    --world-products: #3cc2c3;
+    --world-products-soft: #133536;
+    --world-methods: #f0ad3c;
+    --world-methods-soft: #3b2c12;
+    --world-brokers: #a08bf5;
+    --world-brokers-soft: #2a2349;
+    --good: #45c77c;
+    --good-soft: #15321f;
+    --warn: #f0ad3c;
+    --warn-soft: #3b2c12;
+    --bad: #f0706a;
+    --focus: #7aa7ff;
+    --income: #f0ad3c;
+    --growth: #3cc2c3;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #12151c;
+  --surface: #1a1f29;
+  --surface-2: #232937;
+  --ink: #eef0f4;
+  --ink-2: #b7bdc9;
+  --muted: #7f8795;
+  --line: #2d3442;
+  --world-products: #3cc2c3;
+  --world-products-soft: #133536;
+  --world-methods: #f0ad3c;
+  --world-methods-soft: #3b2c12;
+  --world-brokers: #a08bf5;
+  --world-brokers-soft: #2a2349;
+  --good: #45c77c;
+  --good-soft: #15321f;
+  --warn: #f0ad3c;
+  --warn-soft: #3b2c12;
+  --bad: #f0706a;
+  --focus: #7aa7ff;
+  --income: #f0ad3c;
+  --growth: #3cc2c3;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .35);
+}

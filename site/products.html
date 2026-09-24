@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Products — what to buy | SG Invest Map</title>
+<meta name="description" content="Investment products available in Singapore: what they are, their risk and liquidity, and where their returns come from.">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to content</a>
+<header class="topbar" id="app-header"></header>
+<div class="disclaimer" id="app-disclaimer" hidden></div>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h1><span class="chip" style="background:var(--world-products-soft); color:var(--world-products)">What to buy</span></h1>
+        <h2 style="margin-top:4px">Products</h2>
+        <p class="muted">The actual things you can own — bonds, ETFs, REITs, robo portfolios and more. Filter below, or
+          scan the spectrum to see how each one leans between steady income and long-term growth.</p>
+      </div>
+
+      <div id="filters-mount" class="chip-row" role="group" aria-label="Filter products"></div>
+
+      <div class="section-head" style="margin-top:32px">
+        <h2>Growth ↔ income spectrum</h2>
+        <p class="muted">Where each product's returns tend to come from. Hover a dot to highlight its card below.</p>
+      </div>
+      <div id="spectrum-mount"></div>
+
+      <div id="products-empty"></div>
+      <div class="grid grid-3" id="products-grid" style="margin-top:24px"></div>
+
+      <div class="section-head" style="margin-top:40px">
+        <h2>Where the return comes from</h2>
+        <p class="muted">Share of capital growth vs. income (dividends, interest, coupons) for each product.</p>
+      </div>
+      <div class="chart-wrap tall" id="returns-chart-wrap"><canvas id="returns-canvas"></canvas></div>
+      <div id="returns-table-mount"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"wrap\" style=\"padding:24px 16px\"><div class=\"empty-panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module" src="js/products.js"></script>
+</body>
+</html>
