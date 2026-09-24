@@ -32,6 +32,9 @@ when `/api/health` is absent).
   scraper merge logic or any skipped source. Append new decisions there.
 - `docs/SESSION-*.md` per-session handoff records up to 2026-09-22. From 2026-09-23 the supercharge loop is used:
   logs in `docs/sessions/`, intent in `docs/architecture-map.md` + `docs/<component>/`, changes in `openspec/`.
+- `.github/workflows/scrape-and-deploy.yml` weekly scrape + GitHub Pages deploy. `site/` pages load `data/sgdata.*`
+  page-relative (the Pages artifact copies `data/` in beside `site/`); `server.js` maps `/site/data/sgdata.json`
+  and `/site/data/sgdata.js` to the real files in `data/` for local dev.
 
 @docs/DECISIONS.md
 

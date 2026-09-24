@@ -45,6 +45,26 @@ npm run serve       # http://127.0.0.1:5173
 
 The site uses ES modules, so it has to be served over HTTP. Opening the HTML files directly (`file://`) only shows a "run npm run serve" notice. With `npm run serve`, the site also gets a **Refresh data** button that re-runs the scraper.
 
+## Deployment (GitHub Pages)
+
+The site is published at the root of GitHub Pages by `.github/workflows/scrape-and-deploy.yml`. In the repo's
+Settings → Pages, set **Source = GitHub Actions**.
+
+The workflow builds a Pages artifact with `site/` as the root and `data/` copied in beside it, so the published
+site loads `data/sgdata.json` / `data/sgdata.js` exactly like local `npm run serve` does. It runs on three
+triggers:
+
+- **Weekly schedule** (Monday 03:17 SGT): re-scrapes every fee source, commits `data/sgdata.json` and
+  `data/sgdata.js` if they changed, then deploys.
+- **Manual "Run workflow"** in the Actions tab: same as the schedule.
+- **Push to `main`** touching `site/**` or `data/**`: deploys only, no scrape.
+
+The **Refresh data** button is hidden on the published site (there's no `/api/health` endpoint on Pages) — that's
+expected; use the scheduled/manual scrape instead.
+
+GitHub disables scheduled workflows after 60 days with no repository activity. If the weekly scrape stops
+running, re-enable it from the workflow's page in the Actions tab.
+
 ### Other commands
 
 ```bash

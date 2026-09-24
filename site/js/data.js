@@ -1,5 +1,5 @@
 // Data loading, freshness, query-string (deep link) codec, and small lookup helpers.
-// Contract: window.SGDATA (classic script) → fetch ../data/sgdata.json → empty-state object.
+// Contract: window.SGDATA (classic script) → fetch data/sgdata.json → empty-state object.
 // Never throws: every page must render, even with no data/ present yet.
 
 import { PRESETS, DEFAULT_SCENARIO } from './cost.js';
@@ -65,7 +65,7 @@ export async function getData() {
   }
 
   try {
-    const res = await fetch('../data/sgdata.json');
+    const res = await fetch('data/sgdata.json');
     if (res.ok) {
       const json = await res.json();
       _cache = normalize(json);

@@ -27,30 +27,41 @@ function contentTypeFor(filePath) {
   return CONTENT_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
 }
 
-// Only /site/** and the two generated data files are servable. Resolving the
-// path first (which collapses "..") and then checking the prefix is what
-// actually stops path traversal — checking the raw string is not enough.
+// Only /site/** is servable, plus two exact remapped paths for the generated
+// data files (see DATA_REMAP below). Resolving the path first (which
+// collapses "..") and then checking the prefix is what actually stops path
+// traversal — checking the raw string is not enough.
 function isAllowed(resolved) {
   const siteDir = path.join(ROOT, 'site') + path.sep;
-  if (resolved.startsWith(siteDir)) return true;
-  return (
-    resolved === path.join(ROOT, 'data', 'sgdata.json') ||
-    resolved === path.join(ROOT, 'data', 'sgdata.js')
-  );
+  return resolved.startsWith(siteDir);
 }
+
+// The site is published on GitHub Pages with site/ as the root and data/
+// copied in beside it, so pages load data page-relative: /site/data/sgdata.json
+// and /site/data/sgdata.js. There's no real site/data folder locally — these
+// two exact resolved paths are remapped to the real files in ROOT/data/ so
+// `npm run serve` mirrors the published layout. Nothing else under /site/data
+// maps to anything (path-traversal protection is unaffected: isAllowed still
+// runs on the pre-remap resolved path).
+const DATA_REMAP = new Map([
+  [path.join(ROOT, 'site', 'data', 'sgdata.json'), path.join(ROOT, 'data', 'sgdata.json')],
+  [path.join(ROOT, 'site', 'data', 'sgdata.js'), path.join(ROOT, 'data', 'sgdata.js')],
+]);
 
 async function serveStatic(urlPath, res) {
   const decoded = decodeURIComponent(urlPath.split('?')[0]);
   const relative = decoded.replace(/^\/+/, '');
   const resolved = path.resolve(ROOT, relative);
-  if (!isAllowed(resolved)) {
+  const remapped = DATA_REMAP.get(resolved);
+  if (!remapped && !isAllowed(resolved)) {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not found');
     return;
   }
+  const toRead = remapped || resolved;
   try {
-    const data = await readFile(resolved);
-    res.writeHead(200, { 'Content-Type': contentTypeFor(resolved) });
+    const data = await readFile(toRead);
+    res.writeHead(200, { 'Content-Type': contentTypeFor(toRead) });
     res.end(data);
   } catch {
     res.writeHead(404, { 'Content-Type': 'text/plain' });

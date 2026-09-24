@@ -1,7 +1,7 @@
 # Decision & edge-case log
 
 Sessions of 22 Sep 2026: §1–8 session 1 (project creation), §9–10 session 2 (headless adapters, cost-model extensions).
-23–24 Sep 2026: §11 supercharge session loop adopted, §12 open follow-ups closed.
+23–24 Sep 2026: §11 supercharge session loop adopted, §12 open follow-ups closed, §13 GitHub Pages hosting.
 Earlier bullets superseded later are marked in place. Newest context last within each section.
 Format: **Decision** — why. Edge cases list what happens and where it's handled.
 
@@ -188,3 +188,34 @@ Format: **Decision** — why. Edge cases list what happens and where it's handle
 - **Edge case found during the archive spec sync (fixed):** `computeCost` checked the "No <market> trading fee found" reason against the share-price-*filtered* list. A broker whose only tiers exclude the typical price, but which also had e.g. a custody fee, would have ranked on the custody fee alone. The check now uses the unfiltered list, with a new test "no applicable tier -> incomplete" (18 checks). No current provider hits it; default rankings are unchanged.
   - The main spec `cost-comparison` gained two failure scenarios at sync, to meet the "happy + failure scenario" rule: "No tier covers the price" and "Exchange fees not yet scraped". Both describe implemented behaviour.
 - **Display name is "SGInvest Visualiser"** (user decision, 24 Sep 2026) — replaces "SG Invest Map" in page titles, the header brand and README, and "SG Invest Visualiser" in docs. Internal ids (package name `sg-invest-visualiser`, skill names, localStorage keys) are unchanged so saved theme/checklist state isn't reset.
+
+## 13. Hosting on GitHub Pages (24 Sep 2026)
+- **Served at the Pages root** (user decision) via an Actions-built artifact — `site/` copied as the artifact root
+  with `data/` copied in beside it — rather than moving `site/`'s contents to the repo root.
+  - *Why:* keeps the scraper, docs, `node_modules` and project config out of the published site, and keeps the
+    existing repo layout (baseline data, adapters, tests) untouched.
+- **Data path changed to page-relative.** Every page's `<script src="data/sgdata.js">` and `data.js`'s
+  `fetch('data/sgdata.json')` (previously `../data/…`, which only worked with `site/` one level under the served
+  root) now resolve correctly whether the root is `site/` (Pages) or `/site/` (local `npm run serve`).
+  - `server.js` maps the two exact paths `/site/data/sgdata.json` and `/site/data/sgdata.js` to the real files in
+    `ROOT/data/`, so local dev mirrors the published layout without a real `site/data/` folder. Path-traversal
+    protection (`isAllowed`) is unaffected — it still runs on the pre-remap resolved path, and only those two exact
+    resolved paths are remapped.
+- **`.nojekyll`** is added to the Pages artifact so GitHub serves the site's files (including anything starting
+  with `_`) verbatim instead of running them through Jekyll.
+- **Weekly schedule, Monday 03:17 SGT** (Sunday 19:17 UTC) — fees change rarely and the site's own "live" freshness
+  window is 30 days, so weekly keeps every figure live with 4x margin. An odd minute (`:17`) avoids GitHub's
+  top-of-hour cron congestion. The run's ~45 requests across ~35 hosts are already paced by `lib/http.js`'s
+  800ms-per-host delay, so this adds negligible load on any one provider.
+- **The workflow bot commits only `data/sgdata.json` and `data/sgdata.js`**, as `github-actions[bot]` — the user
+  asked for the scraped-data refresh itself to be automated; hand commits of everything else remain the user's own
+  (CLAUDE.md: never `git add`/`commit`/`push` without being asked).
+- **Partial adapter failures don't fail the job.** `scraper/index.js` already exits 0 and carries previous values
+  forward with `lastRunOk: false` when an individual adapter throws (§5); only a fatal error (e.g. baseline load
+  failure) fails the `scrape` job. `npm test` still gates the job before the scrape runs.
+- **Edge case:** sources that block GitHub Actions' datacenter IPs (the way some already block bot-like fetchers,
+  §5/§9) will show up as `lastRunOk: false` in that week's report and job summary, same as any other adapter
+  failure — no special-casing was added, since the existing carry-forward-and-age behaviour already covers it.
+- **`deploy` job checks out `ref: ${{ github.ref_name }}`** (defaults to `main`) so a scheduled run picks up the
+  data commit the `scrape` job just pushed, even though the triggering event's `github.ref` was already the
+  default branch before that push.

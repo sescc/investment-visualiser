@@ -1,0 +1,121 @@
+# Weekly fee refresh + GitHub Pages deploy.
+#
+# Schedule: Sunday 19:17 UTC = Monday 03:17 SGT — off-peak for Singapore-hour
+# traffic on the scraped provider sites. Weekly is enough because fees change
+# rarely and the site's own "live" freshness window is 30 days (CLAUDE.md),
+# so a weekly run keeps every figure live with 4x margin. A run makes ~45
+# requests spread over ~35 hosts, and scraper/lib/http.js already enforces an
+# 800ms per-host delay, so the load on any one provider is negligible. The
+# odd minute (:17) avoids GitHub's documented top-of-hour cron congestion.
+#
+# The scrape job pushes with the default GITHUB_TOKEN, which by design does
+# not re-trigger workflow runs — so this push never loops back into itself.
+name: Scrape and deploy
+
+on:
+  schedule:
+    - cron: '17 19 * * 0'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'data/**'
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # ubuntu-latest runner images ship Microsoft Edge already; the scraper's
+      # headless-browser adapters (scraper/lib/browser.js) launch it via
+      # playwright-core's chromium.launch({ channel: 'msedge' }), which finds
+      # /opt/microsoft/msedge on Linux. Only fall back to installing it if
+      # that's ever not true.
+      - name: Ensure Microsoft Edge is present
+        run: microsoft-edge --version || npx playwright install --with-deps msedge
+
+      - run: npm test
+
+      - name: Run scraper
+        # Explicit bash so GitHub uses `bash --noprofile --norc -eo pipefail`
+        # instead of its default `bash -e` (no pipefail) — otherwise a fatal
+        # scraper exit is masked by `tee`'s own zero exit status.
+        shell: bash
+        run: npm run scrape 2>&1 | tee scrape.log
+
+      - name: Append report to job summary
+        if: always()
+        run: |
+          if [ -f scrape.log ]; then
+            {
+              echo '## Scrape report'
+              echo '```'
+              cat scrape.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898699+github-actions[bot]@users.noreply.github.com'
+          git add data/sgdata.json data/sgdata.js
+          if git diff --cached --quiet; then
+            echo 'No data changes to commit.'
+          else
+            git commit -m "chore(data): scheduled fee scrape $(date -u +%F)"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            git push
+          fi
+
+  deploy:
+    needs: scrape
+    if: always() && (needs.scrape.result == 'success' || needs.scrape.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Default ref is main; for a schedule event github.ref is already the
+      # default branch, but this makes sure a push-triggered run and the
+      # scheduled run both check out the branch the scrape job just pushed to.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Assemble Pages artifact (site/ as root, data/ copied in)
+        run: |
+          mkdir -p _site/data
+          cp -r site/. _site/
+          cp data/sgdata.json data/sgdata.js _site/data/
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
