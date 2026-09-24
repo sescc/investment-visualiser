@@ -5520,7 +5520,7 @@ window.SGDATA = {
       }
     ]
   },
-  "generatedAt": "2026-09-24T00:01:50.634Z",
+  "generatedAt": "2026-09-24T03:25:56.876Z",
   "fx": {
     "USDSGD": {
       "value": 1.2762,
