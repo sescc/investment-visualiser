@@ -8,7 +8,8 @@
     "scrape": "node scraper/index.js",
     "serve": "node server.js",
     "check-links": "node scraper/check-links.js",
-    "test": "node test/cost.test.mjs"
+    "test": "node test/cost.test.mjs",
+    "build": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "cheerio": "^1.0.0",

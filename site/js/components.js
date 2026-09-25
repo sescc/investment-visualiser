@@ -3,10 +3,13 @@
 
 import { icon } from './icons.js';
 import {
-  worldOf, freshness, freshnessOfComponent, bestFeeComponent, freshnessSummary,
+  worldOf, freshness, bestFeeComponent, freshnessSummary,
   checkRefreshAvailable, triggerRefresh, invalidateCache, buildCompareUrl,
 } from './data.js';
-import { computeCost, formatSGD, rankByCost, describeScenario, PRESETS, DEFAULT_SCENARIO, DEFAULT_SHARE_PRICE, COST_GROUPS, costGroupOf, PRODUCT_COST_LINKS } from './cost.js';
+import { computeCost, formatSGD, rankByCost, describeScenario, PRESETS, DEFAULT_SCENARIO, DEFAULT_SHARE_PRICE, COST_GROUPS, costGroupOf } from './cost.js';
+import { GLOSSARY } from './content.js';
+import { feeSummary, freshnessView } from './feeview.js';
+import { mountEditionSwitch } from './edition-switch.js';
 
 const WORLD_LABEL = { products: 'Products', methods: 'Methods', brokers: 'Brokers' };
 const WORLD_TAGLINE = { products: 'What to buy', methods: 'How to invest', brokers: 'Who executes it' };
@@ -175,6 +178,7 @@ export async function renderChrome(activeHref, data) {
   });
 
   glossaryTooltips(document.body);
+  mountEditionSwitch({ edition: 'stable' });
 }
 
 function updateFreshnessPill(data) {
@@ -337,82 +341,58 @@ export function returnDriverChips(drivers) {
   return h`<div class="chip-row">${drivers.map(d => `<span class="chip chip-sm">${esc(RETURN_DRIVER_LABEL[d] || d)}</span>`).join('')}</div>`;
 }
 
+// DOM-only half of feeview.js's FRESH_STATE_LABEL: state → badge class + icon.
 const FRESH_META = {
-  live: { cls: 'badge-live', label: 'live', icon: 'check' },
-  aging: { cls: 'badge-aging', label: 'aging', icon: 'info' },
-  stale: { cls: 'badge-stale', label: 'stale', icon: 'warning' },
-  missing: { cls: 'badge-missing', label: 'no data', icon: 'warning' },
+  live: { cls: 'badge-live', icon: 'check' },
+  aging: { cls: 'badge-aging', icon: 'info' },
+  stale: { cls: 'badge-stale', icon: 'warning' },
+  missing: { cls: 'badge-missing', icon: 'warning' },
 };
 
 export function freshnessBadge(component) {
-  const state = freshnessOfComponent(component);
-  const meta = FRESH_META[state];
-  const asOf = component?.asOf ? ` · ${new Date(component.asOf).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}` : '';
-  const badge = h`<span class="badge ${meta.cls}">${icon(meta.icon, { size: 12 })} ${meta.label}${asOf}</span>`;
+  const view = freshnessView(component);
+  const meta = FRESH_META[view.state];
+  const asOf = view.asOfText ? ` · ${view.asOfText}` : '';
+  const badge = h`<span class="badge ${meta.cls}">${icon(meta.icon, { size: 12 })} ${view.label}${asOf}</span>`;
   // Each figure links to the page it was read from (merge.js only ever stores https sources).
-  const src = component?.source;
-  if (typeof src !== 'string' || !src.startsWith('https://')) return badge;
-  return h`<a class="badge-link" href="${esc(src)}" target="_blank" rel="noopener" title="Source: ${esc(src)}">${badge}</a>`;
+  if (!view.href) return badge;
+  return h`<a class="badge-link" href="${esc(view.href)}" target="_blank" rel="noopener" title="Source: ${esc(view.href)}">${badge}</a>`;
 }
 
 /** DESIGN.md card fee line: "Yield 3.1% · live" (reads yield_pct directly — computeCost excludes it) or a cost teaser, or a pass-through note. */
 export function feeLine(entry) {
-  const line = feeLineInner(entry);
-  const link = PRODUCT_COST_LINKS[entry?.id];
-  if (!link) return line;
-  const href = `compare.html?group=${link.group}&market=${link.market}#calc-mount`;
-  return h`${line} <a class="fee-compare-link" href="${href}">Compare what it costs to buy → ${esc(COST_GROUPS[link.group].label.toLowerCase())}</a>`;
+  const summary = feeSummary(entry);
+  const line = renderFeeLine(summary);
+  if (!summary.compareLink) return line;
+  return h`${line} <a class="fee-compare-link" href="${summary.compareLink.href}">Compare what it costs to buy → ${esc(summary.compareLink.groupLabel.toLowerCase())}</a>`;
 }
 
-function feeLineInner(entry) {
-  const fees = entry?.fees || [];
-  // Several yields (e.g. FD board rates per bank, CPF per account): show the range and name the best.
-  const yields = fees.filter(f => f.type === 'yield_pct');
-  if (yields.length > 1) {
-    const best = yields.reduce((a, b) => (b.value > a.value ? b : a));
-    const low = Math.min(...yields.map(y => y.value));
-    return h`<span class="fee-line" title="${esc(yields.map(y => `${y.label || 'Rate'}: ${y.value}%`).join('\n'))}">${icon('bill', { size: 14 })} Yield ${low}–${best.value}% <span class="muted">(best: ${esc(best.label || '')})</span> ${freshnessBadge(best)}</span>`;
+/** Thin renderer over feeview.js:feeSummary's view-model — keeps the HTML in one place. */
+function renderFeeLine(summary) {
+  switch (summary.kind) {
+    case 'yield-range': {
+      const { low, best, yields } = summary;
+      return h`<span class="fee-line" title="${esc(yields.map(y => `${y.label || 'Rate'}: ${y.value}%`).join('\n'))}">${icon('bill', { size: 14 })} Yield ${low}–${best.value}% <span class="muted">(best: ${esc(best.label || '')})</span> ${freshnessBadge(best)}</span>`;
+    }
+    case 'yield':
+      return h`<span class="fee-line">${icon('bill', { size: 14 })} Yield ${summary.comp.value}% ${freshnessBadge(summary.comp)}</span>`;
+    case 'exchange':
+      return h`<span class="fee-line">${icon('bill', { size: 14 })} ${summary.comps.map(f => `${esc(f.label)} ${f.value}%`).join(' · ')} <span class="muted">per trade, on top of broker fees</span> ${freshnessBadge(summary.oldest)}</span>`;
+    case 'from':
+      return h`<span class="fee-line">${icon('bill', { size: 14 })} From ${summary.comp.value}${summary.unit} ${freshnessBadge(summary.comp)}</span>`;
+    case 'via-broker':
+      return h`<span class="fee-line muted">${icon('bill', { size: 14 })} Fees via your broker →</span>`;
+    case 'untracked':
+    default:
+      return h`<span class="fee-line muted">${icon('bill', { size: 14 })} Fees not tracked yet</span>`;
   }
-  if (yields.length === 1) {
-    return h`<span class="fee-line">${icon('bill', { size: 14 })} Yield ${yields[0].value}% ${freshnessBadge(yields[0])}</span>`;
-  }
-  // Exchange pass-through fees (e.g. SGX clearing/trading) are the same at every broker: list them by
-  // label rather than as a "From" price. One badge, for the oldest figure.
-  const exchange = fees.filter(f => f.group === 'exchange' && f.label);
-  if (exchange.length) {
-    const oldest = exchange.reduce((a, b) => ((b.asOf || '') < (a.asOf || '') ? b : a));
-    return h`<span class="fee-line">${icon('bill', { size: 14 })} ${exchange.map(f => `${esc(f.label)} ${f.value}%`).join(' · ')} <span class="muted">per trade, on top of broker fees</span> ${freshnessBadge(oldest)}</span>`;
-  }
-  const costComp = bestFeeComponent(entry);
-  if (costComp) {
-    const unit = costComp.currency === 'PCT' ? '%' : ` ${costComp.currency}`;
-    return h`<span class="fee-line">${icon('bill', { size: 14 })} From ${costComp.value}${unit} ${freshnessBadge(costComp)}</span>`;
-  }
-  if (entry?.providers?.length) {
-    return h`<span class="fee-line muted">${icon('bill', { size: 14 })} Fees via your broker →</span>`;
-  }
-  return h`<span class="fee-line muted">${icon('bill', { size: 14 })} Fees not tracked yet</span>`;
 }
 
 // ============================================================================
 // Glossary
 // ============================================================================
 
-const GLOSSARY = {
-  cdp: 'Central Depository — MAS-linked registry that holds Singapore shares directly in your own name.',
-  custodian: 'Custodian / nominee account — your broker holds shares in trust on your behalf, bundled with other clients’.',
-  srs: 'Supplementary Retirement Scheme — a tax-deferred account you can invest from; withdrawals before the statutory age are taxed and penalised.',
-  cpf: 'Central Provident Fund — Singapore’s mandatory savings scheme (Ordinary, Special, MediSave, Retirement accounts).',
-  'cpf-oa': 'CPF Ordinary Account — earns a government-set interest rate (see the CPF Top-Ups card for the current figure); can be invested via CPFIS within limits.',
-  aum: 'Assets under management — the value of what a platform manages for you; many robo-advisors charge an annual % of this.',
-  'expense-ratio': 'The fund’s own yearly running cost, taken out of its returns before you see them.',
-  rsp: 'Regular Savings Plan — investing a fixed amount on a schedule (e.g. monthly), regardless of price.',
-  liquidity: 'How quickly you can turn the investment back into spendable cash.',
-  etf: 'Exchange-Traded Fund — a basket of many stocks or bonds that trades on an exchange like a single share.',
-  reit: 'Real Estate Investment Trust — owns income-producing property and distributes most rental income to unit holders.',
-  'sales-charge': 'A one-off percentage fee taken when you buy into a fund, on top of its running costs.',
-  ssb: 'Singapore Savings Bond — a government bond for individuals with step-up interest and no penalty for early redemption.',
-};
+// GLOSSARY moved to content.js (shared, pure) so the visual edition can reuse the same definitions.
 
 export function glossaryTooltips(root = document) {
   root.querySelectorAll('abbr[data-glossary]').forEach(el => {

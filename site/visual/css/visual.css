@@ -1,0 +1,710 @@
+/* visual.css — the visual-edition design system.
+ *
+ * Load order (see js/shell.js's head-comment for the canonical <head>):
+ *   1. ../../css/tokens.css   (shared color/spacing tokens: --world-products/methods/brokers, --bg, --ink, …)
+ *   2. this file
+ *
+ * Direction: "Singapore after dark" neon-maximalism in dark mode — saturated gradients built from the
+ * three world hues, soft bloom-like glows, glassmorphism panels floating over the WebGL stage.
+ * "Tropical noon risograph" in light mode — the same three hues but chalky/paper-flat, a warm off-white
+ * canvas, halftone-ish grain instead of glow, panels read like printed cards, not glass.
+ * Both themes keep WCAG-AA text contrast on every panel — vibrancy lives in the background and the
+ * chrome, never in body text color.
+ *
+ * Fonts (Google Fonts, verified reachable 2026-09-25):
+ *   Display — "Unbounded" (variable, wght 200-900): extreme geometric letterforms with a huge weight
+ *     range, built for oversized kinetic headlines (SplitText stagger, ScrambleText) without needing a
+ *     second family for different weights. Used only for headings/display numbers.
+ *   Body — "Inter": kept identical to the stable site's body font, so paragraph text, card copy and
+ *     tables read the same in both editions (content parity extends to typography, not just words).
+ *
+ * Z-INDEX SCALE (tokens below) — every visual page must stack in this order:
+ *   canvas (0) < grain (1) < content (2) < header (40, matches stable's .topbar) <
+ *   edition-switch (60, matches stable's pinned button) < modal (100, matches stable's .modal-overlay)
+ *
+ * MOTION SAFETY — enforced here, not just in JS:
+ *   - No selector in this file ever sets `opacity: 0` or `visibility: hidden` on real content. JS
+ *     (motion.js) is solely responsible for entrance states, and only inside a motionScope, so content
+ *     is always in the DOM and visible before/without animation.
+ *   - `.is-calm` (set on <html> by motion.js) and `@media (prefers-reduced-motion: reduce)` both kill
+ *     every CSS transition/animation declared here and force the stage canvas display:none as a
+ *     defense-in-depth backstop (JS also tears the canvas down via motionScope).
+ *   - The animated aurora background gradient is CSS `@keyframes`; both Calm and reduced-motion switch
+ *     it to a static gradient frame — never blank, never hidden.
+ *
+ * COMPONENT CLASSES (contract other visual pages / Wave C build on):
+ *   Layout:    .visual-wrap .visual-section .visual-grid .visual-section-head (glass by default — see
+ *              the Layout section below for why)
+ *   Chrome:    .visual-topbar .bar-inner .brand .nav .nav-link .bar-actions .pill .freshness-pill
+ *              .icon-btn .disclaimer .disclaimer-inner .visual-footer
+ *   Buttons:   .btn .btn-primary .btn-ghost .btn-remix .btn[disabled]
+ *   Badges:    .badge .badge-live .badge-aging .badge-stale .badge-missing .badge-link  (same states/
+ *              names as the stable site, so freshness text/classes are diffable across editions)
+ *   Panels:    .glass (glassmorphism surface) .panel (risograph/flat surface — same box, theme picks look)
+ *   Cards:     .foil-card[data-tilt]  (holographic tilt card; degrades to a flat .card look under Calm)
+ *   Chips:     .chip .chip-sm .chip-btn .chip.is-active
+ *   Modal:     .modal-overlay .modal .modal-close .modal-actions  (same names as stable's components.js
+ *              modal, so the two editions' dialogs are structurally comparable)
+ *   Stage:     #stage-canvas (fixed, pointer-events:none, z-canvas), .grain-overlay (z-grain)
+ *   Cursor:    .cursor-dot (custom cursor ring, (pointer:fine) + motion only)
+ *   Kinetic type: .kinetic (display font, tabular numbers off), .display-hero .display-lg .display-md
+ *   Edition switch: .edition-switch(--stable|--visual) .edition-switch-icon .edition-switch-ring
+ *              .edition-switch-label .edition-switch-caption — same class names, sizes and z-index as
+ *              site/css/app.css (which visual pages don't load), restyled here for the glass look.
+ *              js/shell.js gives the header BOTH `.visual-topbar` and `.topbar` classes, because
+ *              site/js/edition-switch.js measures `.topbar`'s height to place the button just under it.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- typography ---- */
+  --font-display: "Unbounded", var(--font-head, system-ui), sans-serif;
+  --font-visual-body: "Inter", var(--font-body, system-ui), sans-serif;
+
+  /* ---- z-index scale ---- */
+  --z-canvas: 0;
+  --z-grain: 1;
+  --z-content: 2;
+  --z-header: 40;
+  --z-switch: 60;
+  --z-modal: 100;
+
+  /* ---- glass / panel surfaces (light = "risograph" flat paper) ---- */
+  --glass-bg: rgba(255, 255, 255, 0.86);
+  --glass-border: rgba(28, 34, 48, 0.10);
+  --glass-blur: 14px;
+  --panel-shadow: 0 1px 2px rgba(28, 34, 48, .06), 0 12px 32px rgba(28, 34, 48, .10);
+
+  /* ---- aurora background gradient stops (tropical noon: bold saturated colour fields, not a pale
+     wash — found under-saturated in review; light mode now barely dilutes the brand hues) ---- */
+  --aurora-a: color-mix(in srgb, var(--world-products) 88%, white 12%);
+  --aurora-b: color-mix(in srgb, var(--world-methods) 88%, white 12%);
+  --aurora-c: color-mix(in srgb, var(--world-brokers) 88%, white 12%);
+  --aurora-bg: var(--bg);
+  --aurora-strength: 0.7;
+
+  /* Risograph halftone dots (light) vs. soft turbulence (dark, set below) — same .grain-overlay
+     element, the image/blend/size swap per theme. */
+  --grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2' cy='2' r='1.3' fill='%23000' fill-opacity='.55'/%3E%3C/svg%3E");
+  --grain-blend: multiply;
+  --grain-size: 9px 9px;
+  --grain-opacity: 0.07;
+  --radius-xl: 28px;
+  --glow-strength: 0.35;
+
+  --cursor-size: 28px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Opaque enough that --ink-2 body text on it always clears WCAG AA, no matter how bright the
+       particle field/bloom gets behind it (verified needed in Phase 2 — 0.55 let bloom wash it out). */
+    --glass-bg: rgba(14, 17, 25, 0.88);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --panel-shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 20px 60px rgba(0, 0, 0, .45);
+    --aurora-a: var(--world-products);
+    --aurora-b: var(--world-methods);
+    --aurora-c: var(--world-brokers);
+    --aurora-strength: 0.55;
+    --grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --grain-blend: overlay;
+    --grain-size: 180px 180px;
+    --grain-opacity: 0.06;
+    --glow-strength: 0.6;
+  }
+}
+:root[data-theme="dark"] {
+  --glass-bg: rgba(14, 17, 25, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --panel-shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 20px 60px rgba(0, 0, 0, .45);
+  --aurora-a: var(--world-products);
+  --aurora-b: var(--world-methods);
+  --aurora-c: var(--world-brokers);
+  --aurora-strength: 0.55;
+  --grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-blend: overlay;
+  --grain-size: 180px 180px;
+  --grain-opacity: 0.06;
+  --glow-strength: 0.6;
+}
+
+/* ============================================================================
+   Reset & base
+   ============================================================================ */
+
+* { box-sizing: border-box; }
+/* never horizontal page scroll, incl. at 375px — `clip` (not `hidden`) so `html` never becomes a
+   scroll container, which was breaking `position: sticky` on .visual-topbar (found during the
+   edition-switch fix: overflow-x:hidden on `html` auto-promotes its overflow-y to `auto` per spec). */
+html, body { max-width: 100%; overflow-x: clip; }
+@supports not (overflow-x: clip) {
+  body { overflow-x: hidden; }
+}
+body.visual-edition {
+  margin: 0;
+  background: var(--aurora-bg);
+  color: var(--ink);
+  font-family: var(--font-visual-body);
+  font-variant-numeric: tabular-nums;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Animated aurora wash behind everything, under the WebGL canvas fallback and under the grain.
+   Pure CSS so it still runs (as a static gradient) if the canvas/CDN never loads. */
+body.visual-edition::before {
+  content: "";
+  position: fixed;
+  inset: -10vh -10vw;
+  z-index: var(--z-canvas);
+  /* Bold colour fields, not a pale wash (found too faint in review) — each stop mixes in at
+     --aurora-strength (0.55-0.7) rather than the ~35% used before, and covers more of the viewport. */
+  background:
+    radial-gradient(60% 52% at 15% 18%, color-mix(in srgb, var(--aurora-a) calc(var(--aurora-strength) * 100%), transparent), transparent 78%),
+    radial-gradient(65% 55% at 85% 12%, color-mix(in srgb, var(--aurora-b) calc(var(--aurora-strength) * 100%), transparent), transparent 80%),
+    radial-gradient(70% 60% at 50% 95%, color-mix(in srgb, var(--aurora-c) calc(var(--aurora-strength) * 100%), transparent), transparent 82%);
+  background-color: var(--bg);
+  background-size: 150% 150%;
+  animation: aurora-drift 26s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes aurora-drift {
+  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+  100% { background-position: 12% 8%, 88% 10%, 46% 92%; }
+}
+.is-calm body.visual-edition::before,
+html.is-calm body.visual-edition::before,
+body.visual-edition.is-calm::before {
+  animation: none;
+  background-position: 0% 0%, 100% 0%, 50% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.visual-edition::before { animation: none; background-position: 0% 0%, 100% 0%, 50% 100%; }
+}
+
+/* Grain/noise overlay — a risograph halftone dot grid in light mode, soft turbulence in dark mode
+   (same element/class, image swapped per theme via --grain-image/--grain-blend/--grain-size above).
+   Sits under content, never over text. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: var(--grain-image);
+  background-size: var(--grain-size);
+}
+
+/* WebGL particle stage — fixed, full-viewport, decorative only, never intercepts input. */
+#stage-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  display: block;
+}
+.is-calm #stage-canvas,
+html.is-calm #stage-canvas {
+  display: none; /* backstop; motion.js/stage.js also dispose() the canvas on Calm */
+}
+@media (prefers-reduced-motion: reduce) {
+  #stage-canvas { display: none; }
+}
+
+main, header, footer, .visual-topbar, .disclaimer { position: relative; z-index: var(--z-content); }
+
+/* ============================================================================
+   Layout
+   ============================================================================ */
+
+.visual-wrap { max-width: var(--maxw, 1180px); margin: 0 auto; padding: 0 16px; }
+.visual-section { padding: 56px 0; }
+/* Section headings sit directly over the busy WebGL stage/aurora, so they get the glass treatment by
+   default — guaranteed WCAG-AA contrast regardless of what the particle field is doing behind them
+   (found necessary in Phase 2 verification: plain text over the stage was frequently low-contrast). */
+.visual-section-head {
+  max-width: 680px;
+  margin-bottom: 28px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--panel-shadow);
+  padding: 22px 24px;
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+}
+.visual-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .visual-grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .visual-grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ============================================================================
+   Kinetic type
+   ============================================================================ */
+
+.kinetic { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; line-height: 1.02; }
+.display-hero { font-size: clamp(2.1rem, 6vw + 1rem, 5rem); }
+.display-lg { font-size: clamp(1.6rem, 4vw + 1rem, 3rem); }
+.display-md { font-size: clamp(1.2rem, 2.4vw + 1rem, 1.8rem); }
+/* Unbounded is wide — clamp so "Singapore" still fits inside a 375px viewport's 16px gutters. */
+@media (max-width: 400px) {
+  .display-hero { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+}
+
+/* ============================================================================
+   Panels: glass (dark, glossy) vs risograph-flat (light, printed) — same box model either way
+   ============================================================================ */
+
+.glass, .panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--panel-shadow);
+  padding: 24px;
+}
+.glass {
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--surface); }
+}
+
+/* ============================================================================
+   Chrome: header / nav / freshness pill / disclaimer / footer
+   (class names match stable's components.js where the DOM shape is the same, so both editions
+   can be diffed with the same selectors during Phase 2 verification.)
+   ============================================================================ */
+
+.visual-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+}
+.bar-inner { max-width: var(--maxw, 1180px); margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); min-width: 0; flex: 1 1 auto; }
+.brand-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--sg-red); flex: none; box-shadow: 0 0 12px color-mix(in srgb, var(--sg-red) 70%, transparent); }
+/* Missing in an earlier pass — without it the brand name wrapped to 2 lines at narrow widths and
+   blew out the mobile header's height (found in review). */
+.brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.brand-tag { flex: none; font-family: var(--font-visual-body); font-weight: 600; font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--world-brokers) 20%, transparent); color: var(--world-brokers); }
+.nav { display: flex; gap: 4px; margin-left: 4px; flex: 1; flex-wrap: wrap; }
+.nav-link { text-decoration: none; padding: 8px 12px; border-radius: 999px; font-weight: 600; font-size: .9rem; color: var(--ink-2); }
+.nav-link:hover { background: var(--surface-2); color: var(--ink); }
+.nav-link.is-active, .nav-link[aria-current="page"] { background: var(--ink); color: var(--bg); }
+.bar-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* ---- mobile header menu (drawer) ----
+   ≥720px: `.header-menu` is `display: contents`, so `.nav`/`.bar-actions` are direct flex children of
+   `.bar-inner` again — the desktop row is unchanged, and `.nav-burger` stays hidden.
+   <720px: the header itself stays one row (brand + burger, ≤64px — see `.visual-topbar` height in
+   practice); `.header-menu` becomes a fixed drawer under the header, hidden until `.is-open`, holding
+   nav + freshness pill + Remix + Calm/sound/theme. js/shell.js's `setUpHeaderMenu` focus-traps it and
+   closes it on Esc / outside click / picking a nav link. */
+.header-menu { display: contents; }
+/* `.icon-btn.nav-burger` (not just `.nav-burger`) so this reliably beats `.icon-btn { display:
+   inline-flex }` regardless of source order — same specificity as a bare `.nav-burger` rule made it
+   order-dependent, and `.icon-btn` (defined later in this file) was winning, leaving the burger
+   visible at every width (found in review). */
+.icon-btn.nav-burger { display: none; }
+@media (max-width: 719px) {
+  .bar-inner { flex-wrap: nowrap; }
+  .icon-btn.nav-burger { display: inline-flex; flex: none; }
+  .header-menu {
+    display: none;
+    position: fixed;
+    top: var(--header-h, 60px);
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - var(--header-h, 60px));
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--panel-shadow);
+    z-index: var(--z-header);
+  }
+  .header-menu.is-open { display: flex; }
+  .header-menu .nav { flex-direction: column; gap: 4px; margin-left: 0; }
+  .header-menu .nav-link { padding: 12px 14px; }
+  .header-menu .bar-actions { flex-wrap: wrap; gap: 10px; }
+  .header-menu .freshness-pill { max-width: none; width: 100%; justify-content: flex-start; }
+}
+
+.pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--glass-border); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.pill:hover { border-color: var(--muted); color: var(--ink); }
+.freshness-pill { max-width: 220px; }
+.freshness-pill-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--glass-border); background: var(--surface); cursor: pointer; color: var(--ink); }
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn.is-on { background: color-mix(in srgb, var(--world-brokers) 18%, transparent); color: var(--world-brokers); border-color: var(--world-brokers); }
+
+.btn-remix {
+  background: linear-gradient(135deg, var(--world-products), var(--world-brokers));
+  color: white;
+  border: none;
+}
+.btn-remix:hover { filter: brightness(1.08); }
+
+.disclaimer { background: var(--warn-soft); border-bottom: 1px solid var(--glass-border); }
+.disclaimer-inner { max-width: var(--maxw, 1180px); margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: .88rem; }
+.disclaimer-inner p { margin: 0; flex: 1; }
+.disclaimer-inner svg { color: var(--warn); flex: none; }
+
+.visual-footer { border-top: 1px solid var(--glass-border); margin-top: 48px; padding: 24px 0 48px; color: var(--ink-2); font-size: .88rem; }
+.footer-inner { max-width: var(--maxw, 1180px); margin: 0 auto; padding: 0 16px; }
+.footer-links { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+.footer-links a { text-decoration: underline; color: inherit; }
+.footer-fine { color: var(--muted); font-size: .82rem; }
+
+/* ============================================================================
+   Buttons, chips, badges (same state names as stable — see file header)
+   ============================================================================ */
+
+.btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 10px 18px; font-weight: 700; font-size: .92rem; border: 1px solid transparent; cursor: pointer; text-decoration: none; font-family: var(--font-visual-body); }
+.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-primary:hover { opacity: .88; }
+.btn-ghost { background: var(--glass-bg); border-color: var(--glass-border); color: var(--ink); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn[disabled] { opacity: .55; cursor: default; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 12px; font-size: .82rem; font-weight: 700; background: var(--surface-2); color: var(--ink-2); border: 1px solid transparent; }
+.chip-sm { padding: 3px 9px; font-size: .74rem; }
+.chip-btn { cursor: pointer; border: 1px solid var(--glass-border); background: var(--surface); }
+.chip-btn:hover, .chip.is-active { background: var(--world-products-soft); color: var(--world-products); border-color: var(--world-products); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 9px; font-size: .74rem; font-weight: 700; white-space: nowrap; }
+.badge-live { background: var(--good-soft); color: var(--good); }
+.badge-aging { background: var(--warn-soft); color: var(--warn); }
+.badge-stale { background: var(--warn-soft); color: var(--bad); }
+.badge-missing { background: var(--surface-2); color: var(--muted); }
+.badge-link { text-decoration: none; border-radius: 999px; }
+.badge-link:hover .badge, .badge-link:focus-visible .badge { text-decoration: underline; }
+
+.crown { color: var(--good); display: inline-flex; }
+
+.meter { display: inline-flex; }
+.meter-dots { display: inline-flex; gap: 3px; }
+.meter .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
+.meter .dot.is-filled { background: var(--world-products); }
+
+/* ============================================================================
+   Foil / holographic tilt card — data-tilt is wired by js/fx.js; degrades to a flat card
+   the moment (pointer:fine) is false, or motion isn't allowed.
+   ============================================================================ */
+
+.foil-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--panel-shadow);
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.foil-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0; /* revealed on hover/focus only — decorative sheen, never hides content */
+  background: linear-gradient(115deg, transparent 20%, color-mix(in srgb, var(--world-products) 35%, transparent) 40%, color-mix(in srgb, var(--world-brokers) 35%, transparent) 55%, transparent 75%);
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.foil-card:hover::after, .foil-card:focus-visible::after { opacity: var(--glow-strength); }
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .foil-card { transform: none !important; }
+}
+.is-calm .foil-card { transform: none !important; }
+
+/* ============================================================================
+   Modal (same class names as stable: modal-overlay/modal/modal-close/modal-actions)
+   ============================================================================ */
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(6, 8, 14, .55); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: var(--z-modal); }
+.modal { position: relative; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); box-shadow: var(--panel-shadow); padding: 24px; max-width: 560px; width: 100%; max-height: 88vh; overflow-y: auto; }
+.modal-lg { max-width: 720px; }
+.modal-close { position: absolute; top: 12px; right: 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+body.modal-open { overflow: hidden; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.data-table th, .data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--glass-border); }
+.data-table th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+.table-scroll { overflow-x: auto; }
+.incomplete-list { font-size: .84rem; color: var(--muted); padding-left: 18px; }
+
+/* ============================================================================
+   Custom cursor & magnetic buttons — mounted by js/fx.js only under (pointer:fine) AND motionAllowed().
+   ============================================================================ */
+
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--cursor-size);
+  height: var(--cursor-size);
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  pointer-events: none;
+  z-index: var(--z-modal);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+body.cursor-active { cursor: none; }
+body.cursor-active a, body.cursor-active button { cursor: none; }
+
+/* ============================================================================
+   Edition switch — site/js/edition-switch.js is shared by both editions and mounts the same DOM
+   shape (.edition-switch > .edition-switch-icon(+.edition-switch-ring) + .edition-switch-label +
+   .edition-switch-caption) here as on the stable site. Its CSS lives in site/css/app.css, which
+   visual pages don't load (that stylesheet styles the whole stable site), so this restyles the same
+   class names/sizes/z-index/behaviour for the glass look instead of duplicating unrelated rules.
+   ============================================================================ */
+
+.edition-switch {
+  position: fixed;
+  top: var(--edition-switch-top, 72px);
+  right: 16px;
+  z-index: var(--z-switch); /* 60: above content/header (40), below modals (100) */
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--ink);
+}
+/* `top` is recomputed on scroll/resize/disclaimer-dismiss (site/js/edition-switch.js) so it always
+   clears the header and, while visible, the disclaimer's dismiss button too. */
+@media (prefers-reduced-motion: no-preference) {
+  .edition-switch { transition: top 200ms ease; }
+}
+@media (max-width: 480px) {
+  .edition-switch { width: 48px; height: 48px; }
+}
+.edition-switch-icon {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--panel-shadow);
+  border: 1px solid var(--glass-border);
+}
+@media (max-width: 480px) {
+  .edition-switch-icon { font-size: 18px; }
+}
+.edition-switch-ring {
+  position: absolute;
+  inset: -3px;
+  z-index: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--world-products), var(--world-methods), var(--world-brokers), var(--world-products));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .edition-switch-ring { animation: edition-switch-spin 6s linear infinite; }
+  .edition-switch.is-pulsing .edition-switch-icon { animation: edition-switch-pulse 1.1s ease-out; }
+}
+.is-calm .edition-switch-ring, html.is-calm .edition-switch-ring { animation: none; }
+.is-calm .edition-switch.is-pulsing .edition-switch-icon, html.is-calm .edition-switch.is-pulsing .edition-switch-icon { animation: none; }
+@keyframes edition-switch-spin { to { transform: rotate(360deg); } }
+@keyframes edition-switch-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--world-products) 55%, transparent), var(--panel-shadow); }
+  70% { box-shadow: 0 0 0 14px transparent, var(--panel-shadow); }
+  100% { box-shadow: 0 0 0 0 transparent, var(--panel-shadow); }
+}
+
+/* Label bubble: opens leftwards, clamped so it never causes horizontal page scroll on narrow phones. */
+.edition-switch-label {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  max-width: min(260px, calc(100vw - 96px));
+  width: max-content;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--ink);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--panel-shadow);
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: right;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .edition-switch-label { transition: opacity 180ms ease, transform 180ms ease; transform: translateY(-50%) translateX(8px); }
+}
+.edition-switch:hover .edition-switch-label,
+.edition-switch:focus-visible .edition-switch-label,
+.edition-switch.is-introducing .edition-switch-label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%);
+}
+
+/* Touch devices: no hover, so a short caption sits under the button instead. */
+.edition-switch-caption { display: none; }
+@media (hover: none) {
+  .edition-switch-label { display: none; }
+  .edition-switch-caption {
+    display: block;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 6px;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--ink-2);
+    background: var(--glass-bg);
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    white-space: nowrap;
+    box-shadow: var(--panel-shadow);
+  }
+}
+
+/* ============================================================================
+   Reduced motion / Calm mode: stop every animation/transition declared in this file.
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+.is-calm *, .is-calm *::before, .is-calm *::after,
+html.is-calm *, html.is-calm *::before, html.is-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ============================================================================
+   Cross-document View Transitions — progressive enhancement, ignored where unsupported.
+   Skipped entirely under reduced-motion; js/shell.js also calls skipTransition() under Calm.
+   ============================================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  .visual-topbar { view-transition-name: visual-header; }
+  .hero-headline { view-transition-name: visual-hero-headline; }
+}
+
+/* ============================================================================
+   Mobile
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .visual-wrap { padding: 0 16px; }
+  .visual-section { padding: 36px 0; }
+  .glass, .panel { padding: 18px; border-radius: 20px; }
+}
+
+/* Visible focus ring everywhere (kept simple/high-contrast; never removed). */
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ============================================================================
+   Hub page (index.html / js/hub.js) — page-specific styles. Other Wave C pages should add their own
+   clearly-labelled section like this one rather than growing the shared component list above.
+   ============================================================================ */
+
+.muted { color: var(--muted); }
+
+/* ---- hero diagram (portal journey) ---- */
+.diagram-card { padding: 16px; }
+.diagram-svg { width: 100%; height: auto; display: block; }
+@media (max-width: 720px) {
+  .diagram-card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .diagram-svg { min-width: 640px; }
+}
+.diagram-node { cursor: pointer; }
+.diagram-node:hover .diagram-node-box, .diagram-node:focus-visible .diagram-node-box { filter: brightness(1.08); }
+.diagram-node text { pointer-events: none; }
+.diagram-label-lg { fill: var(--ink); font-family: var(--font-display); font-weight: 700; }
+.diagram-label-muted { fill: var(--ink-2); font-family: var(--font-visual-body); font-weight: 500; }
+.diagram-arrow { stroke: var(--muted); stroke-width: 2; fill: none; }
+.diagram-node-box { stroke: var(--glass-border); stroke-width: 1.5; }
+.fill-surface-2 { fill: var(--surface-2); }
+.fill-muted { fill: var(--muted); }
+.fill-products-soft { fill: var(--world-products-soft); }
+.fill-methods-soft { fill: var(--world-methods-soft); }
+.fill-brokers-soft { fill: var(--world-brokers-soft); }
+.portal-node .diagram-node-box { filter: drop-shadow(0 0 0 transparent); transition: filter .3s ease; }
+.portal-methods:hover .diagram-node-box, .portal-methods:focus-visible .diagram-node-box { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--world-methods) 60%, transparent)); }
+.portal-brokers:hover .diagram-node-box, .portal-brokers:focus-visible .diagram-node-box { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--world-brokers) 60%, transparent)); }
+.portal-products:hover .diagram-node-box, .portal-products:focus-visible .diagram-node-box { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--world-products) 60%, transparent)); }
+#journey-coin { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--world-products) 70%, transparent)); }
+
+/* ---- quiz card stack ---- */
+.quiz { max-width: 460px; touch-action: pan-y; }
+.quiz-progress-track { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-bottom: 14px; }
+.quiz-progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--world-products), var(--world-brokers)); box-shadow: 0 0 10px color-mix(in srgb, var(--world-brokers) 60%, transparent); }
+.quiz-progress { font-size: .78rem; color: var(--muted); margin-bottom: 4px; }
+.quiz-card { cursor: grab; user-select: none; }
+.quiz-card:active { cursor: grabbing; }
+.quiz-options { display: grid; gap: 8px; margin-top: 12px; }
+.quiz-option { text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--surface); cursor: pointer; font-size: .92rem; color: var(--ink); font-family: var(--font-visual-body); }
+.quiz-option:hover, .quiz-option:focus-visible { border-color: var(--world-products); background: var(--world-products-soft); }
+.quiz-result { display: grid; gap: 12px; }
+.quiz-reel { background: var(--surface-2); border-radius: 14px; padding: 14px; overflow: hidden; position: relative; height: 3.4em; display: flex; align-items: center; }
+.quiz-reel-track { display: flex; flex-direction: column; }
+.quiz-reel-item { line-height: 3.4em; height: 3.4em; font-weight: 700; }
+.quiz-result-card { background: var(--surface-2); border-radius: 14px; padding: 12px 14px; }
+
+/* ---- risk/access galaxy ---- */
+.galaxy-wrap { position: relative; aspect-ratio: 16 / 10; min-height: 320px; border-radius: var(--radius-xl); overflow: hidden; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--panel-shadow); }
+.galaxy-wrap canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+.galaxy-tooltip { position: absolute; pointer-events: none; padding: 4px 10px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: .76rem; font-weight: 700; transform: translate(-50%, -130%); white-space: nowrap; opacity: 0; transition: opacity .12s ease; }
+.galaxy-tooltip.is-visible { opacity: 1; }
+.galaxy-fallback-note { font-size: .84rem; color: var(--muted); margin: 10px 0; }
+.chart-legend-text { font-size: .82rem; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+
+/* ---- world cards ---- */
+.world-card { display: block; padding: 22px; }
+.world-card h3 { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; font-family: var(--font-display); }
+.world-card .count { display: block; font-size: .78rem; color: var(--muted); margin-bottom: 8px; }
+.world-card .teaser { display: block; font-size: .9rem; }
+.world-products .card-top, .world-card.world-products { border-top: 4px solid var(--world-products); }
+.world-card.world-methods { border-top: 4px solid var(--world-methods); }
+.world-card.world-brokers { border-top: 4px solid var(--world-brokers); }

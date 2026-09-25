@@ -1,0 +1,248 @@
+/* products.css — page-specific styles for site/visual/products.html + js/products.js.
+ * Loaded after visual.css (see products.html's <head>); reuses visual.css's shared component classes
+ * (.glass/.panel, .chip*, .badge*, .btn*, .foil-card, .meter*, .data-table/.table-scroll, .modal-*)
+ * and only adds the page-specific pieces: the controls panel + risk thermometer, the growth↔income
+ * spectrum scrubber, the trading-card deck (booster-pack bands, flip faces, three deck modes), the
+ * sign-up quest modal's step path, and the liquid-fill return-source columns.
+ *
+ * Motion safety: nothing here sets opacity:0/visibility:hidden on real content — the deck's three
+ * modes (pinned / carousel / grid) are layout-only swaps, and js/products.js only ever creates the
+ * ScrollTrigger pin inside a motionScope, tearing it down (back to `data-mode="grid"`) the instant
+ * Calm mode or reduced-motion turns on. The card back is toggled with the native `hidden` attribute,
+ * so its content is always in the DOM and reachable by any assistive tech regardless of motion state.
+ */
+
+.muted { color: var(--muted); }
+
+/* ============================================================================
+   Controls panel: category filters + risk thermometer
+   ============================================================================ */
+
+.controls-panel {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 820px) {
+  .controls-panel { grid-template-columns: 1.1fr 0.9fr; align-items: start; }
+}
+.controls-panel h3 { margin: 0 0 6px; }
+.therm-hint { margin: 0 0 14px; font-size: .86rem; }
+
+.thermometer { display: flex; flex-direction: column; gap: 8px; }
+#risk-range {
+  width: 100%;
+  height: 34px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+#risk-range::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--good), var(--world-methods), var(--bad));
+}
+#risk-range::-moz-range-track {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--good), var(--world-methods), var(--bad));
+}
+#risk-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--glass-border), var(--panel-shadow);
+}
+#risk-range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--glass-border), var(--panel-shadow);
+}
+.therm-ticks { display: flex; justify-content: space-between; font-size: .74rem; color: var(--muted); padding: 0 2px; }
+.therm-readout { font-weight: 700; margin: 6px 0 0; }
+
+/* ============================================================================
+   Growth ↔ income spectrum (same data/behaviour as the stable page's spectrum track)
+   ============================================================================ */
+
+/* overflow:hidden (not just the page-level rule) so a nowrap tag near the left/right edge can never
+   push document.body.scrollWidth past the viewport — it clips instead, same trade-off stable's own
+   spectrum tooltip makes implicitly by staying inside a narrower fixed layout. */
+.spectrum { position: relative; padding: 56px 0 84px; overflow: hidden; }
+.spectrum-track { position: absolute; left: 37px; right: 37px; top: 8px; height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--income), var(--muted), var(--growth)); }
+.spectrum-point { position: absolute; top: 0; transform: translateX(-50%); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; font-family: inherit; }
+.spectrum-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--dot-color, var(--muted)); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--glass-border); }
+.spectrum-tag { font-size: .72rem; font-weight: 700; color: var(--ink-2); white-space: nowrap; opacity: 0; transition: opacity .15s ease; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 2px 6px; }
+.spectrum-point:hover .spectrum-tag, .spectrum-point:focus-visible .spectrum-tag { opacity: 1; }
+.spectrum-point.spectrum-top1 .spectrum-dot, .spectrum-point.spectrum-top1 .spectrum-tag { margin-top: 20px; }
+.spectrum-point.spectrum-top2 .spectrum-dot, .spectrum-point.spectrum-top2 .spectrum-tag { margin-top: 40px; }
+.spectrum-point.spectrum-bottom1 .spectrum-dot, .spectrum-point.spectrum-bottom1 .spectrum-tag { margin-top: -20px; }
+.spectrum-point.spectrum-bottom2 .spectrum-dot, .spectrum-point.spectrum-bottom2 .spectrum-tag { margin-top: -40px; }
+.spectrum-ends { position: absolute; left: 0; right: 0; bottom: 44px; display: flex; justify-content: space-between; font-size: .8rem; font-weight: 700; color: var(--muted); padding: 0 4px; }
+.chart-table { margin-top: 14px; }
+.chart-table summary { cursor: pointer; font-weight: 700; color: var(--ink-2); font-size: .86rem; }
+
+/* ============================================================================
+   Deck: pinned horizontal scroll / native carousel / readable grid (see js/products.js:setDeckMode)
+   ============================================================================ */
+
+.deck-section .visual-wrap { margin-bottom: 20px; }
+.deck-viewport { position: relative; }
+.deck-track { display: flex; gap: 22px; padding: 4px 16px; perspective: 1400px; }
+
+/* pinned (desktop + motion): a bounded box GSAP ScrollTrigger pins while the track scrolls horizontally */
+.deck-viewport[data-mode="pinned"] {
+  height: 78vh;
+  min-height: 440px;
+  max-height: 720px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.deck-viewport[data-mode="pinned"] .deck-track { align-items: stretch; height: 100%; padding: 24px 6vw; will-change: transform; }
+.deck-viewport[data-mode="pinned"] .trading-card { flex: 0 0 min(360px, 80vw); }
+
+/* carousel (phones, motion allowed): native horizontal scroll-snap — never the page itself */
+.deck-viewport[data-mode="carousel"] { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; padding-bottom: 8px; }
+.deck-viewport[data-mode="carousel"] .trading-card { flex: 0 0 82vw; scroll-snap-align: center; }
+
+/* grid (Calm / reduced motion, and the default before JS decides): fully readable, no horizontal scroll */
+.deck-viewport[data-mode="grid"] { overflow: visible; }
+.deck-viewport[data-mode="grid"] .deck-track { flex-wrap: wrap; justify-content: center; padding: 4px; }
+.deck-viewport[data-mode="grid"] .trading-card { flex: 1 1 300px; max-width: 380px; }
+
+/* ---- booster-pack band ---- */
+.pack-band {
+  flex: 0 0 84px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(160deg, var(--world-products), var(--world-brokers));
+  filter: hue-rotate(calc(var(--pack-i, 0) * 47deg));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 8px;
+  box-shadow: var(--panel-shadow);
+}
+.pack-band-label { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 800; letter-spacing: .02em; font-size: 1rem; }
+.pack-band-count { writing-mode: vertical-rl; transform: rotate(180deg); font-size: .72rem; opacity: .85; }
+.deck-viewport[data-mode="grid"] .pack-band {
+  flex: 1 1 100%;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+.deck-viewport[data-mode="grid"] .pack-band-label,
+.deck-viewport[data-mode="grid"] .pack-band-count { writing-mode: horizontal-tb; transform: none; }
+
+/* ============================================================================
+   Trading card
+   ============================================================================ */
+
+.trading-card { padding: 20px; display: flex; flex-direction: column; }
+.trading-card.is-highlight { outline: 3px solid var(--world-products); outline-offset: 2px; }
+.trading-card.is-risk-match { outline: 3px solid var(--bad); outline-offset: 2px; }
+.trading-card.is-risk-dim { opacity: .38; }
+.tc-inner { display: flex; flex-direction: column; flex: 1; transform-style: preserve-3d; }
+.tc-face { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.tc-head { display: flex; align-items: flex-start; gap: 10px; }
+.tc-icon { color: var(--world-products); flex: none; }
+.tc-title { margin: 0; font-size: 1.15rem !important; }
+.tc-analogy { margin: 2px 0 0; font-size: .84rem; color: var(--muted); font-style: italic; }
+.tc-summary { margin: 0; font-size: .92rem; line-height: 1.4; }
+.meter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: .74rem; color: var(--muted); }
+.meter-label { margin-right: 6px; }
+.tc-fee { font-size: .86rem; }
+.tc-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; flex-wrap: wrap; }
+.tc-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+.fee-line { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.fee-compare-link { display: block; margin-top: 4px; font-size: .8rem; font-weight: 700; color: var(--world-products); text-decoration: none; }
+.fee-compare-link:hover, .fee-compare-link:focus-visible { text-decoration: underline; }
+
+.gd-bar { display: flex; flex-direction: column; gap: 3px; }
+.gd-track { position: relative; height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--income), var(--muted), var(--growth)); }
+.gd-marker { position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--glass-border); transform: translate(-50%, -50%); }
+.gd-labels { display: flex; justify-content: space-between; font-size: .68rem; color: var(--muted); }
+
+.proscons-grid { display: grid; gap: 14px; grid-template-columns: 1fr; margin: 4px 0; }
+@media (min-width: 480px) { .proscons-grid { grid-template-columns: 1fr 1fr; } }
+.proscons-col h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: .86rem; }
+.proscons-col ul { margin: 0; padding-left: 18px; font-size: .86rem; display: grid; gap: 4px; }
+.proscons-pros h4 { color: var(--good); }
+.proscons-cons h4 { color: var(--bad); }
+.best-for, .eligibility { font-size: .84rem; margin: 4px 0; }
+
+/* ============================================================================
+   Sign-up quest modal
+   ============================================================================ */
+
+.quest-path { position: relative; height: 56px; margin: 20px 4px 8px; }
+.quest-path-line { position: absolute; left: 14px; right: 14px; top: 50%; height: 4px; border-radius: 999px; background: var(--glass-border); transform: translateY(-50%); }
+.quest-node {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 800;
+  background: var(--surface-2); color: var(--muted);
+  border: 2px solid var(--glass-border);
+}
+.quest-node.is-past { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+.quest-node.is-current { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.quest-token {
+  position: absolute; top: -6px; transform: translateX(-50%);
+  color: var(--world-methods);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.25));
+  transition: left .35s ease;
+}
+@media (prefers-reduced-motion: reduce) { .quest-token { transition: none; } }
+.is-calm .quest-token { transition: none; }
+.quest-count { margin: 0 0 12px; }
+.quest-step { padding: 18px; }
+.quest-step h3 { margin: 0 0 8px; }
+.quest-step p { margin: 0 0 10px; }
+.link-out { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--world-products); text-decoration: none; }
+.link-out:hover, .link-out:focus-visible { text-decoration: underline; }
+
+/* ============================================================================
+   Liquid-fill return-source columns
+   ============================================================================ */
+
+.liquid-row { display: flex; gap: 18px; overflow-x: auto; padding: 8px 4px 14px; }
+.liquid-col { flex: 0 0 96px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.liquid-flask {
+  position: relative;
+  width: 56px;
+  height: 220px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.liquid-fill { width: 100%; height: var(--fill); flex: none; }
+.liquid-growth { background: linear-gradient(180deg, color-mix(in srgb, var(--growth) 85%, white 15%), var(--growth)); order: 2; }
+.liquid-income { background: linear-gradient(180deg, color-mix(in srgb, var(--income) 85%, white 15%), var(--income)); order: 1; }
+.liquid-name { font-size: .78rem; font-weight: 700; margin: 0; }
+.liquid-pct { font-size: .72rem; margin: 0; }
+
+/* ============================================================================
+   Mobile
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .deck-track { padding: 4px 6px; gap: 16px; }
+  .liquid-flask { height: 170px; width: 46px; }
+}

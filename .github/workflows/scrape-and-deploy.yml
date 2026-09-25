@@ -104,12 +104,12 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
       - name: Assemble Pages artifact (site/ as root, data/ copied in)
-        run: |
-          mkdir -p _site/data
-          cp -r site/. _site/
-          cp data/sgdata.json data/sgdata.js _site/data/
-          touch _site/.nojekyll
+        run: node scripts/build-site.mjs
 
       - uses: actions/configure-pages@v5
 

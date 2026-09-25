@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Products — what to buy | SGInvest Visualiser (visual edition)</title>
+<meta name="description" content="Investment products available in Singapore: what they are, their risk and liquidity, and where their returns come from — the spectacle-first edition.">
+<!-- Importmap MUST come before any <script type="module">. Three.js core from cdnjs (pinned 0.186.0),
+     addons (EffectComposer/UnrealBloomPass/etc.) from jsDelivr /npm (pinned), per CLAUDE.md. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+  }
+}
+</script>
+<!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
+<script>
+(function () {
+  try { var t = localStorage.getItem('sgtheme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  try { var calm = new URLSearchParams(location.search).get('calm') === '1' || localStorage.getItem('sg-visual-calm') === '1'; if (calm) document.documentElement.classList.add('is-calm'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/products.css">
+</head>
+<body class="visual-edition">
+<a class="sr-only" href="#main">Skip to content</a>
+<header id="app-header"></header>
+<div id="app-disclaimer" class="disclaimer" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Hero — same chip/heading/intro copy as the stable page (site/products.html), verbatim. -->
+  <section class="visual-section hero-section products-hero">
+    <div class="visual-wrap">
+      <div class="visual-section-head" style="max-width:680px">
+        <h1><span class="chip" style="background:var(--world-products-soft); color:var(--world-products)">What to buy</span></h1>
+        <h2 id="hero-headline" class="kinetic display-hero" style="margin-top:4px">Products</h2>
+        <p class="muted">The actual things you can own — bonds, ETFs, REITs, robo portfolios and more. Filter below, or
+          scan the spectrum to see how each one leans between steady income and long-term growth.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Controls: category filters + risk thermometer -->
+  <section class="visual-section controls-section">
+    <div class="visual-wrap">
+      <div class="glass controls-panel">
+        <div class="controls-filters">
+          <h3 class="kinetic display-md">Filter the deck</h3>
+          <div id="filters-mount" class="chip-row" role="group" aria-label="Filter products"></div>
+        </div>
+        <div class="controls-thermometer">
+          <h3 class="kinetic display-md">Risk thermometer</h3>
+          <p class="muted therm-hint">Drag to highlight products at that risk level — the card deck and the background field react.</p>
+          <div class="thermometer" id="risk-thermometer">
+            <input type="range" min="0" max="5" step="1" value="0" id="risk-range" aria-label="Highlight products by risk level, 0 for all" />
+            <div class="therm-ticks" aria-hidden="true">
+              <span>All</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            </div>
+            <p class="therm-readout" id="therm-readout">Showing every risk level</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Growth ↔ income spectrum -->
+  <section class="visual-section" id="spectrum-section">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 class="kinetic display-lg">Growth ↔ income spectrum</h2>
+        <p class="muted">Where each product's returns tend to come from. Hover a dot to highlight its card below.</p>
+      </div>
+      <div id="spectrum-mount" class="glass"></div>
+    </div>
+  </section>
+
+  <!-- 4. The deck: pinned horizontal scroll of holographic trading cards, grouped into booster packs -->
+  <section class="visual-section deck-section" id="deck-section">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 class="kinetic display-lg">The deck</h2>
+        <p class="muted">Every product is a card. Flip one for pros &amp; cons, or start its sign-up quest. Hit Remix in the
+          header to re-deal.</p>
+      </div>
+    </div>
+    <div id="products-empty" class="visual-wrap"></div>
+    <div class="deck-viewport" id="deck-viewport" data-mode="grid">
+      <div class="deck-track" id="deck-track"></div>
+    </div>
+  </section>
+
+  <!-- 5. Where the return comes from — liquid-fill columns -->
+  <section class="visual-section" id="returns-section">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 class="kinetic display-lg">Where the return comes from</h2>
+        <p class="muted">Share of capital growth vs. income (dividends, interest, coupons) for each product.</p>
+      </div>
+      <div id="returns-mount" class="glass"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"visual-wrap\" style=\"padding:24px 0\"><div class=\"panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173/site/visual/</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script type="module" src="js/products.js"></script>
+</body>
+</html>

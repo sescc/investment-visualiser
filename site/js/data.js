@@ -65,7 +65,7 @@ export async function getData() {
   }
 
   try {
-    const res = await fetch('data/sgdata.json');
+    const res = await fetch(new URL('../data/sgdata.json', import.meta.url));
     if (res.ok) {
       const json = await res.json();
       _cache = normalize(json);

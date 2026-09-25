@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods — how to invest — SGInvest Visualiser (visual edition)</title>
+<meta name="description" content="Ways to invest in Singapore — robo-advisors, regular savings plans, CPFIS, SRS and more — plotted as an MRT-style line map, with real provider fees. Not financial advice.">
+<!-- Importmap MUST come before any <script type="module">. Three.js core from cdnjs (pinned 0.186.0),
+     addons (EffectComposer/UnrealBloomPass/etc.) from jsDelivr /npm (pinned), per CLAUDE.md. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+  }
+}
+</script>
+<!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
+<script>
+(function () {
+  try { var t = localStorage.getItem('sgtheme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  try { var calm = new URLSearchParams(location.search).get('calm') === '1' || localStorage.getItem('sg-visual-calm') === '1'; if (calm) document.documentElement.classList.add('is-calm'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/methods.css">
+</head>
+<body class="visual-edition">
+<a class="sr-only" href="#main">Skip to content</a>
+<header id="app-header"></header>
+<div id="app-disclaimer" class="disclaimer" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Hero / intro — same heading + intro copy as stable's site/methods.html -->
+  <section class="visual-section hero-section">
+    <div class="visual-wrap">
+      <div class="visual-section-head methods-hero">
+        <span class="chip" style="background:var(--world-methods-soft); color:var(--world-methods)">How to invest</span>
+        <h1 class="kinetic display-hero" id="methods-headline" style="margin-top:8px">Methods</h1>
+        <p class="muted">The channel your money flows through before it becomes an investment — and which account it
+          comes from.</p>
+        <p class="methods-diagram-note" data-el="map-hint" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. MRT-style line map — one coloured line per category, one station per method -->
+  <section class="visual-section" aria-labelledby="map-heading">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="map-heading" class="kinetic display-lg">The methods line map</h2>
+        <p class="muted">Each line is a way of getting your money into an investment. Click or tap a station — or
+          tab to it and press Enter — to open its full platform: what it is, the fees, the pros and cons, and how
+          to start.</p>
+      </div>
+      <div id="methods-empty"></div>
+      <div id="mrt-map" class="mrt-map"></div>
+    </div>
+  </section>
+
+  <!-- 3. Fee-drag machine -->
+  <section class="visual-section" aria-labelledby="calc-heading">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="calc-heading" class="kinetic display-lg">Fee-drag calculator</h2>
+        <p class="muted">Estimate total fees across method providers for a given investing scenario.</p>
+      </div>
+      <div id="calc-mount"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"visual-wrap\" style=\"padding:24px 0\"><div class=\"panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173/site/visual/</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script type="module" src="js/methods.js"></script>
+</body>
+</html>

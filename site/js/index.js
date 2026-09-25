@@ -1,8 +1,8 @@
 import { getData, isEmpty, allEntries, buildCompareUrl } from './data.js';
 import { renderChrome, entryCard, wireEntryCards, openProsConsModal, emptyStatePanel, crown } from './components.js';
 import { renderBubbleChart, bubbleTableRows, buildTableDetails, registerChart } from './charts.js';
-import { rankByCost, formatSGD, DEFAULT_SCENARIO, PRESETS, COST_GROUPS, costGroupOf } from './cost.js';
 import { icon } from './icons.js';
+import { WORLD_META, teaserData, QUESTIONS, pickQuizResult } from './content.js';
 
 const data = await getData();
 await renderChrome('index.html', data);
@@ -25,30 +25,15 @@ if (!products.length) {
 }
 
 // ---------------- World cards ----------------
-const WORLD_META = {
-  products: { icon: 'basket', tagline: 'What to buy', href: 'products.html' },
-  methods: { icon: 'key', tagline: 'How to invest', href: 'methods.html' },
-  brokers: { icon: 'briefcase', tagline: 'Who executes it', href: 'brokers.html' },
-};
-
-// Teaser per world: products → best low-risk yield; methods/brokers → cheapest in one like-for-like cost group.
-const TEASER_GROUP = { methods: 'robo', brokers: 'brokers' };
-
+// WORLD_META, and the pure numbers behind each teaser, live in content.js so the visual edition can
+// reuse them; only the HTML string-building here is DOM/site-specific.
 function teaserFor(world) {
-  if (world === 'products') {
-    const yields = data.products.entries
-      .filter(e => e.riskLevel <= 2 && e.liquidity >= 3) // low-risk and not locked away (excludes CPF top-ups)
-      .flatMap(e => (e.fees || []).filter(f => f.type === 'yield_pct').map(f => ({ e, f })))
-      .sort((a, b) => b.f.value - a.f.value);
-    if (!yields.length) return null;
-    const { e, f } = yields[0];
-    return `Top low-risk yield: <strong>${e.name}</strong> — ${f.value}%${f.label ? ` <span class="muted">(${f.label})</span>` : ''}`;
+  const t = teaserData(data, world);
+  if (!t) return null;
+  if (t.kind === 'yield') {
+    return `Top low-risk yield: <strong>${t.entryName}</strong> — ${t.value}%${t.label ? ` <span class="muted">(${t.label})</span>` : ''}`;
   }
-  const group = TEASER_GROUP[world];
-  const items = data[world].entries.flatMap(e => e.providers || []).filter(p => costGroupOf(p) === group);
-  const { ranked } = rankByCost(items, DEFAULT_SCENARIO, data.fx);
-  if (!ranked.length) return null;
-  return `${crown('Cheapest right now')} Cheapest ${COST_GROUPS[group].label.toLowerCase()} for ${PRESETS.rsp.label}: <strong>${ranked[0].item.name}</strong> — ${formatSGD(ranked[0].total)} over ${DEFAULT_SCENARIO.years} years`;
+  return `${crown('Cheapest right now')} Cheapest ${t.groupLabel.toLowerCase()} for ${t.presetLabel}: <strong>${t.name}</strong> — ${t.totalText} over ${t.years} years`;
 }
 
 const cardsMount = document.getElementById('world-cards');
@@ -64,48 +49,7 @@ cardsMount.innerHTML = Object.entries(WORLD_META).map(([world, meta]) => {
 }).join('');
 
 // ---------------- Quiz ----------------
-const QUESTIONS = [
-  {
-    key: 'goal', q: 'What matters most to you?',
-    options: [
-      { label: 'Grow my money over the long run', value: 'growth' },
-      { label: 'Steady income along the way', value: 'income' },
-      { label: 'Keep my capital safe', value: 'safety' },
-    ],
-  },
-  {
-    key: 'horizon', q: "What's your time horizon?",
-    options: [
-      { label: 'Less than 2 years', value: 2 },
-      { label: '2 – 5 years', value: 5 },
-      { label: '5+ years', value: 10 },
-    ],
-  },
-  {
-    key: 'amount', q: 'How much can you invest?',
-    options: [
-      { label: 'A little each month (under S$200)', value: { monthly: 100, lumpSum: 0 } },
-      { label: 'S$200 – S$1,000 a month', value: { monthly: 500, lumpSum: 0 } },
-      { label: 'A lump sum (S$10,000+)', value: { monthly: 0, lumpSum: 20000 } },
-    ],
-  },
-  {
-    key: 'style', q: 'How hands-on do you want to be?',
-    options: [
-      { label: "I'll pick my own investments", value: 'active' },
-      { label: 'I want it automated for me', value: 'passive' },
-    ],
-  },
-  {
-    key: 'account', q: 'Do you want to use CPF or SRS money?',
-    options: [
-      { label: 'CPF Ordinary Account', value: 'cpf' },
-      { label: 'SRS', value: 'srs' },
-      { label: 'No, cash only', value: 'cash' },
-    ],
-  },
-];
-
+// QUESTIONS and the result-picking logic live in content.js (shared, pure); this file only owns the DOM.
 const answers = {};
 let qIdx = 0;
 const quizMount = document.getElementById('quiz-mount');
@@ -132,18 +76,7 @@ function renderQuiz() {
   quizMount.querySelector('[data-action="quiz-back"]')?.addEventListener('click', () => { qIdx -= 1; renderQuiz(); });
 }
 
-function scoreEntry(entry, targetRisk, targetGd) {
-  const riskDist = Math.abs((entry.riskLevel ?? 3) - targetRisk);
-  const gdDist = typeof entry.growthVsDividend === 'number' ? Math.abs(entry.growthVsDividend - targetGd) / 20 : 0;
-  return riskDist + gdDist;
-}
-
 function renderResult() {
-  const goal = answers.goal || 'growth';
-  const targetRisk = goal === 'safety' ? 1 : goal === 'income' ? 2.5 : 4;
-  const targetGd = goal === 'growth' ? 85 : goal === 'income' ? 15 : 40;
-  const handsOff = answers.style === 'passive';
-
   if (isEmpty(data)) {
     quizMount.innerHTML = `<div class="quiz"><p class="muted">No data loaded yet — run <code>npm run scrape</code> to see personalised suggestions.</p>
       <button type="button" class="btn btn-ghost" data-action="quiz-restart">Start over</button></div>`;
@@ -151,20 +84,7 @@ function renderResult() {
     return;
   }
 
-  const bestProduct = products.slice().sort((a, b) => scoreEntry(a, targetRisk, targetGd) - scoreEntry(b, targetRisk, targetGd))[0];
-  const methodPool = data.methods.entries;
-  const bestMethod = methodPool.slice().sort((a, b) => {
-    const aMatch = (answers.account && answers.account !== 'cash' && (a.eligibility || '').toLowerCase().includes(answers.account)) ? -1 : 0;
-    const bMatch = (answers.account && answers.account !== 'cash' && (b.eligibility || '').toLowerCase().includes(answers.account)) ? -1 : 0;
-    if (aMatch !== bMatch) return aMatch - bMatch;
-    return handsOff ? (a.complexity ?? 3) - (b.complexity ?? 3) : (b.complexity ?? 3) - (a.complexity ?? 3);
-  })[0];
-  const brokerPool = data.brokers.entries;
-  const bestBroker = brokerPool.slice().sort((a, b) => handsOff ? (a.complexity ?? 3) - (b.complexity ?? 3) : (a.riskLevel ?? 3) - (b.riskLevel ?? 3))[0];
-
-  const amount = answers.amount || { monthly: 500, lumpSum: 0 };
-  const scenario = { lumpSum: amount.lumpSum, monthly: amount.monthly, years: answers.horizon || 10, tradesPerMonth: handsOff ? 0 : 1, market: 'SG' };
-  const ids = [bestProduct, bestMethod, bestBroker].filter(Boolean).map(e => e.id);
+  const { bestProduct, bestMethod, bestBroker, scenario, ids } = pickQuizResult(data, answers);
   const compareUrl = buildCompareUrl({ ids, scenario });
 
   quizMount.innerHTML = `
