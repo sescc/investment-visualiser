@@ -65,7 +65,7 @@
             "label": "SGX clearing fee",
             "note": "Charged by SGX on every trade of SGX-listed securities, passed on at cost by all brokers (GST may apply). Read from moomoo SG's fee schedule and cross-checked against Maybank Securities' — both must agree. Structured warrants/DLCs differ.",
             "source": "https://www.moomoo.com/sg/support/topic5_118",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "sgx-clearing-fee",
             "lastRunOk": true
           },
@@ -78,7 +78,7 @@
             "label": "SGX trading fee",
             "note": "Charged by SGX on every trade of SGX-listed securities, passed on at cost by all brokers (GST may apply). Read from moomoo SG's fee schedule and cross-checked against Maybank Securities' — both must agree. Structured warrants/DLCs differ.",
             "source": "https://www.moomoo.com/sg/support/topic5_118",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "sgx-clearing-fee",
             "lastRunOk": true
           }
@@ -376,7 +376,7 @@
             "value": 5,
             "currency": "PCT",
             "label": "Typical initial sales charge (subscription fee): 1.5%–5% of investment (upper bound shown)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.moneysense.gov.sg/unit-trusts-guide/",
             "adapter": "unit-trust-fees",
             "lastRunOk": true
@@ -476,7 +476,7 @@
             "value": 2,
             "currency": "SGD",
             "label": "Non-refundable transaction fee per SSB application (ATM or internet banking)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy",
             "adapter": "mas-ssb-fee",
             "lastRunOk": true
@@ -487,7 +487,7 @@
             "value": 2.32,
             "currency": "PCT",
             "label": "10-year average p.a. return, SSB GX26100Z (issue date 1 October 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://eservices.mas.gov.sg/statistics/fdanet/StepUpInterest.aspx",
             "adapter": "mas-ssb-yield",
             "lastRunOk": true
@@ -498,7 +498,7 @@
             "value": 1.65,
             "currency": "PCT",
             "label": "Year 1 interest rate, SSB GX26100Z (issue date 1 October 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://eservices.mas.gov.sg/statistics/fdanet/StepUpInterest.aspx",
             "adapter": "mas-ssb-yield",
             "lastRunOk": true
@@ -583,10 +583,10 @@
           {
             "type": "yield_pct",
             "market": "SG",
-            "value": 1.7,
+            "value": 1.92,
             "currency": "PCT",
-            "label": "6-month T-bill cut-off yield, BS26118E (auction 10/09/2026)",
-            "asOf": "2026-09-24",
+            "label": "6-month T-bill cut-off yield, BS26119F (auction 24/09/2026)",
+            "asOf": "2026-09-28",
             "source": "https://eservices.mas.gov.sg/statistics/fdanet/TreasuryBillAuctions.aspx",
             "adapter": "mas-tbill-yield",
             "lastRunOk": true
@@ -674,7 +674,7 @@
             "value": 2.3,
             "currency": "PCT",
             "label": "10-year SGS bond cut-off yield, NZ16100X (auction 27/08/2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://eservices.mas.gov.sg/statistics/fdanet/BondAuctions.aspx",
             "adapter": "mas-sgs-yield",
             "lastRunOk": true
@@ -771,7 +771,7 @@
             "label": "SGX clearing fee",
             "note": "Charged by SGX on every trade of SGX-listed securities, passed on at cost by all brokers (GST may apply). Read from moomoo SG's fee schedule and cross-checked against Maybank Securities' — both must agree. Structured warrants/DLCs differ.",
             "source": "https://www.moomoo.com/sg/support/topic5_118",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "sgx-clearing-fee",
             "lastRunOk": true
           },
@@ -784,7 +784,7 @@
             "label": "SGX trading fee",
             "note": "Charged by SGX on every trade of SGX-listed securities, passed on at cost by all brokers (GST may apply). Read from moomoo SG's fee schedule and cross-checked against Maybank Securities' — both must agree. Structured warrants/DLCs differ.",
             "source": "https://www.moomoo.com/sg/support/topic5_118",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "sgx-clearing-fee",
             "lastRunOk": true
           }
@@ -886,7 +886,7 @@
             "label": "DBS 12-month board rate",
             "note": "Board (non-promotional) rate, entry/smallest deposit tier — larger placements may get a different rate (see page). S$1,000-S$9,999 tier.",
             "source": "https://www.dbs.com.sg/personal/rates-online/fixed-deposit-rate-singapore-dollar.page",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "fixed-deposit-boards",
             "lastRunOk": true
           },
@@ -898,7 +898,7 @@
             "label": "OCBC 12-month board rate",
             "note": "Board (non-promotional) rate, entry/smallest deposit tier — larger placements may get a different rate (see page). S$5,000-S$20,000 tier.",
             "source": "https://www.ocbc.com/personal-banking/deposits/fixed-deposit-sgd-interest-rates.page",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "fixed-deposit-boards",
             "lastRunOk": true
           },
@@ -910,7 +910,7 @@
             "label": "UOB 12-month board rate",
             "note": "Board (non-promotional) rate, entry/smallest deposit tier — larger placements may get a different rate (see page). Below S$50,000 tier.",
             "source": "https://www.uob.com.sg/personal/online-rates/singapore-dollar-time-fixed-deposit-rates.page",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "adapter": "fixed-deposit-boards",
             "lastRunOk": true
           }
@@ -1063,7 +1063,7 @@
             "value": 2.5,
             "currency": "PCT",
             "label": "CPF Ordinary Account (OA) interest rate (1 October 2026 to 31 December 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
             "adapter": "cpf-interest-rates",
             "lastRunOk": true
@@ -1074,7 +1074,7 @@
             "value": 4,
             "currency": "PCT",
             "label": "CPF Special Account (SA) interest rate (1 October 2026 to 31 December 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
             "adapter": "cpf-interest-rates",
             "lastRunOk": true
@@ -1085,7 +1085,7 @@
             "value": 4,
             "currency": "PCT",
             "label": "CPF MediSave Account (MA) interest rate (1 October 2026 to 31 December 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
             "adapter": "cpf-interest-rates",
             "lastRunOk": true
@@ -1096,7 +1096,7 @@
             "value": 4,
             "currency": "PCT",
             "label": "CPF Retirement Account (RA) interest rate (1 October 2026 to 31 December 2026)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
             "adapter": "cpf-interest-rates",
             "lastRunOk": true
@@ -1332,7 +1332,7 @@
             "value": 0.25,
             "currency": "PCT",
             "label": "UOB Gold Savings Account monthly service charge (% p.a. of highest balance each month)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.uob.com.sg/personal/invest/gold-and-silver.page",
             "adapter": "uob-gold",
             "lastRunOk": true
@@ -1343,7 +1343,7 @@
             "value": 100,
             "currency": "SGD",
             "label": "UOB GSA physical gold conversion fee, per 100g cast bar",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.uob.com.sg/personal/invest/gold-and-silver.page",
             "adapter": "uob-gold",
             "lastRunOk": true
@@ -1429,7 +1429,7 @@
             "value": 0.6,
             "currency": "PCT",
             "label": "Coinhako spot trade fee (SGD/USD, Coinhako wallet)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://help.coinhako.com/portal/en/kb/articles/coinhako-fees",
             "adapter": "coinhako",
             "lastRunOk": true
@@ -1588,7 +1588,7 @@
             "value": 1,
             "currency": "PCT",
             "label": "BSD (residential) on First $180,000 (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1599,7 +1599,7 @@
             "value": 2,
             "currency": "PCT",
             "label": "BSD (residential) on Next $180,000 (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1610,7 +1610,7 @@
             "value": 3,
             "currency": "PCT",
             "label": "BSD (residential) on Next $640,000 (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1621,7 +1621,7 @@
             "value": 4,
             "currency": "PCT",
             "label": "BSD (residential) on Next $500,000 (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1632,7 +1632,7 @@
             "value": 5,
             "currency": "PCT",
             "label": "BSD (residential) on Next $1,500,000 (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1643,7 +1643,7 @@
             "value": 6,
             "currency": "PCT",
             "label": "BSD (residential) on Remaining amount (On or after 15 Feb 2023)",
-            "asOf": "2026-09-24",
+            "asOf": "2026-09-28",
             "source": "https://www.iras.gov.sg/taxes/stamp-duty/for-property/buying-or-acquiring-property/buyer's-stamp-duty-(bsd)",
             "adapter": "iras-bsd",
             "lastRunOk": true
@@ -1848,7 +1848,7 @@
                   }
                 ],
                 "label": "Managed Portfolios annual fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.syfe.com/pricing",
                 "adapter": "syfe",
                 "lastRunOk": true
@@ -1911,7 +1911,7 @@
                   }
                 ],
                 "label": "General Investing annual fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.stashaway.sg/pricing",
                 "adapter": "stashaway",
                 "lastRunOk": true
@@ -1964,7 +1964,7 @@
                 ],
                 "label": "Cash — Long-Term Wealth access fee (advised portfolios)",
                 "note": "CPF and SRS advised portfolios are priced separately at flat rates (see page) and do not combine with Cash for tiering.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://endowus.com/pricing",
                 "adapter": "endowus",
                 "lastRunOk": true
@@ -1999,7 +1999,7 @@
                 "value": 0.75,
                 "currency": "PCT",
                 "note": "Same rate shown for all digiPortfolio strategies (Wealth Builder, Global, Asia, etc.); excludes the underlying fund houses' own management fees (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbs.com.sg/personal/investments/other-investments/dbs-digiportfolio",
                 "adapter": "dbs-digiportfolio",
                 "lastRunOk": true
@@ -2032,7 +2032,7 @@
                 "value": 0.88,
                 "currency": "PCT",
                 "note": "Computed and charged monthly based on the number of calendar days in the month",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/roboinvest",
                 "adapter": "ocbc-roboinvest",
                 "lastRunOk": true
@@ -2064,7 +2064,7 @@
                 "value": 0.8,
                 "currency": "PCT",
                 "note": "Investment amount S$25,000 and below, inclusive of GST; drops to 0.6% p.a. above S$25,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.uobam.com.sg/uobaminvest/digital-adviser.html",
                 "adapter": "uobam-invest",
                 "lastRunOk": true
@@ -2185,7 +2185,7 @@
                 "currency": "PCT",
                 "label": "RSP sales charge (Nikko AM Singapore STI ETF)",
                 "note": "Charged monthly on RSP purchases; the ABF Singapore Bond Index Fund counter is 0.50% instead",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbs.com.sg/ibanking/help/faq/exchange-traded-fund-regular-savings-plan-sales-charge.html",
                 "adapter": "posb-invest-saver",
                 "lastRunOk": true
@@ -2227,7 +2227,7 @@
                 "currency": "PCT",
                 "label": "Transaction fee",
                 "note": "Per monthly purchase, per counter — standard rate; a preferential under-30 rate also exists (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/blue-chip-investment-plan",
                 "adapter": "ocbc-bcip",
                 "lastRunOk": true
@@ -2238,7 +2238,7 @@
                 "value": 5,
                 "currency": "SGD",
                 "label": "Minimum per counter",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/blue-chip-investment-plan",
                 "adapter": "ocbc-bcip",
                 "lastRunOk": true
@@ -2282,7 +2282,7 @@
                 ],
                 "label": "SBP monthly handling fee",
                 "note": "0.3% p.a. of Total Portfolio Value, min S$1/month; capped at S$8.88/month below S$40,000 and S$5.88/month from S$40,000.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "phillip-sbp",
                 "lastRunOk": true
@@ -2317,7 +2317,7 @@
                 "currency": "SGD",
                 "note": "FSM Global has waived the ETF RSP Buy Order processing fee since 2021, \"until further notice\" — a standing rate, not a time-limited promo.",
                 "source": "https://fsm.global/sg/regular-savings-plan",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "adapter": "fsmone",
                 "lastRunOk": true
               }
@@ -2414,7 +2414,7 @@
                 "value": 0.82,
                 "currency": "PCT",
                 "note": "Online sales charge per transaction, any investment amount",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbs.com.sg/personal/investments/unit-trusts/why-invest",
                 "adapter": "dbs-unit-trusts",
                 "lastRunOk": true
@@ -2447,7 +2447,7 @@
                 "value": 0.88,
                 "currency": "PCT",
                 "note": "Online sales charge via OCBC app / Internet Banking; branch/advised purchases usually cost more (see page)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/unit-trusts/why-invest-with-us",
                 "adapter": "ocbc-unit-trusts",
                 "lastRunOk": true
@@ -2566,7 +2566,7 @@
                 "value": 2,
                 "currency": "SGD",
                 "label": "Non-refundable transaction fee per SSB application (ATM or internet banking)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy",
                 "adapter": "mas-ssb-fee",
                 "lastRunOk": true
@@ -2599,7 +2599,7 @@
                 "value": 2,
                 "currency": "SGD",
                 "label": "Non-refundable transaction fee per SSB application (ATM or internet banking)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy",
                 "adapter": "mas-ssb-fee",
                 "lastRunOk": true
@@ -2632,7 +2632,7 @@
                 "value": 2,
                 "currency": "SGD",
                 "label": "Non-refundable transaction fee per SSB application (ATM or internet banking)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.mas.gov.sg/bonds-and-bills/investing-in-singapore-savings-bonds/how-to-buy",
                 "adapter": "mas-ssb-fee",
                 "lastRunOk": true
@@ -3099,7 +3099,7 @@
                 "value": 0,
                 "currency": "PCT",
                 "note": "Permanent 0% sales charge on funds.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://fsm.global/sg/pricing-structure",
                 "adapter": "fsmone",
                 "lastRunOk": true
@@ -3111,7 +3111,7 @@
                 "currency": "PCT",
                 "label": "Platform fee (annualised)",
                 "note": "Standard (non-Diamond-tier) rate for Cash/SRS holdings; CPF investments and Diamond-tier clients are priced separately (see page). Fixed Income Funds are charged 0.05%/quarter (0.2%/year annualised) instead. Annualised from the published 0.0875%-per-quarter rate.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://fsm.global/sg/pricing-structure",
                 "adapter": "fsmone",
                 "lastRunOk": true
@@ -3155,7 +3155,7 @@
                 ],
                 "label": "Fund Smart (self-directed, single fund) access fee — Cash",
                 "note": "CPF/SRS Fund Smart single-fund access fee is a flat rate (see page) and does not use this tiering.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://endowus.com/pricing",
                 "adapter": "endowus",
                 "lastRunOk": true
@@ -3186,7 +3186,7 @@
                 "value": 0,
                 "currency": "SGD",
                 "note": "dollarDEX advertises zero platform fees across Cash/CPF/SRS investing. Fund-level sales charges are set per fund and not published as a single site-wide rate.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://singlife.com/en/dollardex",
                 "adapter": "dollardex",
                 "lastRunOk": true
@@ -3218,7 +3218,7 @@
                 "value": 0,
                 "currency": "PCT",
                 "note": "Unit trusts bought via Cash Plus account",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3399,7 +3399,7 @@
                 "value": 0.08,
                 "currency": "PCT",
                 "note": "Cash Plus account, Starter tier (TAV S$0–29,999), no minimum commission",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3410,7 +3410,7 @@
                 "value": 0,
                 "currency": "SGD",
                 "note": "No minimum commission on Cash Plus Starter tier",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3422,7 +3422,7 @@
                 "currency": "PCT",
                 "label": "Zero-commission US trading",
                 "note": "Cash Plus account, Starter tier",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3433,7 +3433,7 @@
                 "value": 0.08,
                 "currency": "PCT",
                 "note": "Cash Plus account, Starter tier",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3444,7 +3444,7 @@
                 "value": 30,
                 "currency": "HKD",
                 "note": "Cash Plus account, Starter tier",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.poems.com.sg/pricing/",
                 "adapter": "poems",
                 "lastRunOk": true
@@ -3502,7 +3502,7 @@
                 "value": 0.18,
                 "currency": "PCT",
                 "note": "Online Cash account, flat rate (not Cash Upfront)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -3513,7 +3513,7 @@
                 "value": 27.25,
                 "currency": "SGD",
                 "note": "Online Cash account minimum commission, incl. GST",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -3524,7 +3524,7 @@
                 "value": 0.18,
                 "currency": "PCT",
                 "note": "Online Cash account, flat rate (not Cash Upfront)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -3535,7 +3535,7 @@
                 "value": 16.35,
                 "currency": "USD",
                 "note": "Online Cash account minimum commission, incl. GST",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -3582,7 +3582,7 @@
                 "market": "SG",
                 "value": 0.15,
                 "currency": "PCT",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3592,7 +3592,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3602,7 +3602,7 @@
                 "market": "US",
                 "value": 0.15,
                 "currency": "PCT",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3612,7 +3612,7 @@
                 "market": "US",
                 "value": 20,
                 "currency": "USD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3622,7 +3622,7 @@
                 "market": "HK",
                 "value": 0.15,
                 "currency": "PCT",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3632,7 +3632,7 @@
                 "market": "HK",
                 "value": 150,
                 "currency": "HKD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -3680,7 +3680,7 @@
                 "value": 0.275,
                 "currency": "PCT",
                 "note": "Cash/Margin Account, contract value up to SGD50,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3690,7 +3690,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3701,7 +3701,7 @@
                 "value": 0.3,
                 "currency": "PCT",
                 "note": "Cash Account flat rate",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3711,7 +3711,7 @@
                 "market": "US",
                 "value": 20,
                 "currency": "USD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3722,7 +3722,7 @@
                 "value": 0.25,
                 "currency": "PCT",
                 "note": "Cash Account, contract value up to HKD250,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3732,7 +3732,7 @@
                 "market": "HK",
                 "value": 100,
                 "currency": "HKD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -3779,7 +3779,7 @@
                 "value": 0.275,
                 "currency": "PCT",
                 "note": "Online/Mobile, Cash/Margin, contract value up to SGD50,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3789,7 +3789,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3800,7 +3800,7 @@
                 "value": 0.3,
                 "currency": "PCT",
                 "note": "Online/Mobile, Cash/Margin",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3810,7 +3810,7 @@
                 "market": "US",
                 "value": 20,
                 "currency": "USD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3821,7 +3821,7 @@
                 "value": 0.25,
                 "currency": "PCT",
                 "note": "Online/Mobile, Cash/Margin, contract value up to HKD250,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3831,7 +3831,7 @@
                 "market": "HK",
                 "value": 100,
                 "currency": "HKD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.maybank.com/investment-banking/sg/help_centre/pricing/stocks.page",
                 "adapter": "maybank-securities",
                 "lastRunOk": true
@@ -3864,7 +3864,7 @@
                 "value": 0.275,
                 "currency": "PCT",
                 "note": "Online/Mobile, CDP Linked account, contract value up to SGD50,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://itrade.cgsi.com.sg/app/help.client.services.z?cat=01&subcat=01_05",
                 "adapter": "cgs-international",
                 "lastRunOk": true
@@ -3874,7 +3874,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://itrade.cgsi.com.sg/app/help.client.services.z?cat=01&subcat=01_05",
                 "adapter": "cgs-international",
                 "lastRunOk": true
@@ -3989,7 +3989,7 @@
                 "value": 0.06,
                 "currency": "PCT",
                 "note": "Combines Commission (0.03%, min SGD 0.99/order) + Platform Fee (0.03%, min SGD 0.99/order) — the two are structurally identical, so combining them is exact.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.moomoo.com/sg/support/topic5_118",
                 "adapter": "moomoo-sg",
                 "lastRunOk": true
@@ -3999,7 +3999,7 @@
                 "market": "SG",
                 "value": 1.98,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.moomoo.com/sg/support/topic5_118",
                 "adapter": "moomoo-sg",
                 "lastRunOk": true
@@ -4011,7 +4011,7 @@
                 "currency": "USD",
                 "source": "https://www.moomoo.com/sg/support/topic5_76",
                 "note": "Commission is USD $0 (moomoo's \"permanent zero commissions\" policy for eligible clients). This is the Platform Fee, fixed default tier per order.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "adapter": "moomoo-sg",
                 "lastRunOk": true
               }
@@ -4052,7 +4052,7 @@
                 "value": 0.03,
                 "currency": "PCT",
                 "label": "Commission",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4063,7 +4063,7 @@
                 "value": 0.99,
                 "currency": "SGD",
                 "label": "Commission minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4075,7 +4075,7 @@
                 "value": 0.03,
                 "currency": "PCT",
                 "label": "Platform fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4087,7 +4087,7 @@
                 "value": 1,
                 "currency": "SGD",
                 "label": "Platform fee minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4098,7 +4098,7 @@
                 "value": 0.005,
                 "currency": "USD",
                 "label": "Commission per share",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4109,7 +4109,7 @@
                 "value": 0.99,
                 "currency": "USD",
                 "label": "Commission minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4120,7 +4120,7 @@
                 "value": 0.5,
                 "currency": "PCT",
                 "label": "Commission cap (% of trade value)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4132,7 +4132,7 @@
                 "value": 0.005,
                 "currency": "USD",
                 "label": "Platform fee per share",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4144,7 +4144,7 @@
                 "value": 1,
                 "currency": "USD",
                 "label": "Platform fee minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4156,7 +4156,7 @@
                 "value": 0.5,
                 "currency": "PCT",
                 "label": "Platform fee cap (% of trade value)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.itiger.com/sg/commissions",
                 "adapter": "tiger-brokers-sg",
                 "lastRunOk": true
@@ -4196,7 +4196,7 @@
                 "value": 0.025,
                 "currency": "PCT",
                 "note": "Standard rate after the 1-year commission-free promo period for new clients ends.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.webull.com.sg/pricing",
                 "adapter": "webull-sg",
                 "lastRunOk": true
@@ -4206,7 +4206,7 @@
                 "market": "SG",
                 "value": 0.8,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.webull.com.sg/pricing",
                 "adapter": "webull-sg",
                 "lastRunOk": true
@@ -4217,7 +4217,7 @@
                 "value": 0,
                 "currency": "USD",
                 "note": "Webull SG advertises \"Truly $0 fees for US Stocks & ETFs\" — both commission and platform fee are $0 (not a time-limited promo, unlike the SG-market rate).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.webull.com.sg/pricing",
                 "adapter": "webull-sg",
                 "lastRunOk": true
@@ -4272,7 +4272,7 @@
                 "value": 0.02,
                 "currency": "PCT",
                 "label": "Commission",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4284,7 +4284,7 @@
                 "value": 0.03,
                 "currency": "PCT",
                 "label": "Platform fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4296,7 +4296,7 @@
                 "currency": "USD",
                 "label": "Commission",
                 "note": "Online rate at any share price (ASEAN/Japan/Korea/Taiwan client tier).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4312,7 +4312,7 @@
                   "from": 40
                 },
                 "note": "Online rate, ASEAN/Japan/Korea/Taiwan client tier; the tier follows the calculator's typical share price.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4328,7 +4328,7 @@
                   "below": 40
                 },
                 "note": "Online rate, ASEAN/Japan/Korea/Taiwan client tier; the tier follows the calculator's typical share price.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4343,7 +4343,7 @@
                 "sharePrice": {
                   "below": 40
                 },
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4358,7 +4358,7 @@
                 "sharePrice": {
                   "below": 40
                 },
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.usmart.sg/pricing",
                 "adapter": "usmart-sg",
                 "lastRunOk": true
@@ -4421,7 +4421,7 @@
                 "currency": "SGD",
                 "label": "Commission",
                 "note": "\"Lifetime Free\" promotional commission — the site's current standard headline rate.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4433,7 +4433,7 @@
                 "value": 0.03,
                 "currency": "PCT",
                 "label": "Platform fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4445,7 +4445,7 @@
                 "value": 0.99,
                 "currency": "SGD",
                 "label": "Platform fee minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4457,7 +4457,7 @@
                 "currency": "USD",
                 "label": "Commission",
                 "note": "\"Lifetime Free\" promotional commission — the site's current standard headline rate.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4469,7 +4469,7 @@
                 "value": 0.005,
                 "currency": "USD",
                 "label": "Platform fee per share",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4481,7 +4481,7 @@
                 "value": 0.99,
                 "currency": "USD",
                 "label": "Platform fee minimum",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://longbridge.com/sg/pricing",
                 "adapter": "longbridge-sg",
                 "lastRunOk": true
@@ -4529,7 +4529,7 @@
                 "value": 0.06,
                 "currency": "PCT",
                 "note": "Base (Blue) tier rate; lower rates apply at higher membership tiers (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.syfe.com/pricing",
                 "adapter": "syfe",
                 "lastRunOk": true
@@ -4539,7 +4539,7 @@
                 "market": "SG",
                 "value": 1.98,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.syfe.com/pricing",
                 "adapter": "syfe",
                 "lastRunOk": true
@@ -4550,7 +4550,7 @@
                 "value": 0,
                 "currency": "USD",
                 "note": "$0 commission and $0 platform fee on all US trades, across all tiers.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.syfe.com/pricing",
                 "adapter": "syfe",
                 "lastRunOk": true
@@ -4672,7 +4672,7 @@
                 "label": "Auto currency conversion markup",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-spot-currencies.php",
                 "note": "Typical markup IBKR adds to the rate for automatic conversions. Converting manually instead is priced per trade with a minimum (see page). Shown for information; not included in cost totals.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
               },
@@ -4682,7 +4682,7 @@
                 "value": 0.08,
                 "currency": "PCT",
                 "note": "IBKR Pro Fixed pricing plan (not Tiered, not IBKR Lite).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
@@ -4692,7 +4692,7 @@
                 "market": "SG",
                 "value": 2.5,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
@@ -4704,7 +4704,7 @@
                 "currency": "USD",
                 "label": "Commission per share",
                 "note": "IBKR Pro Fixed pricing plan.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
@@ -4715,7 +4715,7 @@
                 "value": 1,
                 "currency": "USD",
                 "label": "Minimum per order",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
@@ -4726,7 +4726,7 @@
                 "value": 1,
                 "currency": "PCT",
                 "label": "Maximum per order (% of trade value)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.interactivebrokers.com.sg/en/pricing/commissions-stocks.php",
                 "adapter": "interactive-brokers-sg",
                 "lastRunOk": true
@@ -4790,7 +4790,7 @@
                 "label": "Currency conversion fee",
                 "source": "https://www.help.saxo/hc/en-sg/articles/360019476437-What-are-the-currency-conversion-fees-for-account-transfers",
                 "note": "Built into Saxo's conversion rate when converting between currency sub-accounts. Shown for information; not included in cost totals.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "adapter": "saxo-markets-sg",
                 "lastRunOk": true
               },
@@ -4800,7 +4800,7 @@
                 "value": 0.08,
                 "currency": "PCT",
                 "note": "Classic (standard/entry) tier rate; Platinum and VIP tiers get lower rates at higher trading volumes (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions",
                 "adapter": "saxo-markets-sg",
                 "lastRunOk": true
@@ -4810,7 +4810,7 @@
                 "market": "SG",
                 "value": 3,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions",
                 "adapter": "saxo-markets-sg",
                 "lastRunOk": true
@@ -4821,7 +4821,7 @@
                 "value": 0.08,
                 "currency": "PCT",
                 "note": "Classic (standard/entry) tier rate; Platinum and VIP tiers get lower rates at higher trading volumes (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions",
                 "adapter": "saxo-markets-sg",
                 "lastRunOk": true
@@ -4831,7 +4831,7 @@
                 "market": "US",
                 "value": 1,
                 "currency": "USD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.home.saxo/en-sg/rates-and-conditions/stocks/commissions",
                 "adapter": "saxo-markets-sg",
                 "lastRunOk": true
@@ -4930,7 +4930,7 @@
                 "value": 0.18,
                 "currency": "PCT",
                 "note": "Online Cash account, flat rate (not Cash Upfront)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -4941,7 +4941,7 @@
                 "value": 27.25,
                 "currency": "SGD",
                 "note": "Online Cash account minimum commission, incl. GST",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.dbsvickers.com/vickers/pricing/individualaccount-fullpricing",
                 "adapter": "dbs-vickers",
                 "lastRunOk": true
@@ -4974,7 +4974,7 @@
                 "market": "SG",
                 "value": 0.15,
                 "currency": "PCT",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -4984,7 +4984,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.ocbc.com/personal-banking/investments/fees-and-charges.page",
                 "adapter": "ocbc-securities",
                 "lastRunOk": true
@@ -5018,7 +5018,7 @@
                 "value": 0.275,
                 "currency": "PCT",
                 "note": "Cash/Margin Account, contract value up to SGD50,000",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -5028,7 +5028,7 @@
                 "market": "SG",
                 "value": 25,
                 "currency": "SGD",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://uobkh.com.sg/en/faq/article/equities",
                 "adapter": "uob-kay-hian",
                 "lastRunOk": true
@@ -5197,7 +5197,7 @@
                 "value": 0,
                 "currency": "PCT",
                 "note": "Permanent 0% sales charge on funds.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://fsm.global/sg/pricing-structure",
                 "adapter": "fsmone",
                 "lastRunOk": true
@@ -5209,7 +5209,7 @@
                 "currency": "PCT",
                 "label": "Platform fee (annualised)",
                 "note": "Standard (non-Diamond-tier) rate for Cash/SRS holdings; CPF investments and Diamond-tier clients are priced separately (see page). Fixed Income Funds are charged 0.05%/quarter (0.2%/year annualised) instead. Annualised from the published 0.0875%-per-quarter rate.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://fsm.global/sg/pricing-structure",
                 "adapter": "fsmone",
                 "lastRunOk": true
@@ -5261,7 +5261,7 @@
                   }
                 ],
                 "label": "Endowus Access Fee (Cash)",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://endowus.com/pricing",
                 "adapter": "endowus",
                 "lastRunOk": true
@@ -5378,7 +5378,7 @@
                 "value": 0.6,
                 "currency": "PCT",
                 "label": "Trading fee",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://help.coinhako.com/portal/en/kb/articles/coinhako-fees",
                 "adapter": "coinhako",
                 "lastRunOk": true
@@ -5413,7 +5413,7 @@
                 "currency": "PCT",
                 "label": "Trading fee (taker, lowest 30-day volume tier)",
                 "note": "ActiveTrader taker fee at the entry tier (>= $0 volume/balance). Maker fee at the same tier is 0.6%; both fall with higher 30-day trading volume or asset balance.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.gemini.com/fees/activetrader-fee-schedule",
                 "adapter": "gemini-sg",
                 "lastRunOk": true
@@ -5447,7 +5447,7 @@
                 "currency": "PCT",
                 "label": "Trading fee (entry tier, 0 x 30-day volume)",
                 "note": "Entry tier; discounted on a sliding scale at higher 30-day trading volume (see page).",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://www.independentreserve.com/fees",
                 "adapter": "independent-reserve-sg",
                 "lastRunOk": true
@@ -5481,7 +5481,7 @@
                 "currency": "PCT",
                 "label": "Trading fee (SGD market, taker)",
                 "note": "SGD market maker/taker fee, GST inclusive (both 0.25%). The USDT market is priced separately on the same guide page.",
-                "asOf": "2026-09-24",
+                "asOf": "2026-09-28",
                 "source": "https://sg.upbit.com/service_center/guide",
                 "adapter": "upbit-sg",
                 "lastRunOk": true
@@ -5520,18 +5520,18 @@
       }
     ]
   },
-  "generatedAt": "2026-09-24T03:25:56.876Z",
+  "generatedAt": "2026-09-27T22:16:58.942Z",
   "fx": {
     "USDSGD": {
-      "value": 1.2762,
-      "asOf": "2026-09-24",
+      "value": 1.2794,
+      "asOf": "2026-09-28",
       "source": "https://eservices.mas.gov.sg/statistics/msb/exchangerates.aspx",
       "adapter": "mas-fx",
       "lastRunOk": true
     },
     "HKDSGD": {
-      "value": 0.1627,
-      "asOf": "2026-09-24",
+      "value": 0.1631,
+      "asOf": "2026-09-28",
       "source": "https://eservices.mas.gov.sg/statistics/msb/exchangerates.aspx",
       "adapter": "mas-fx",
       "lastRunOk": true
