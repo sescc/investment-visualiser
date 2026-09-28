@@ -2,32 +2,40 @@
 // GSAP + its plugins are loaded from cdnjs (once, lazily, memoized).
 //
 // PUBLIC API
-//   DEBUG                          → { noWebgl: bool, calm: bool } parsed once from `location.search`
-//                                     (`?nowebgl=1` forces the WebGL/CSS-gradient fallback everywhere;
-//                                     `?calm=1` forces Calm mode — the Browser pane can't emulate
-//                                     prefers-reduced-motion, so this is how that path gets tested).
+//   DEBUG                          → { noGsap: bool, calm: bool } parsed once from `location.search`
+//                                     (`?nogsap=1` forces whenGsap() to resolve null everywhere, to test
+//                                     the animation-library-failure path; `?calm=1` forces Calm mode —
+//                                     the Browser pane can't emulate prefers-reduced-motion, so this is
+//                                     how that path gets tested).
 //   getCalm() → bool               localStorage `sg-visual-calm` (try/catch), or true if `?calm=1`.
 //   setCalm(bool)                  Persists Calm mode, toggles `<html class="is-calm">`, dispatches
 //                                   `sg:calmchange` on window.
 //   motionAllowed() → bool         false when `prefers-reduced-motion: reduce` OR Calm mode is on.
-//   hasWebGL() → bool              false when `?nowebgl=1` or the browser truly can't get a context.
 //   onMotionChange(cb) → unsub     cb(allowed: bool) whenever motionAllowed() may have changed
 //                                   (reduced-motion media query flips, or Calm toggles).
 //   motionScope(setup) → {destroy} Runs setup() now iff motionAllowed(); setup() returns a cleanup
 //                                   function. Cleanup runs the instant motion becomes disallowed
 //                                   (Calm turned on, or the OS setting flips), and setup() runs again
-//                                   if motion becomes allowed again. Every animated feature (stage,
-//                                   cursor, tilt, magnetic buttons, scroll choreography) should mount
-//                                   through this so a single toggle tears down every canvas/listener.
+//                                   if motion becomes allowed again. Every animated feature (backdrop
+//                                   parallax, tilt, magnetic buttons, scroll choreography) should mount
+//                                   through this so a single toggle tears down every listener/timeline.
 //                                   If you build a `gsap.matchMedia()` instance inside setup(), store
 //                                   it and call `.revert()` in your cleanup — matchMedia only tracks
 //                                   the OS media query, not Calm mode, so motionScope is what notices
 //                                   the localStorage flag.
-//   whenGsap() → Promise<gsap|null>  Loads gsap.min.js + all ten plugins from cdnjs 3.15.0 in parallel
-//   loadGsap()                       after the core, registers whichever loaded, and resolves the
-//                                     `window.gsap` namespace. Resolves null after an 8s timeout or a
-//                                     core-load failure (a plugin failing individually doesn't fail the
-//                                     whole load). Memoized: safe to call from every module.
+//   whenGsap() → Promise<gsap|null>  Loads gsap.min.js + only the plugins actually used anywhere under
+//   loadGsap()                       site/visual/js (grep-verified — see GSAP_PLUGINS below) from cdnjs
+//                                     3.15.0 in parallel after the core, registers whichever loaded, and
+//                                     resolves the `window.gsap` namespace. Resolves null immediately
+//                                     under `?nogsap=1`, or after an 8s timeout, or a core-load failure
+//                                     (a plugin failing individually doesn't fail the whole load).
+//                                     Memoized: safe to call from every module. On a successful load,
+//                                     also runs `ScrollTrigger.config({ ignoreMobileResize: true,
+//                                     limitCallbacks: true })` once, and refreshes ScrollTrigger after
+//                                     `document.fonts.ready` (layout can shift once webfonts swap in).
+//   refreshScenes() → void         `ScrollTrigger.refresh()` if GSAP/ScrollTrigger loaded; no-op
+//                                   otherwise. Call after re-rendering content that scenes measure
+//                                   against (new data, a filter/sort change, etc.).
 //   reveal(el, gsapVars) → void    Fire-and-forget entrance animation. No-op (element keeps its normal,
 //                                   fully-visible styling — nothing in visual.css ever sets opacity:0 on
 //                                   content) when motion isn't allowed or GSAP failed to load.
@@ -40,13 +48,75 @@
 //                                   Tweens a number and writes `format(value)` into `el.textContent`,
 //                                   guaranteed to end at exactly `format(toValue)`. Writes the final
 //                                   value immediately (no animation) when motion isn't allowed.
+//   scene(section, build, opts) → { refresh(), destroy(), get timeline }
+//                                   The one helper that owns a pinned-or-scrubbed scroll sequence's
+//                                   whole lifecycle (motionScope + whenGsap + gsap.context +
+//                                   gsap.matchMedia). `opts`: `pin` (default true), `length` (viewport
+//                                   heights the scene plays over, default 1), `mobile` (currently always
+//                                   'scrub' — reserved for a future mode), `start` (ScrollTrigger start,
+//                                   default `top top+=<header height>`).
+//                                   ≥768px: pins `section` and scrubs `build`'s timeline over
+//                                   `length * 100vh` of scroll (`anticipatePin`, `invalidateOnRefresh`).
+//                                   <768px: the same timeline scrubs from 'top 85%' to 'bottom 60%' with
+//                                   no pin (address-bar resize / short-viewport safe).
+//                                   `build(tl, { gsap, isMobile, section })` fills the timeline — it
+//                                   receives an *empty* `gsap.timeline()` already wired to its
+//                                   ScrollTrigger.
+//                                   A `focusin` inside `section` while its ScrollTrigger is active and
+//                                   short of progress 1 jumps `window.scrollTo` straight to the
+//                                   trigger's end (instant), so keyboard users never land inside a
+//                                   half-played scene. `will-change: transform` is toggled on `section`
+//                                   as the trigger becomes active/inactive (`onToggle`).
+//                                   Safe no-op (authored layout stays exactly as written) under
+//                                   !motionAllowed() or a failed/`?nogsap=1` GSAP load. `destroy()`
+//                                   reverts everything (`gsap.context().revert()` + matchMedia revert).
+//   batchReveal(elements, variant, { decorative } = {}) → { destroy() }
+//                                   `ScrollTrigger.batch(elements, { once: true, ... })`, animating only
+//                                   transform/opacity, staggered. `variant` is one of chaos.js's
+//                                   entrance names ('fade-rise' | 'scramble' | 'slide-scale' |
+//                                   'flip-in'). Text-bearing elements (the default, `decorative:
+//                                   false`) never start below opacity 0.85 (law 6: text is never
+//                                   hidden); pass `{ decorative: true }` for purely-decorative elements
+//                                   (fills, chips, coins…) to allow a full opacity:0 start. Same
+//                                   motionScope/no-op semantics as `scene()`.
+//   scrubOnEntry(el, build, { start, end, once, scrub } = {}) → { destroy() }
+//                                   The lightweight sibling of `scene()`: ONE ScrollTrigger-scrubbed
+//                                   timeline tied to `el`'s own scroll entry — no pin, no matchMedia
+//                                   mobile/desktop split. For "this block (or some children of it)
+//                                   drifts/fades/scales in as it nears the viewport" — a deal-in card
+//                                   stack, a wrapper's rotate-in, a headline explode, a fee jar's coins.
+//                                   `start`/`end` default to `'top 85%'`/`'top 40%'`; `scrub` defaults to
+//                                   0.4 (same feel as `scrubHeading`); `once` (default false) is passed
+//                                   straight through to the ScrollTrigger (stops tracking scroll after
+//                                   the first entry instead of reversing on scroll-back).
+//                                   `build(tl, { gsap, isMobile })` fills the timeline — `isMobile` is a
+//                                   one-time `matchMedia('(max-width: 767px)').matches` snapshot at
+//                                   mount time, not reactive (there's no per-breakpoint rebuild here;
+//                                   use `scene()` if you need that). `build` may itself return an extra
+//                                   cleanup function (e.g. reverting a `SplitText` instance it created)
+//                                   — `scrubOnEntry` calls it, if returned, alongside its own
+//                                   `gsap.context().revert()`.
+//                                   Same motionScope/no-op semantics as `scene()`: safe no-op (authored
+//                                   layout unchanged) under !motionAllowed() or a failed/`?nogsap=1` GSAP
+//                                   load; torn down and rebuilt automatically as Calm/reduced-motion
+//                                   toggles.
+//   scrubHeading(el) → { destroy() }
+//                                   Splits `el` into chars (SplitText, `aria: 'auto'` so the heading
+//                                   stays announced as one string) and scrubs them from
+//                                   { y: '40%', opacity: 0.85, rotateX: -30 } to their resting position
+//                                   between 'top 90%' and 'top 55%'. Deliberately NOT a fully-clipped
+//                                   "chars rise from y:100%" reveal — that would start the heading text
+//                                   fully hidden, which law 6 forbids even for a moment. `destroy()`
+//                                   kills the ScrollTrigger/tween and calls `.revert()` on the SplitText
+//                                   instance, restoring the original text node. Same motionScope/no-op
+//                                   semantics as `scene()`.
 //
 // Nothing in this file touches fee numbers — `format` is always supplied by the caller (formatSGD, a
 // percent formatter, etc.), never invented here.
 
 const params = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
 export const DEBUG = Object.freeze({
-  noWebgl: params.get('nowebgl') === '1',
+  noGsap: params.get('nogsap') === '1',
   calm: params.get('calm') === '1',
 });
 
@@ -86,17 +156,6 @@ const reduceMQ = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced
 export function motionAllowed() {
   const reduced = !!reduceMQ?.matches;
   return !reduced && !getCalm();
-}
-
-export function hasWebGL() {
-  if (DEBUG.noWebgl) return false;
-  if (typeof document === 'undefined') return false;
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
-  } catch {
-    return false;
-  }
 }
 
 export function onMotionChange(cb) {
@@ -141,9 +200,15 @@ export function motionScope(setup) {
 
 const GSAP_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/';
 const GSAP_CORE = 'gsap.min.js';
+// Only plugins actually referenced anywhere under site/visual/js (grep-verified 2026-09-27).
+// ScrollTrigger, SplitText, DrawSVGPlugin, MotionPathPlugin are kept regardless — Wave 2's page scenes
+// use them. Flip (calc.js, compare.js), Draggable + InertiaPlugin (hub.js quiz fling) are used today.
+// Dropped: MorphSVGPlugin, ScrambleTextPlugin, CustomEase — no `window.X` reference to any of them
+// exists in site/visual/js (the "scramble" strings in chaos.js/CSS are just an entrance-variant name,
+// not a use of ScrambleTextPlugin).
 const GSAP_PLUGINS = [
-  'ScrollTrigger', 'SplitText', 'Flip', 'DrawSVGPlugin', 'MorphSVGPlugin',
-  'Draggable', 'InertiaPlugin', 'ScrambleTextPlugin', 'MotionPathPlugin', 'CustomEase',
+  'ScrollTrigger', 'SplitText', 'DrawSVGPlugin', 'MotionPathPlugin',
+  'Flip', 'Draggable', 'InertiaPlugin',
 ];
 
 function loadScript(src) {
@@ -163,9 +228,15 @@ function timeoutAfter(ms) {
 
 let _gsapPromise = null;
 
+function refreshAfterFontsReady() {
+  if (typeof document === 'undefined' || !document.fonts?.ready) return;
+  document.fonts.ready.then(() => { window.ScrollTrigger?.refresh(); }).catch(() => { /* ignore */ });
+}
+
 export function whenGsap() {
   if (_gsapPromise) return _gsapPromise;
   _gsapPromise = (async () => {
+    if (DEBUG.noGsap) return null;
     try {
       const result = await Promise.race([
         (async () => {
@@ -175,6 +246,8 @@ export function whenGsap() {
           const gsap = window.gsap;
           const toRegister = GSAP_PLUGINS.map(p => window[p]).filter(Boolean);
           if (toRegister.length) gsap.registerPlugin(...toRegister);
+          window.ScrollTrigger?.config({ ignoreMobileResize: true, limitCallbacks: true });
+          refreshAfterFontsReady();
           return gsap;
         })(),
         timeoutAfter(8000),
@@ -189,6 +262,11 @@ export function whenGsap() {
 }
 
 export const loadGsap = whenGsap;
+
+/** ScrollTrigger.refresh() if loaded; no-op otherwise. Call after re-rendering measured content. */
+export function refreshScenes() {
+  window.ScrollTrigger?.refresh();
+}
 
 // ---------------------------------------------------------------------------
 // Small motion helpers — every one is a safe no-op under !motionAllowed() or a failed GSAP load.
@@ -246,49 +324,243 @@ export async function countUp(el, toValue, format = String) {
   });
 }
 
-/** Pauses/resumes a render-loop callback when the tab is hidden or the canvas scrolls off-screen. */
-export function renderLoop(fn, { canvas } = {}) {
-  let raf = null;
-  let running = false;
-  let visible = true;
-  let intersecting = true;
-  let last = performance.now();
+// ---------------------------------------------------------------------------
+// Scroll scenes — the shared lifecycle for every pinned-or-scrubbed sequence.
+// ---------------------------------------------------------------------------
 
-  function frame(now) {
-    raf = requestAnimationFrame(frame);
-    const dt = Math.min(0.1, (now - last) / 1000);
-    last = now;
-    if (visible && intersecting) fn(dt, now);
-  }
-  function start() {
-    if (running) return;
-    running = true;
-    last = performance.now();
-    raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
-  }
+function headerOffsetPx() {
+  if (typeof getComputedStyle !== 'function') return 0;
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--header-h');
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+}
 
-  const onVis = () => { visible = document.visibilityState !== 'hidden'; };
-  document.addEventListener('visibilitychange', onVis);
+/**
+ * scene(section, build, { pin = true, length = 1, mobile = 'scrub', start } = {})
+ *   → { refresh(), destroy(), get timeline }
+ * See the file-header PUBLIC API comment for the full contract.
+ */
+export function scene(section, build, opts = {}) {
+  const { pin = true, length = 1, start } = opts;
+  if (!section || typeof build !== 'function') return { refresh() {}, destroy() {}, get timeline() { return null; } };
 
-  let io = null;
-  if (canvas && typeof IntersectionObserver === 'function') {
-    io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.target === canvas) intersecting = e.isIntersecting; });
-    }, { threshold: 0.01 });
-    io.observe(canvas);
-  }
+  let currentTl = null;
+  let currentSt = null;
+  let mm = null;
 
-  start();
+  const scopeHandle = motionScope(() => {
+    let ctx = null;
+    let cancelled = false;
+    let onFocusIn = null;
+
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger) return;
+      if (!motionAllowed()) return; // Calm/reduced-motion may have flipped while GSAP was loading.
+
+      const onToggle = self => { section.style.willChange = self.isActive ? 'transform' : ''; };
+
+      ctx = gsap.context(() => {
+        mm = gsap.matchMedia();
+        mm.add('(min-width: 768px)', () => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              // A function, not a computed string: ScrollTrigger re-calls this on refresh() (e.g. after
+              // the header's height changes), so the pin start point never goes stale.
+              start: start ?? (() => `top top+=${headerOffsetPx()}`),
+              end: '+=' + (length * 100) + '%',
+              scrub: 0.5,
+              pin,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onToggle,
+            },
+          });
+          currentTl = tl;
+          currentSt = tl.scrollTrigger;
+          build(tl, { gsap, isMobile: false, section });
+          return () => { currentTl = null; currentSt = null; };
+        });
+        mm.add('(max-width: 767px)', () => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 85%',
+              end: 'bottom 60%',
+              scrub: 0.5,
+              invalidateOnRefresh: true,
+              onToggle,
+            },
+          });
+          currentTl = tl;
+          currentSt = tl.scrollTrigger;
+          build(tl, { gsap, isMobile: true, section });
+          return () => { currentTl = null; currentSt = null; };
+        });
+      }, section);
+
+      onFocusIn = e => {
+        // Gate on progress only, not `isActive`: tabbing forward into a not-yet-active section fires
+        // `focusin` before ScrollTrigger marks it active, and an `isActive` check here would let the
+        // browser's native scrollIntoView-on-focus land the viewport mid-pin instead (found in review).
+        if (!currentSt || currentSt.progress >= 1) return;
+        if (!section.contains(e.target)) return;
+        // Deferred one frame so this runs AFTER the browser's own focus-scroll, not before it — the
+        // native jump would otherwise immediately re-scroll to a mid-pin position on its own schedule.
+        requestAnimationFrame(() => { if (currentSt && currentSt.progress < 1) window.scrollTo(0, currentSt.end); });
+      };
+      section.addEventListener('focusin', onFocusIn);
+    })();
+
+    return () => {
+      cancelled = true;
+      if (onFocusIn) section.removeEventListener('focusin', onFocusIn);
+      mm?.revert();
+      ctx?.revert();
+      section.style.willChange = '';
+      currentTl = null;
+      currentSt = null;
+    };
+  });
+
   return {
-    stop() {
-      stop();
-      document.removeEventListener('visibilitychange', onVis);
-      io?.disconnect();
-    },
+    refresh: refreshScenes,
+    destroy: () => scopeHandle.destroy(),
+    get timeline() { return currentTl; },
   };
+}
+
+// ---------------------------------------------------------------------------
+// scrubOnEntry — the lightweight, unpinned sibling of scene(): one scrubbed timeline tied to an
+// element's own scroll entry. Added 2026-09-27, replacing near-identical local copies (compare.js's
+// motionScrollFx + its two users; hub.js's and products.js's identical heroExplode; hub.js's
+// mountQuizDealIn).
+// ---------------------------------------------------------------------------
+
+/**
+ * scrubOnEntry(el, build, { start = 'top 85%', end = 'top 40%', once = false, scrub = 0.4 } = {})
+ *   → { destroy() }
+ * See the file-header PUBLIC API comment for the full contract.
+ */
+export function scrubOnEntry(el, build, opts = {}) {
+  const { start = 'top 85%', end = 'top 40%', once = false, scrub = 0.4 } = opts;
+  if (!el || typeof build !== 'function') return { destroy() {} };
+
+  return motionScope(() => {
+    let ctx = null;
+    let extraCleanup = null;
+    let cancelled = false;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger) return;
+      if (!motionAllowed()) return; // Calm/reduced-motion may have flipped while GSAP was loading.
+      const isMobile = typeof matchMedia === 'function' && matchMedia('(max-width: 767px)').matches;
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline({ scrollTrigger: { trigger: el, start, end, scrub, once } });
+        extraCleanup = build(tl, { gsap, isMobile }) || null;
+      }, el);
+    })();
+    return () => {
+      cancelled = true;
+      extraCleanup?.();
+      ctx?.revert();
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// batchReveal — ScrollTrigger.batch entrance for grids, one trigger group not one per card.
+// ---------------------------------------------------------------------------
+
+const REVEAL_VARIANTS = {
+  'fade-rise': { y: 24 },
+  scramble: { y: -16, rotate: -3 },
+  'slide-scale': { x: -24, scale: 0.94 },
+  'flip-in': { rotateX: -35 },
+};
+
+/**
+ * batchReveal(elements, variant = 'fade-rise', { decorative = false } = {}) → { destroy() }
+ * See the file-header PUBLIC API comment for the full contract.
+ */
+export function batchReveal(elements, variant = 'fade-rise', { decorative = false } = {}) {
+  const els = Array.isArray(elements) || elements instanceof NodeList ? Array.from(elements) : [elements].filter(Boolean);
+  if (!els.length) return { destroy() {} };
+  const offset = REVEAL_VARIANTS[variant] || REVEAL_VARIANTS['fade-rise'];
+
+  return motionScope(() => {
+    let ctx = null;
+    let batchTriggers = null;
+    let cancelled = false;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger) return;
+      if (!motionAllowed()) return;
+      // Text-bearing elements (the default) never start below opacity 0.85 — law 6, text is never
+      // hidden. Purely decorative elements (fills, chips, coins…) may start fully transparent.
+      const fromVars = { opacity: decorative ? 0 : 0.85, ...offset };
+      ctx = gsap.context(() => {
+        // Apply the "before" state synchronously, up front — NOT inside onEnter via fromTo. Elements
+        // sit at full/authored opacity from first paint until whichever one scrolls into view first;
+        // driving the from-state off ScrollTrigger.batch's onEnter instead would let every element below
+        // the fold render fully visible and then visibly snap down to `fromVars` the instant it enters,
+        // which reads as a flash/pop rather than an entrance (found in review).
+        gsap.set(els, fromVars);
+        batchTriggers = window.ScrollTrigger.batch(els, {
+          start: 'top 88%',
+          once: true,
+          onEnter: batch => gsap.to(batch, {
+            opacity: 1, y: 0, x: 0, scale: 1, rotate: 0, rotateX: 0,
+            duration: 0.6, ease: 'power3.out', stagger: 0.06,
+          }),
+        });
+      });
+    })();
+    return () => {
+      cancelled = true;
+      batchTriggers?.forEach(st => st.kill());
+      batchTriggers = null;
+      ctx?.revert(); // restores the gsap.set() from-state back to the authored CSS
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// scrubHeading — chars scrub in as the heading nears the viewport; never fully hidden (law 6).
+// ---------------------------------------------------------------------------
+
+/**
+ * scrubHeading(el) → { destroy() }
+ * See the file-header PUBLIC API comment for the full contract.
+ */
+export function scrubHeading(el) {
+  if (!el) return { destroy() {} };
+  return motionScope(() => {
+    let split = null;
+    let tween = null;
+    let st = null;
+    let cancelled = false;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.SplitText || !window.ScrollTrigger) return;
+      if (!motionAllowed()) return;
+      split = new window.SplitText(el, { type: 'chars', aria: 'auto' });
+      const chars = split.chars?.length ? split.chars : [el];
+      tween = gsap.fromTo(chars,
+        { y: '40%', opacity: 0.85, rotateX: -30 },
+        {
+          y: '0%', opacity: 1, rotateX: 0, stagger: 0.02, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 90%', end: 'top 55%', scrub: 0.4 },
+        },
+      );
+      st = tween.scrollTrigger;
+    })();
+    return () => {
+      cancelled = true;
+      st?.kill();
+      tween?.kill?.();
+      split?.revert();
+    };
+  });
 }

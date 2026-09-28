@@ -278,7 +278,7 @@ body.modal-open { overflow: hidden; }
 /* ---------------- Edition switch (floating stable ↔ visual button) ---------------- */
 .edition-switch {
   position: fixed;
-  top: var(--edition-switch-top, 72px);
+  top: 0;
   right: 16px;
   z-index: 60; /* above content/header (40), below modals (100) */
   width: 56px;
@@ -288,11 +288,14 @@ body.modal-open { overflow: hidden; }
   justify-content: center;
   text-decoration: none;
   color: var(--ink);
+  transform: translateY(var(--edition-switch-y, 72px));
 }
-/* `top` is recomputed on scroll/resize/disclaimer-dismiss (edition-switch.js) so it always clears the
-   header and, while visible, the disclaimer's dismiss button too — slide, don't jump, between values. */
+/* `--edition-switch-y` is recomputed on scroll/resize/disclaimer-dismiss (edition-switch.js) so the
+   button always clears the header and, while visible, the disclaimer's dismiss button too — slide,
+   don't jump, between values. Positioned via `transform: translateY()`, not `top` (`top` forces a
+   layout pass on every write; `transform` is compositor-only — see edition-switch.js:positionSwitch). */
 @media (prefers-reduced-motion: no-preference) {
-  .edition-switch { transition: top 200ms ease; }
+  .edition-switch { transition: transform 200ms ease; }
 }
 @media (max-width: 480px) {
   .edition-switch { width: 48px; height: 48px; }

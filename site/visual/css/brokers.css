@@ -1,0 +1,156 @@
+/* brokers.css — page-specific styles for site/visual/brokers.html: the CDP-vs-custodian explainer, the
+   "choose your fighter" broker-type character-select grid + modal, and "The Fee Race" (calc.js staged as
+   a race track). Everything here layers on top of the frozen site/visual/css/visual.css tokens/utilities
+   — no color, spacing or font is redefined here that already exists there; this file only adds the
+   shapes this page needs. calc.js's own markup/styling (the "fee-drag machine" it mounts under
+   #calc-mount) lives in the shared css/calc.css (linked in brokers.html) — this page only sets the accent
+   variable calc.css's hover/focus rings read, below.
+
+   One small block below is still duplicated from methods.css rather than imported — a suggested follow-up
+   (not calc.js's markup, so out of scope for the calc.css consolidation): a handful of stable
+   diagram-utility classes (.diagram-label / .fill-good-soft / .stroke-line) that exist in the STABLE
+   site's app.css but were never carried into visual.css. */
+
+/* ---------------------------------------------------------------------------
+   Diagram utilities missing from visual.css (present in stable's app.css, not yet ported)
+--------------------------------------------------------------------------- */
+.diagram-label { fill: var(--ink); font-family: var(--font-visual-body); font-weight: 600; }
+.fill-good-soft { fill: var(--good-soft); }
+.stroke-line { stroke: var(--glass-border); }
+
+.brokers-hero { max-width: 720px; }
+
+:root { --calc-accent: var(--world-brokers); --calc-accent-soft: var(--world-brokers-soft); }
+
+.fee-line { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.fee-compare-link { display: inline-flex; align-items: center; margin-left: 8px; font-weight: 700; font-size: .84rem; }
+.card-fee { margin: 10px 0; }
+.providers-table td { vertical-align: middle; }
+.providers-table .is-incomplete td { opacity: .75; }
+
+/* ---------------------------------------------------------------------------
+   "Choose your fighter" — character-select grid
+--------------------------------------------------------------------------- */
+/* The deal-in scene (brokers.js) animates THIS wrapper's transform, never `.fighter-card` itself — the
+   card carries `data-tilt`/`data-magnetic` (fx.js), which writes its own `style.transform` on hover, and
+   two writers on one element's transform fight each other (found in review). */
+.fighter-slot { min-width: 0; }
+.fighter-card {
+  display: flex; flex-direction: column; gap: 10px; padding: 20px; text-align: left;
+  background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer;
+  color: inherit; font: inherit; border-top: 4px solid var(--world-brokers); width: 100%;
+}
+.fighter-card:focus-visible { outline: 3px solid var(--world-brokers); outline-offset: 3px; }
+.fighter-card-head { display: flex; align-items: flex-start; gap: 12px; }
+.fighter-card-icon {
+  flex: none; width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  background: var(--world-brokers-soft); color: var(--world-brokers);
+}
+.fighter-card-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin: 0; }
+.fighter-card-category { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.fighter-card-analogy { color: var(--muted); font-style: italic; font-size: .86rem; margin: 0; }
+.fighter-card-summary { font-size: .9rem; margin: 0; }
+
+.fighter-meters { display: grid; gap: 8px; margin-top: 4px; }
+.fighter-meter { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: 8px; font-size: .78rem; color: var(--ink-2); }
+/* display:block is required — these are <span>s (for role="img" inline flow), and inline elements
+   ignore height/width entirely, which collapsed both to a 0x0 box (found in Phase browser verification). */
+.fighter-meter-track { display: block; height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+/* scaleX, not `width` (perf rule) — brokers.js sets the correct final scaleX inline immediately, and
+   only re-tweens `transform` (via the transition below, or a direct write under !motionAllowed()). */
+.fighter-meter-fill { display: block; height: 100%; width: 100%; border-radius: 999px; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, var(--world-brokers), color-mix(in srgb, var(--world-brokers) 60%, white 40%)); transition: transform .8s cubic-bezier(.22,.9,.32,1); }
+@media (prefers-reduced-motion: reduce) { .fighter-meter-fill { transition: none; } }
+.is-calm .fighter-meter-fill { transition: none !important; }
+
+.fighter-card-cta { margin-top: auto; padding-top: 6px; font-size: .84rem; font-weight: 700; color: var(--world-brokers); display: flex; align-items: center; gap: 6px; }
+
+/* ---------------------------------------------------------------------------
+   Fighter modal (broker-type detail — same content shape as methods.js's platform panel)
+--------------------------------------------------------------------------- */
+.fighter-panel { display: grid; gap: 18px; }
+.fighter-head { display: flex; align-items: flex-start; gap: 14px; }
+.fighter-icon { flex: none; width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--world-brokers); }
+.fighter-analogy { color: var(--muted); font-style: italic; margin-top: 2px; }
+.fighter-meters-row { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+.fighter-meter-item { display: flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--ink-2); }
+.fighter-section-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin: 4px 0 8px; display: flex; align-items: center; gap: 8px; }
+.fighter-proscons { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 560px) { .fighter-proscons { grid-template-columns: 1fr; } }
+.fighter-proscons ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
+.fighter-facts { display: grid; gap: 6px; font-size: .9rem; }
+.fighter-quest { display: grid; gap: 10px; }
+.fighter-quest-step { display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); }
+.fighter-quest-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--world-brokers); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .82rem; }
+.fighter-quest-body { flex: 1; min-width: 0; }
+.fighter-quest-body p { margin: 0 0 6px; font-size: .88rem; color: var(--ink-2); }
+.fighter-quest-check { display: flex; align-items: center; gap: 8px; font-size: .84rem; font-weight: 600; margin-bottom: 4px; }
+.fighter-providers-table { margin-top: 4px; }
+.fighter-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.provider-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.provider-tag { font-size: .68rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+
+/* ---------------------------------------------------------------------------
+   The Fee Race — a decorative racetrack layered over calc.js's onResult()
+--------------------------------------------------------------------------- */
+.fee-race { display: grid; gap: 14px; padding: 22px; margin-bottom: 20px; }
+.fee-race-banner { font-weight: 700; font-size: 1.02rem; display: flex; align-items: center; gap: 8px; min-height: 1.4em; }
+.fee-race-track { display: flex; flex-direction: column; gap: 14px; }
+
+.fee-race-lane { display: grid; grid-template-columns: 26px minmax(120px, 1fr) minmax(0, 3fr) auto; align-items: center; gap: 12px; }
+.fee-race-lane-rank { font-weight: 700; color: var(--muted); text-align: center; }
+.fee-race-lane.is-winner .fee-race-lane-rank { color: var(--good); }
+.fee-race-lane-name { font-weight: 700; font-size: .92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fee-race-lane-strip {
+  position: relative; height: 26px; border-radius: 10px; overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, var(--fee-race-stripe-a, var(--surface-2)) 0 10px, var(--fee-race-stripe-b, var(--surface)) 10px 20px);
+  border: 1px solid var(--glass-border);
+}
+/* scaleX, never `width` (perf rule) — brokers.js's scroll-scrubbed race scene writes `transform`
+   directly on every scrub tick, so no CSS transition lives here (it would visibly lag one step behind
+   the scrub, same reasoning as methods.css's .mrt-dot). width:100% is the authored full-strip size; the
+   scene's gsap.set(...,{scaleX:0}) is what hides it before the scene has played. */
+.fee-race-lane-fill {
+  position: absolute; inset: 0 auto 0 0; width: 100%; height: 100%; border-radius: 10px 0 0 10px;
+  transform-origin: left center; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--lane-color, var(--world-brokers)), color-mix(in srgb, var(--lane-color, var(--world-brokers)) 60%, white 40%));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lane-color, var(--world-brokers)) 55%, transparent);
+}
+/* The racer is a SIBLING of the fill (not nested inside it) so scaling the fill never stretches/squishes
+   it: brokers.js animates its own `x` (translateX) in sync with the fill's scaleX. Centred vertically
+   with flex/height instead of a transform, so GSAP's `x` writes are the only transform this element ever
+   carries (no filter — CSS filter is never allowed, even static, per the perf rule). */
+.fee-race-lane-racer {
+  position: absolute; left: 0; top: 0; height: 100%; display: flex; align-items: center; justify-content: center;
+  width: 22px; margin-left: -11px; font-size: 15px; line-height: 1; pointer-events: none;
+}
+.fee-race-lane-flag { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: .55; pointer-events: none; }
+.fee-race-lane-total { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+@media (max-width: 640px) {
+  .fee-race-lane { grid-template-columns: 22px 1fr auto; grid-template-areas: "rank name total" "rank strip strip"; row-gap: 6px; }
+  .fee-race-lane-rank { grid-area: rank; }
+  .fee-race-lane-name { grid-area: name; }
+  .fee-race-lane-total { grid-area: total; }
+  .fee-race-lane-strip { grid-area: strip; }
+}
+
+.fee-race-empty { color: var(--muted); }
+
+.pit-lane { border-top: 1px dashed var(--glass-border); padding-top: 14px; margin-top: 4px; }
+.pit-lane-heading { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: .86rem; color: var(--muted); margin: 0 0 8px; }
+.pit-lane-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pit-lane-item { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: .84rem; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 8px 12px; }
+.pit-lane-name { font-weight: 700; color: var(--ink-2); }
+
+/* Racer "style" per visit (chaos.js roll.entrance) — a static size difference only, never an animation:
+   the scroll-scrubbed race (brokers.js) is the only motion the racer ever gets, its ease chosen in JS.
+   Font-size (not transform) so it can never fight the scene's own GSAP `x`/`scaleX` writes on the same
+   elements. Replaces the old infinite CSS `animation` per variant. */
+.fee-race--fade-rise .fee-race-lane-racer { font-size: 15px; }
+.fee-race--scramble .fee-race-lane-racer { font-size: 13px; }
+.fee-race--slide-scale .fee-race-lane-racer { font-size: 17px; }
+.fee-race--flip-in .fee-race-lane-racer { font-size: 15px; }
+
+/* The winner's end-of-race "stamp" accent (transform only, one-shot via the scene's own timeline) — see
+   brokers.js. No CSS animation/transition needed here; GSAP drives it directly. */
+.fee-race-lane.is-winner { transform-origin: center; }

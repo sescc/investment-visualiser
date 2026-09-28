@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SGInvest Visualiser — visual edition</title>
 <meta name="description" content="A visual, jargon-free guide to investment products, methods and brokers in Singapore — the spectacle-first edition. Not financial advice.">
-<!-- Importmap MUST come before any <script type="module">. Three.js core from cdnjs (pinned 0.186.0),
-     addons (EffectComposer/UnrealBloomPass/etc.) from jsDelivr /npm (pinned), per CLAUDE.md. -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
-  }
-}
-</script>
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
 <script>
 (function () {
@@ -24,6 +14,7 @@
 </script>
 <link rel="stylesheet" href="../css/tokens.css">
 <link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/hub.css">
 </head>
 <body class="visual-edition">
 <a class="sr-only" href="#main">Skip to content</a>
@@ -33,7 +24,7 @@
 <main id="main">
 
   <!-- 1. Hero -->
-  <section class="visual-section hero-section">
+  <section class="visual-section hero-section" data-formation="nebula">
     <div class="visual-wrap">
       <div class="visual-section-head hero-panel" style="max-width:640px">
         <h1 id="hero-headline" class="kinetic display-hero hero-headline">Your map to investing in Singapore</h1>
@@ -66,6 +57,7 @@
 
           <a href="methods.html" aria-label="Methods: how you invest">
             <g class="diagram-node portal-node portal-methods">
+              <rect id="ring-methods" data-origin="310 100" x="203" y="38" width="214" height="124" rx="20" class="portal-ring" style="stroke:var(--world-methods)"></rect>
               <rect x="210" y="45" width="200" height="110" rx="16" class="fill-methods-soft diagram-node-box"></rect>
               <text x="310" y="85" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-methods)">Method</text>
               <text x="310" y="106" text-anchor="middle" class="diagram-label-muted" font-size="11">how you invest</text>
@@ -75,6 +67,7 @@
 
           <a href="brokers.html" aria-label="Brokers: who executes it">
             <g class="diagram-node portal-node portal-brokers">
+              <rect id="ring-brokers" data-origin="605 100" x="498" y="38" width="214" height="124" rx="20" class="portal-ring" style="stroke:var(--world-brokers)"></rect>
               <rect x="505" y="45" width="200" height="110" rx="16" class="fill-brokers-soft diagram-node-box"></rect>
               <text x="605" y="85" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-brokers)">Broker / platform</text>
               <text x="605" y="106" text-anchor="middle" class="diagram-label-muted" font-size="11">who executes it</text>
@@ -84,6 +77,7 @@
 
           <a href="products.html" aria-label="Products: what you buy">
             <g class="diagram-node portal-node portal-products">
+              <rect id="ring-products" data-origin="855 100" x="793" y="53" width="124" height="94" rx="20" class="portal-ring" style="stroke:var(--world-products)"></rect>
               <rect x="800" y="60" width="110" height="80" rx="16" class="fill-products-soft diagram-node-box"></rect>
               <text x="855" y="94" text-anchor="middle" class="diagram-label-lg" font-size="16" style="fill:var(--world-products)">Product</text>
               <text x="855" y="114" text-anchor="middle" class="diagram-label-muted" font-size="11">what you buy</text>
@@ -97,7 +91,7 @@
   </section>
 
   <!-- 2. Quiz -->
-  <section class="visual-section" id="quiz-section">
+  <section class="visual-section" id="quiz-section" data-formation="rain">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">Which path suits me?</h2>
@@ -109,7 +103,7 @@
   </section>
 
   <!-- 3. Risk vs access map -->
-  <section class="visual-section">
+  <section class="visual-section" data-formation="rings">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">Risk vs. access map</h2>
@@ -122,7 +116,7 @@
   </section>
 
   <!-- 4. World cards -->
-  <section class="visual-section">
+  <section class="visual-section" data-formation="helix">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">Start exploring</h2>

@@ -51,9 +51,10 @@
 
 import { rankByCost, describeScenario, formatSGD, costGroupOf, COST_GROUPS, PRESETS, DEFAULT_SCENARIO, DEFAULT_SHARE_PRICE } from '../../js/cost.js';
 import { decodeScenario } from '../../js/data.js';
+import { freshnessView } from '../../js/feeview.js';
 import { icon } from '../../js/icons.js';
 import { esc } from './shell.js';
-import { motionAllowed, whenGsap, countUp } from './motion.js';
+import { motionAllowed, scene } from './motion.js';
 import { confettiBurst, playBlip } from './fx.js';
 
 function h(strings, ...vals) {
@@ -62,6 +63,19 @@ function h(strings, ...vals) {
 
 function crownIcon(label = 'Cheapest') {
   return h`<span class="crown" title="${esc(label)}">${icon('crown', { size: 14 })}<span class="sr-only">${esc(label)}</span></span>`;
+}
+
+// Same badge markup/logic as site/js/components.js's freshnessBadge (and methods.js/brokers.js's local
+// copies) — parity requirement: the FX-conversion table cell below must render byte-for-byte like
+// stable's, including the freshness badge and its source link, not just the bare percentage.
+const FRESH_META = { live: { cls: 'badge-live', icon: 'check' }, aging: { cls: 'badge-aging', icon: 'info' }, stale: { cls: 'badge-stale', icon: 'warning' }, missing: { cls: 'badge-missing', icon: 'warning' } };
+function freshnessBadgeHTML(component) {
+  const view = freshnessView(component);
+  const meta = FRESH_META[view.state];
+  const asOf = view.asOfText ? ` · ${view.asOfText}` : '';
+  const badge = h`<span class="badge ${meta.cls}">${icon(meta.icon, { size: 12 })} ${view.label}${asOf}</span>`;
+  if (!view.href) return badge;
+  return h`<a class="badge-link" href="${esc(view.href)}" target="_blank" rel="noopener" title="Source: ${esc(view.href)}">${badge}</a>`;
 }
 
 const FIELD_META = [
@@ -159,11 +173,17 @@ export function mountVisualCalculator(container, opts = {}) {
       years: Number(fd.get('years')) || 1,
       tradesPerMonth: Number(fd.get('tradesPerMonth')) || 0,
       sharePrice: Number(fd.get('sharePrice')) || DEFAULT_SHARE_PRICE,
-      market: fd.get('market') || scenario.market || 'SG',
+      // Bug found in review: the radio's real `name` is "fee-machine-market" (see the form markup above),
+      // not "market" — `fd.get('market')` always returned null, so clicking Market silently did nothing.
+      market: fd.get('fee-machine-market') || scenario.market || 'SG',
     };
   }
 
-  function buildRowEl(r, i) {
+  // `pct` is baked in as the fill's real, final `transform: scaleX()` the instant the row is created —
+  // never a mid-tween placeholder (width:0% used to sit there until the first tween tick). Only a later
+  // value CHANGE on an already-existing row gets an eased transform tween (see updateRace below); a
+  // brand-new row's fill is simply correct from birth, and its entrance is Flip's own opacity/scale fade.
+  function buildRowEl(r, pct) {
     const row = document.createElement('div');
     row.className = 'bar-race-row';
     row.dataset.id = keyOf(r.item);
@@ -171,8 +191,12 @@ export function mountVisualCalculator(container, opts = {}) {
     row.innerHTML = h`
       <span class="bar-race-rank" data-el="rank"></span>
       <span class="bar-race-name">${esc(r.item.name)}</span>
-      <div class="bar-race-track"><div class="bar-race-fill" style="width:0%"></div></div>
+      <div class="bar-race-track"><div class="bar-race-fill"></div></div>
       <span class="bar-race-total" data-el="total">${formatSGD(r.total)}</span>`;
+    const fill = row.querySelector('.bar-race-fill');
+    fill.style.width = '100%';
+    fill.style.transformOrigin = 'left';
+    fill.style.transform = `scaleX(${pct / 100})`;
     return row;
   }
 
@@ -186,8 +210,10 @@ export function mountVisualCalculator(container, opts = {}) {
 
     ranked.forEach((r, i) => {
       const key = keyOf(r.item);
+      const pct = maxTotal ? Math.max(2, (r.total / maxTotal) * 100) : 0;
       let row = existing.get(key);
-      if (row) existing.delete(key); else row = buildRowEl(r, i);
+      const isChange = !!row; // an existing row whose rank/value may have just changed, not a first render
+      if (row) existing.delete(key); else row = buildRowEl(r, pct);
       row.classList.toggle('is-first', i === 0);
       row.querySelector('[data-el="rank"]').innerHTML = i === 0 ? crownIcon(`Cheapest ${COST_GROUPS[group]?.label.toLowerCase() || ''} for ${describeScenario(scenario)}`) : String(i + 1);
       row.style.setProperty('--bar-color', `var(--world-${worldOf.get(key) || 'methods'})`);
@@ -195,17 +221,20 @@ export function mountVisualCalculator(container, opts = {}) {
 
       const fill = row.querySelector('.bar-race-fill');
       const totalEl = row.querySelector('[data-el="total"]');
-      const pct = maxTotal ? Math.max(2, (r.total / maxTotal) * 100) : 0;
-      if (gsapReady) window.gsap.to(fill, { width: `${pct}%`, duration: 0.6, ease: 'power2.out' });
-      else fill.style.width = `${pct}%`;
-      countUp(totalEl, r.total, formatSGD);
+      if (isChange) {
+        // Fee numbers never stop mid-tween: only the decorative bar eases (transform, one-shot, 0.5s) —
+        // the total text below is always written as the real, final formatSGD(r.total) immediately.
+        if (gsapReady) window.gsap.to(fill, { scaleX: pct / 100, duration: 0.5, ease: 'power2.out' });
+        else fill.style.transform = `scaleX(${pct / 100})`;
+      }
+      totalEl.textContent = formatSGD(r.total);
     });
     existing.forEach(el => el.remove());
 
     if (state && FlipPlugin) {
       window.Flip.from(state, {
-        duration: 0.55, ease: 'power2.inOut', absolute: true, nested: true,
-        onEnter: els => window.gsap.fromTo(els, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.35 }),
+        duration: 0.55, ease: 'power2.inOut', absolute: true, nested: true, scale: true,
+        onEnter: els => window.gsap.fromTo(els, { opacity: 0.85, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.35 }),
         onLeave: els => window.gsap.to(els, { opacity: 0, duration: 0.25 }),
       });
     }
@@ -236,10 +265,16 @@ export function mountVisualCalculator(container, opts = {}) {
 
   function renderTable(ranked) {
     const showFx = ranked.some(r => r.info?.length);
+    // Same fxCell as site/js/components.js's update() (~663–665): the freshness badge + source link
+    // travel with the percentage, not just the bare number.
+    const fxCell = r => {
+      const f = r.info?.find(i => i.type === 'fx_spread_pct');
+      return f ? `<td>${f.pct}% ${freshnessBadgeHTML(f.component)}</td>` : '<td class="muted">not published</td>';
+    };
     tableEl.innerHTML = h`
       <table class="data-table">
         <thead><tr><th>Provider</th><th>Estimated cost</th>${showFx ? '<th>Currency conversion <span class="muted">(not in total)</span></th>' : ''}</tr></thead>
-        <tbody>${ranked.map((r, i) => h`<tr><td>${i === 0 ? crownIcon() : ''} ${esc(r.item.name)}</td><td>${formatSGD(r.total)}</td>${showFx ? `<td>${r.info?.find(x => x.type === 'fx_spread_pct') ? r.info.find(x => x.type === 'fx_spread_pct').pct + '%' : '<span class="muted">not published</span>'}</td>` : ''}</tr>`).join('') || '<tr><td colspan="2" class="muted">No complete data for this scenario.</td></tr>'}</tbody>
+        <tbody>${ranked.map((r, i) => `<tr><td>${i === 0 ? crownIcon() : ''} ${esc(r.item.name)}</td><td>${formatSGD(r.total)}</td>${showFx ? fxCell(r) : ''}</tr>`).join('') || '<tr><td colspan="2" class="muted">No complete data for this scenario.</td></tr>'}</tbody>
       </table>`;
   }
 
@@ -310,11 +345,24 @@ export function mountVisualCalculator(container, opts = {}) {
 
   update();
 
+  // "Scaled in (scrubbed) on first entry": the whole row-track shape (not the fill's already-correct
+  // pct — that's baked in above) grows in via scaleX as the calculator first scrolls into view. Targets
+  // only `.bar-race` (never the form/inputs), so scene()'s focusin-jumps-to-end behaviour can only ever
+  // affect this results list, not steal focus away from a dial the user is actively typing into — the
+  // calculator itself is never pinned or wrapped by this scene (`pin: false`).
+  const revealScene = scene(raceEl, (tl, { gsap }) => {
+    const tracks = Array.from(raceEl.querySelectorAll('.bar-race-track'));
+    if (!tracks.length) return;
+    gsap.set(tracks, { scaleX: 0 });
+    tl.to(tracks, { scaleX: 1, stagger: 0.05, ease: 'power2.out' });
+  }, { pin: false, start: 'top 85%', length: 0.5 });
+
   return {
     setScenario(partial) { scenario = { ...scenario, ...partial }; syncFormFromScenario(); update(); },
     setGroup(key) { if (groupKeys.includes(key)) { group = key; syncFormFromScenario(); update(); } },
     destroy() {
       destroyed = true;
+      revealScene.destroy();
       form.removeEventListener('click', onDialClick);
       form.removeEventListener('input', onFormInput);
       form.removeEventListener('change', onMarketChange);

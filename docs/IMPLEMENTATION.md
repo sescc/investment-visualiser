@@ -6,5 +6,7 @@
 | server | `server.js` | [server/IMPLEMENTATION.md](server/IMPLEMENTATION.md) |
 | cost-model | `site/js/cost.js` | [cost-model/IMPLEMENTATION.md](cost-model/IMPLEMENTATION.md) |
 | site | `site/` | [site/IMPLEMENTATION.md](site/IMPLEMENTATION.md) |
+| visual | `site/visual/` | [visual/IMPLEMENTATION.md](visual/IMPLEMENTATION.md) |
+| build | `scripts/build-site.mjs`, `vercel.json` | — |
 
 Shared objects: `data/baseline/*.json` (Baseline), `data/sgdata.json|.js` (SgData — written only by `scraper/lib/merge.js:merge` via `scraper/index.js:run`).

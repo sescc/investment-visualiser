@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Methods — how to invest — SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Ways to invest in Singapore — robo-advisors, regular savings plans, CPFIS, SRS and more — plotted as an MRT-style line map, with real provider fees. Not financial advice.">
-<!-- Importmap MUST come before any <script type="module">. Three.js core from cdnjs (pinned 0.186.0),
-     addons (EffectComposer/UnrealBloomPass/etc.) from jsDelivr /npm (pinned), per CLAUDE.md. -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
-  }
-}
-</script>
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
 <script>
 (function () {
@@ -24,6 +14,7 @@
 </script>
 <link rel="stylesheet" href="../css/tokens.css">
 <link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/calc.css">
 <link rel="stylesheet" href="css/methods.css">
 </head>
 <body class="visual-edition">
@@ -34,7 +25,7 @@
 <main id="main">
 
   <!-- 1. Hero / intro — same heading + intro copy as stable's site/methods.html -->
-  <section class="visual-section hero-section">
+  <section class="visual-section hero-section" data-formation="rings">
     <div class="visual-wrap">
       <div class="visual-section-head methods-hero">
         <span class="chip" style="background:var(--world-methods-soft); color:var(--world-methods)">How to invest</span>
@@ -47,7 +38,7 @@
   </section>
 
   <!-- 2. MRT-style line map — one coloured line per category, one station per method -->
-  <section class="visual-section" aria-labelledby="map-heading">
+  <section class="visual-section" aria-labelledby="map-heading" data-formation="helix">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 id="map-heading" class="kinetic display-lg">The methods line map</h2>
@@ -56,12 +47,14 @@
           to start.</p>
       </div>
       <div id="methods-empty"></div>
-      <div id="mrt-map" class="mrt-map"></div>
+      <div id="mrt-map-viewport" class="mrt-map-viewport">
+        <div id="mrt-map" class="mrt-map"></div>
+      </div>
     </div>
   </section>
 
   <!-- 3. Fee-drag machine -->
-  <section class="visual-section" aria-labelledby="calc-heading">
+  <section class="visual-section" aria-labelledby="calc-heading" data-formation="rain">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 id="calc-heading" class="kinetic display-lg">Fee-drag calculator</h2>

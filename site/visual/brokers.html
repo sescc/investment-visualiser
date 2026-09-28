@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brokers — who executes it — SGInvest Visualiser (visual edition)</title>
+<meta name="description" content="Broker types in Singapore — CDP-linked vs custodian vs international — staged as a choose-your-fighter select screen, with a live Fee Race calculator using real provider fees. Not financial advice.">
+<!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
+<script>
+(function () {
+  try { var t = localStorage.getItem('sgtheme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  try { var calm = new URLSearchParams(location.search).get('calm') === '1' || localStorage.getItem('sg-visual-calm') === '1'; if (calm) document.documentElement.classList.add('is-calm'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/calc.css">
+<link rel="stylesheet" href="css/brokers.css">
+</head>
+<body class="visual-edition">
+<a class="sr-only" href="#main">Skip to content</a>
+<header id="app-header"></header>
+<div id="app-disclaimer" class="disclaimer" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Hero / intro — same heading + intro copy as stable's site/brokers.html -->
+  <section class="visual-section hero-section" data-formation="grid">
+    <div class="visual-wrap">
+      <div class="visual-section-head brokers-hero">
+        <span class="chip" style="background:var(--world-brokers-soft); color:var(--world-brokers)">Who executes it</span>
+        <h1 class="kinetic display-hero" id="brokers-headline" style="margin-top:8px">Brokers</h1>
+        <p class="muted">The single most important thing to understand before you sign up: whose name are your shares
+          actually held in?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CDP vs custodian explainer — same diagram/legend copy as stable, restyled -->
+  <section class="visual-section" aria-labelledby="ownership-heading" data-formation="rings">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="ownership-heading" class="kinetic display-lg">Whose name is on the shares?</h2>
+        <p class="muted">Every broker type below is one of these two lanes. Same trade, different paperwork.</p>
+      </div>
+      <div class="glass diagram-card">
+        <svg class="diagram-svg" viewBox="0 0 900 260" role="img" aria-labelledby="cdp-title">
+          <title id="cdp-title">CDP-linked brokers register Singapore shares directly in your name at CDP. Custodian brokers hold shares in trust on your behalf.</title>
+          <defs>
+            <marker id="arrow-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="fill-muted"></path>
+            </marker>
+          </defs>
+
+          <!-- Decorative "share certificate" chips (brokers.js's ownership scene) — aria-hidden, never a
+               content element. Placed FIRST in the SVG (paint order), before every box/text group below,
+               so they always render BEHIND every piece of text/box in the diagram — a chip mid-flight can
+               never cover a label, no matter what path it travels (found in review: they previously sat
+               last in the markup, painting on top of "You"). Drawn at their FINAL resting spot in empty
+               box space clear of any centred text; the scene tweens a transform OFFSET back to 0, never
+               touches opacity of the boxes/text around them. -->
+          <g id="ownership-chip-cdp" aria-hidden="true">
+            <rect x="758" y="34" width="24" height="16" rx="3" class="fill-good-soft" stroke="var(--good)" stroke-width="1.5"></rect>
+          </g>
+          <g id="ownership-chip-pooled" aria-hidden="true">
+            <rect x="578" y="169" width="24" height="16" rx="3" class="fill-brokers-soft" stroke="var(--world-brokers)" stroke-width="1.5"></rect>
+          </g>
+
+          <!-- Lane 1: CDP-linked -->
+          <text x="10" y="24" class="diagram-label-lg" font-size="14">CDP-linked</text>
+          <path d="M160 55 H280" class="diagram-arrow" marker-end="url(#arrow-b)"></path>
+          <path d="M440 55 H560" class="diagram-arrow" marker-end="url(#arrow-b)"></path>
+          <g><rect x="10" y="30" width="150" height="50" rx="12" class="fill-surface-2 diagram-node-box"></rect><text x="85" y="60" text-anchor="middle" class="diagram-label" font-size="13">You</text></g>
+          <g><rect x="285" y="30" width="155" height="50" rx="12" class="fill-brokers-soft diagram-node-box"></rect><text x="362" y="60" text-anchor="middle" class="diagram-label" font-size="12" style="fill:var(--world-brokers)">Broker (routes order)</text></g>
+          <g><rect x="565" y="20" width="230" height="70" rx="12" class="fill-good-soft diagram-node-box"></rect>
+            <text x="680" y="48" text-anchor="middle" class="diagram-label" font-size="12" style="fill:var(--good)">CDP</text>
+            <text x="680" y="66" text-anchor="middle" class="diagram-label-muted" font-size="10.5">shares registered in YOUR name</text>
+          </g>
+
+          <line x1="0" y1="130" x2="900" y2="130" class="stroke-line"></line>
+
+          <!-- Lane 2: Custodian -->
+          <text x="10" y="160" class="diagram-label-lg" font-size="14">Custodian</text>
+          <path d="M160 190 H280" class="diagram-arrow" marker-end="url(#arrow-b)"></path>
+          <g><rect x="10" y="165" width="150" height="50" rx="12" class="fill-surface-2 diagram-node-box"></rect><text x="85" y="195" text-anchor="middle" class="diagram-label" font-size="13">You</text></g>
+          <g><rect x="285" y="155" width="330" height="70" rx="12" class="fill-brokers-soft diagram-node-box"></rect>
+            <text x="450" y="183" text-anchor="middle" class="diagram-label" font-size="12" style="fill:var(--world-brokers)">Broker holds shares in trust (nominee)</text>
+            <text x="450" y="201" text-anchor="middle" class="diagram-label-muted" font-size="10.5">bundled with other clients' holdings</text>
+          </g>
+        </svg>
+        <p class="chart-legend-text">CDP-linked: shares sit in a government-run depository under your own name — you
+          can move them between brokers freely. Custodian: the broker (or its nominee) holds shares on your behalf,
+          which is often cheaper and easier for overseas markets, but moving out can be slower.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Choose your fighter — one character-select card per broker type -->
+  <section class="visual-section" aria-labelledby="fighters-heading" data-formation="nebula">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="fighters-heading" class="kinetic display-lg">Choose your fighter</h2>
+        <p class="muted">Eight ways to get a trade executed. Tap a card — or tab to it and press Enter — for the full
+          stats, pros and cons, sign-up quest and provider list.</p>
+      </div>
+      <div id="brokers-empty"></div>
+      <div class="visual-grid cols-3" id="brokers-fighters"></div>
+    </div>
+  </section>
+
+  <!-- 4. Fee-drag calculator, staged as "The Fee Race" — same heading/intro copy as stable -->
+  <section class="visual-section" aria-labelledby="calc-heading" data-formation="rain">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="calc-heading" class="kinetic display-lg">Fee-drag calculator</h2>
+        <p class="muted">Estimate total fees across broker providers for a given investing scenario.</p>
+      </div>
+      <div id="fee-race-mount"></div>
+      <div id="calc-mount"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"visual-wrap\" style=\"padding:24px 0\"><div class=\"panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173/site/visual/</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script type="module" src="js/brokers.js"></script>
+</body>
+</html>

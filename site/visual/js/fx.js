@@ -1,27 +1,29 @@
-// fx.js — small interaction flourishes: custom cursor, magnetic buttons, holographic tilt cards,
-// a confetti burst, and an opt-in WebAudio "blip". Every visual effect here is decoration on top of
-// real, already-visible DOM content — nothing in this file is required to read or use a page.
+// fx.js — small interaction flourishes: magnetic buttons, holographic tilt cards, a confetti burst, and
+// an opt-in WebAudio "blip". Every visual effect here is decoration on top of real, already-visible DOM
+// content — nothing in this file is required to read or use a page.
 //
 // PUBLIC API
-//   mountFx({ cursor = true, magnetic = true, tilt = true } = {}) → { destroy() }
-//     Single entry point for shell.js. Wraps all three in one motion.js `motionScope`, so Calm mode
-//     or reduced-motion tears every listener down together, and turning motion back on remounts them.
-//     Each sub-feature additionally no-ops when `(pointer: fine)` doesn't match (touch/coarse
-//     pointers get no cursor replacement, no magnetic pull, no tilt — the card/button still works,
-//     just as a normal tap target).
-//     - cursor:   replaces the system cursor with a ring that follows the pointer (`.cursor-dot`,
-//                 `body.cursor-active` — see visual.css). Uses `mix-blend-mode: difference` so it
-//                 stays visible on every background without per-theme tuning.
+//   mountFx({ magnetic = true, tilt = true } = {}) → { destroy() }
+//     Single entry point for shell.js. Wraps both in one motion.js `motionScope`, so Calm mode or
+//     reduced-motion tears every listener down together, and turning motion back on remounts them.
+//     Each sub-feature additionally no-ops when `(pointer: fine)` doesn't match (touch/coarse pointers
+//     get no magnetic pull, no tilt — the card/button still works, just as a normal tap target).
 //     - magnetic: any element with `data-magnetic` is pulled a few px toward a nearby pointer and
-//                 eases back on pointerleave. Delegated listener, so elements added to the DOM after
-//                 mount (e.g. cards rendered later by hub.js) are picked up automatically.
+//                 eases back on pointerleave.
 //     - tilt:     any element with `data-tilt` (the `.foil-card` pattern) gets a perspective
 //                 rotateX/rotateY tilt toward the pointer, and sets `--mx`/`--my` (0–100%) custom
 //                 properties the card's CSS sheen (`.foil-card::after`) can read for a moving
-//                 highlight. Also delegated.
+//                 highlight.
+//     Both are delegated (`pointerover`/`pointerout` on `document`, so elements added to the DOM after
+//     mount — e.g. cards rendered later by hub.js — are picked up automatically) and only listen for
+//     `pointermove` on the ONE currently-hovered element (added on pointerover, removed on pointerout)
+//     rather than a permanent document-wide pointermove listener. Each burst of pointermove events
+//     coalesces into a single write per animation frame (one `requestAnimationFrame` per burst, not a
+//     continuous loop — it schedules nothing while the pointer is still).
 //   confettiBurst({ x, y }, { count, colors } = {})
 //     Fire-and-forget canvas 2D burst (~1.5s), auto-removes its own canvas. No-op when motion isn't
 //     allowed (motion.js `motionAllowed()`). Defaults `colors` to the three world hues read from CSS.
+//     `count` is capped at 40 regardless of what the caller asks for.
 //   getSoundEnabled() / setSoundEnabled(bool)
 //     localStorage `sg-visual-sound` (try/catch), default **off**.
 //   playBlip({ freq, duration, type, gain } = {})
@@ -38,70 +40,60 @@ function cssVarColor(name, fallback) {
 }
 
 // ---------------------------------------------------------------------------
-// Custom cursor
-// ---------------------------------------------------------------------------
-
-function mountCursor() {
-  if (!FINE_POINTER()) return null;
-  const dot = document.createElement('div');
-  dot.className = 'cursor-dot';
-  dot.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(dot);
-  document.body.classList.add('cursor-active');
-
-  function onMove(e) {
-    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-  }
-  function onDown() { dot.classList.add('is-pressed'); }
-  function onUp() { dot.classList.remove('is-pressed'); }
-  function onOver(e) {
-    dot.classList.toggle('is-interactive', !!e.target.closest?.('a, button, [data-tilt], [data-magnetic]'));
-  }
-
-  window.addEventListener('pointermove', onMove, { passive: true });
-  window.addEventListener('pointerdown', onDown, { passive: true });
-  window.addEventListener('pointerup', onUp, { passive: true });
-  window.addEventListener('pointerover', onOver, { passive: true });
-
-  return () => {
-    window.removeEventListener('pointermove', onMove);
-    window.removeEventListener('pointerdown', onDown);
-    window.removeEventListener('pointerup', onUp);
-    window.removeEventListener('pointerover', onOver);
-    document.body.classList.remove('cursor-active');
-    dot.remove();
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Magnetic buttons — delegated, so late-rendered [data-magnetic] elements work without a remount.
+// Magnetic buttons — delegated pointerover/pointerout find the target; a pointermove listener is added
+// only to that one element while it's hovered (removed again on pointerout), and each burst of moves
+// coalesces into a single write per animation frame rather than writing on every event.
 // ---------------------------------------------------------------------------
 
 function mountMagnetic() {
   if (!FINE_POINTER()) return null;
   let active = null;
-  function onMove(e) {
-    const el = e.target.closest?.('[data-magnetic]') || null;
-    if (el !== active) {
-      if (active) { active.style.transition = 'transform .25s ease-out'; active.style.transform = ''; }
-      active = el;
-      if (active) active.style.transition = 'transform .05s linear';
-    }
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const mx = e.clientX - (r.left + r.width / 2);
-    const my = e.clientY - (r.top + r.height / 2);
-    el.style.transform = `translate(${mx * 0.22}px, ${my * 0.22}px)`;
+  let pendingEvent = null;
+  let raf = null;
+
+  function flush() {
+    raf = null;
+    if (!active || !pendingEvent) return;
+    const r = active.getBoundingClientRect();
+    const mx = pendingEvent.clientX - (r.left + r.width / 2);
+    const my = pendingEvent.clientY - (r.top + r.height / 2);
+    active.style.transform = `translate(${mx * 0.22}px, ${my * 0.22}px)`;
   }
-  document.addEventListener('pointermove', onMove, { passive: true });
+  function onMove(e) {
+    pendingEvent = e;
+    if (raf == null) raf = requestAnimationFrame(flush);
+  }
+  function onOver(e) {
+    const el = e.target.closest?.('[data-magnetic]');
+    if (!el || el === active) return;
+    active = el;
+    active.style.transition = 'transform .05s linear';
+    active.addEventListener('pointermove', onMove, { passive: true });
+  }
+  function onOut(e) {
+    if (!active || (e.relatedTarget && active.contains(e.relatedTarget))) return;
+    active.removeEventListener('pointermove', onMove);
+    active.style.transition = 'transform .25s ease-out';
+    active.style.transform = '';
+    active = null;
+    pendingEvent = null;
+    if (raf != null) { cancelAnimationFrame(raf); raf = null; }
+  }
+
+  document.addEventListener('pointerover', onOver, { passive: true });
+  document.addEventListener('pointerout', onOut, { passive: true });
   return () => {
-    document.removeEventListener('pointermove', onMove);
-    if (active) { active.style.transition = ''; active.style.transform = ''; }
+    document.removeEventListener('pointerover', onOver);
+    document.removeEventListener('pointerout', onOut);
+    if (active) { active.removeEventListener('pointermove', onMove); active.style.transition = ''; active.style.transform = ''; }
+    if (raf != null) cancelAnimationFrame(raf);
   };
 }
 
 // ---------------------------------------------------------------------------
-// Holographic tilt cards — delegated; sets --mx/--my for the CSS sheen in visual.css's .foil-card::after
+// Holographic tilt cards — same delegated pointerover/pointerout + per-element pointermove + rAF-
+// coalesced writes as magnetic buttons above. Sets --mx/--my for the CSS sheen in
+// visual.css's .foil-card::after.
 // ---------------------------------------------------------------------------
 
 function resetTilt(el) {
@@ -113,32 +105,48 @@ function resetTilt(el) {
 function mountTilt() {
   if (!FINE_POINTER()) return null;
   let active = null;
-  function onMove(e) {
-    const el = e.target.closest?.('[data-tilt]') || null;
-    if (el !== active) {
-      if (active) resetTilt(active);
-      active = el;
-      if (active) active.style.transition = '';
-    }
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
+  let pendingEvent = null;
+  let raf = null;
+
+  function flush() {
+    raf = null;
+    if (!active || !pendingEvent) return;
+    const r = active.getBoundingClientRect();
+    const px = (pendingEvent.clientX - r.left) / r.width;
+    const py = (pendingEvent.clientY - r.top) / r.height;
     const rx = (0.5 - py) * 10;
     const ry = (px - 0.5) * 12;
-    el.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
-    el.style.setProperty('--mx', `${px * 100}%`);
-    el.style.setProperty('--my', `${py * 100}%`);
+    active.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.015)`;
+    active.style.setProperty('--mx', `${px * 100}%`);
+    active.style.setProperty('--my', `${py * 100}%`);
   }
-  function onLeave(e) {
-    if (active && (!e.relatedTarget || !active.contains(e.relatedTarget))) { resetTilt(active); active = null; }
+  function onMove(e) {
+    pendingEvent = e;
+    if (raf == null) raf = requestAnimationFrame(flush);
   }
-  document.addEventListener('pointermove', onMove, { passive: true });
-  document.addEventListener('pointerout', onLeave, { passive: true });
+  function onOver(e) {
+    const el = e.target.closest?.('[data-tilt]');
+    if (!el || el === active) return;
+    active = el;
+    active.style.transition = '';
+    active.addEventListener('pointermove', onMove, { passive: true });
+  }
+  function onOut(e) {
+    if (!active || (e.relatedTarget && active.contains(e.relatedTarget))) return;
+    active.removeEventListener('pointermove', onMove);
+    resetTilt(active);
+    active = null;
+    pendingEvent = null;
+    if (raf != null) { cancelAnimationFrame(raf); raf = null; }
+  }
+
+  document.addEventListener('pointerover', onOver, { passive: true });
+  document.addEventListener('pointerout', onOut, { passive: true });
   return () => {
-    document.removeEventListener('pointermove', onMove);
-    document.removeEventListener('pointerout', onLeave);
-    if (active) resetTilt(active);
+    document.removeEventListener('pointerover', onOver);
+    document.removeEventListener('pointerout', onOut);
+    if (active) { active.removeEventListener('pointermove', onMove); resetTilt(active); }
+    if (raf != null) cancelAnimationFrame(raf);
   };
 }
 
@@ -146,9 +154,9 @@ function mountTilt() {
 // mountFx — single motionScope wrapping whichever sub-features are requested.
 // ---------------------------------------------------------------------------
 
-export function mountFx({ cursor = true, magnetic = true, tilt = true } = {}) {
+export function mountFx({ magnetic = true, tilt = true } = {}) {
   const scope = motionScope(() => {
-    const cleanups = [cursor && mountCursor(), magnetic && mountMagnetic(), tilt && mountTilt()].filter(Boolean);
+    const cleanups = [magnetic && mountMagnetic(), tilt && mountTilt()].filter(Boolean);
     return () => cleanups.forEach(fn => fn());
   });
   return scope;
@@ -162,7 +170,7 @@ export function confettiBurst(origin = {}, opts = {}) {
   if (!motionAllowed()) return;
   const x = origin.x ?? window.innerWidth / 2;
   const y = origin.y ?? window.innerHeight / 2;
-  const count = opts.count ?? 70;
+  const count = Math.min(opts.count ?? 40, 40);
   const colors = opts.colors || [
     cssVarColor('--world-products', '#0f8b8d'),
     cssVarColor('--world-methods', '#d98a12'),

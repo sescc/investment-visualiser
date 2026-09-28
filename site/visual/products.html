@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Products — what to buy | SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Investment products available in Singapore: what they are, their risk and liquidity, and where their returns come from — the spectacle-first edition.">
-<!-- Importmap MUST come before any <script type="module">. Three.js core from cdnjs (pinned 0.186.0),
-     addons (EffectComposer/UnrealBloomPass/etc.) from jsDelivr /npm (pinned), per CLAUDE.md. -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
-  }
-}
-</script>
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
 <script>
 (function () {
@@ -34,7 +24,7 @@
 <main id="main">
 
   <!-- 1. Hero — same chip/heading/intro copy as the stable page (site/products.html), verbatim. -->
-  <section class="visual-section hero-section products-hero">
+  <section class="visual-section hero-section products-hero" data-formation="nebula">
     <div class="visual-wrap">
       <div class="visual-section-head" style="max-width:680px">
         <h1><span class="chip" style="background:var(--world-products-soft); color:var(--world-products)">What to buy</span></h1>
@@ -46,7 +36,7 @@
   </section>
 
   <!-- 2. Controls: category filters + risk thermometer -->
-  <section class="visual-section controls-section">
+  <section class="visual-section controls-section" data-formation="grid">
     <div class="visual-wrap">
       <div class="glass controls-panel">
         <div class="controls-filters">
@@ -69,7 +59,7 @@
   </section>
 
   <!-- 3. Growth ↔ income spectrum -->
-  <section class="visual-section" id="spectrum-section">
+  <section class="visual-section" id="spectrum-section" data-formation="rings">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">Growth ↔ income spectrum</h2>
@@ -80,7 +70,7 @@
   </section>
 
   <!-- 4. The deck: pinned horizontal scroll of holographic trading cards, grouped into booster packs -->
-  <section class="visual-section deck-section" id="deck-section">
+  <section class="visual-section deck-section" id="deck-section" data-formation="helix">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">The deck</h2>
@@ -95,7 +85,7 @@
   </section>
 
   <!-- 5. Where the return comes from — liquid-fill columns -->
-  <section class="visual-section" id="returns-section">
+  <section class="visual-section" id="returns-section" data-formation="rain">
     <div class="visual-wrap">
       <div class="visual-section-head">
         <h2 class="kinetic display-lg">Where the return comes from</h2>

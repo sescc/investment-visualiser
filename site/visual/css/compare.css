@@ -1,0 +1,259 @@
+/* compare.css — page-specific styles for site/visual/compare.html + js/compare.js.
+ * Loaded after visual.css (see compare.html's <head>); reuses visual.css's shared component classes
+ * (.glass/.panel, .chip*, .badge*, .btn*, .foil-card, .meter*, .data-table/.table-scroll, .chart-table)
+ * and only adds the page-specific pieces: the picker, the versus arena (fighter cards + kinetic "VS" +
+ * attribute-clash bars), the facts grid, and the fee jar.
+ *
+ * Motion safety: nothing here sets opacity:0/visibility:hidden on real content except the decorative
+ * elements law 6 explicitly allows to start hidden (clash bars, the radar wrapper) — never names,
+ * totals, labels or FX/exchange notes. js/compare.js's scroll scenes (hero drift, scrubbed headings,
+ * clash-bar/radar-wrapper scrub-in, facts batchReveal, the pinned fee-jar year scrub) animate only
+ * `transform`/`opacity`; the jar fill is `scaleY` with `transform-origin: bottom` (never `height`), and
+ * every number/label/fill level is set as real text/transform regardless of motion state.
+ */
+
+.muted { color: var(--muted); }
+
+/* ============================================================================
+   Hero
+   ============================================================================ */
+
+.compare-hero p { margin: 6px 0 0; }
+
+/* ============================================================================
+   Picker
+   ============================================================================ */
+
+.arena-picker { margin-bottom: 18px; }
+.arena-search {
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: .95rem;
+  font-family: var(--font-visual-body);
+}
+.arena-search:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.arena-picker .chip-row { margin-top: 10px; margin-bottom: 0; }
+
+/* ============================================================================
+   Versus arena
+   ============================================================================ */
+
+.arena-stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 18px;
+  margin: 24px 0;
+  min-height: 60px;
+}
+.arena-empty {
+  width: 100%;
+  text-align: center;
+  padding: 32px 16px;
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-xl);
+}
+
+.fighter-slot {
+  flex: 1 1 260px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  border-top: 4px solid var(--fighter-color, var(--world-brokers));
+  text-align: left;
+}
+.fighter-remove { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; }
+.fighter-icon { color: var(--fighter-color, var(--world-brokers)); }
+.fighter-name { margin: 0; font-size: 1.15rem !important; padding-right: 30px; }
+.fighter-summary { margin: 0; font-size: .9rem; line-height: 1.4; }
+.fighter-fee { font-size: .86rem; }
+
+.vs-type {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: clamp(1.6rem, 3vw + 1rem, 2.6rem);
+  font-weight: 900;
+  letter-spacing: .04em;
+  background: linear-gradient(135deg, var(--world-products), var(--world-brokers));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Was `filter: drop-shadow(...)` — CSS `filter` is never allowed (perf rule), even static, so the
+     glow comes from a text-shadow on the glyphs instead. */
+  text-shadow: 0 0 14px color-mix(in srgb, var(--world-brokers) 55%, transparent);
+  padding: 0 4px;
+}
+
+/* ============================================================================
+   Attribute clash (tug-of-war bars)
+   ============================================================================ */
+
+.clash-wrap { display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
+.clash-row { display: flex; flex-direction: column; gap: 6px; }
+.clash-label { font-weight: 700; font-size: .86rem; }
+.clash-track {
+  position: relative;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--good-soft), var(--warn-soft), var(--bad));
+  opacity: .35;
+}
+.clash-track { opacity: 1; background: var(--surface-2); border: 1px solid var(--glass-border); }
+.clash-center-line {
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--glass-border);
+}
+/* Tug-of-war bars: left/width/transform-origin are set once (static), never animated — only
+   `scaleX` is tweened (js/compare.js's clash-bar scroll scrub), growing from the shared 50% centre
+   origin out to each fighter's value. Decorative (law 6 lists "bars" as allowed to start hidden);
+   the marker dots/tags/legend beside them carry the actual values and are never animated to hidden. */
+.clash-bar {
+  position: absolute;
+  height: 6px;
+  margin-top: -3px; /* static vertical centering on the track's 50% `top` — never animated */
+  border-radius: 999px;
+  opacity: .85;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+.clash-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.clash-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--marker-color, var(--world-brokers));
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--glass-border), 0 0 8px color-mix(in srgb, var(--marker-color, var(--world-brokers)) 55%, transparent);
+}
+.clash-tag {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--ink-2);
+  opacity: 0;
+  transition: opacity .15s ease;
+  pointer-events: none;
+}
+.clash-marker:hover .clash-tag, .clash-marker:focus-visible .clash-tag { opacity: 1; }
+.clash-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: .78rem; }
+.clash-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.clash-legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* ============================================================================
+   Radar
+   ============================================================================ */
+
+.radar-wrap { max-width: 480px; margin: 0 auto; height: 360px; position: relative; }
+.radar-empty-note { text-align: center; }
+
+/* ============================================================================
+   Facts grid
+   ============================================================================ */
+
+.facts-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+  margin-bottom: 16px;
+}
+@media (min-width: 720px) { .facts-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); } }
+
+.fact-card { border-top: 4px solid var(--fact-color, var(--world-brokers)); }
+.fact-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.fact-name { margin: 0; font-size: 1.05rem; }
+.fact-summary { font-size: .9rem; margin: 0 0 8px; }
+.fact-fee { font-size: .86rem; margin-bottom: 8px; }
+.fact-line { font-size: .84rem; margin: 4px 0; }
+.fact-proscons { display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 10px; }
+@media (min-width: 480px) { .fact-proscons { grid-template-columns: 1fr 1fr; } }
+.fact-proscons h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: .82rem; }
+.fact-proscons ul { margin: 0; padding-left: 16px; font-size: .82rem; display: grid; gap: 4px; }
+.fact-proscons div:first-child h4 { color: var(--good); }
+.fact-proscons div:last-child h4 { color: var(--bad); }
+
+/* Shared meter row (reuses visual.css's .meter/.dot classes) */
+.compare-meters { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: .74rem; color: var(--muted); margin: 2px 0; }
+.meter-item { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ============================================================================
+   Fee jar
+   ============================================================================ */
+
+.fee-jar { margin-top: 24px; }
+.jar-panel { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+@media (max-width: 560px) { .jar-panel { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+
+.jar-flask {
+  position: relative;
+  width: 90px;
+  height: 200px;
+  border-radius: 14px 14px 22px 22px;
+  background: var(--surface-2);
+  border: 2px solid var(--glass-border);
+  overflow: hidden;
+  flex: none;
+}
+/* scaleY (not `height`, per the perf rules) from a bottom transform-origin, so the fill grows
+   upward exactly like the old height-based version looked, without animating a layout property. */
+.jar-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--warn) 80%, white 20%), var(--bad));
+}
+.jar-coin-drop {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.jar-readout { display: flex; flex-direction: column; gap: 6px; }
+.jar-caption { margin: 0; font-size: .84rem; }
+.jar-total { margin: 0; }
+.jar-slider-label { font-size: .82rem; font-weight: 700; margin-top: 6px; }
+#jar-year { width: 100%; max-width: 320px; accent-color: var(--world-brokers); }
+.jar-fx-note { margin-top: 12px; font-size: .82rem; line-height: 1.6; }
+.jar-fx-note svg { vertical-align: -2px; }
+
+/* ============================================================================
+   Mobile
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .arena-stage { flex-direction: column; align-items: stretch; }
+  .fighter-slot { max-width: none; }
+  .vs-type { align-self: center; }
+}

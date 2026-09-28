@@ -1,0 +1,105 @@
+/* hub.css — page-specific styles for site/visual/index.html + js/hub.js. Loaded after visual.css (see
+ * index.html's <head>); reuses visual.css's shared component classes (.glass/.panel, .kinetic, .foil-card,
+ * .chip*, .btn*, .modal-*, .data-table/.table-scroll) and only adds hub-only pieces: the hero portal-ring
+ * accents, the risk-vs-access SVG scatter (replaces the old WebGL bubble galaxy — see visual.css's own
+ * note at its "Hub page" section), the world-card fan-out slot, and the pros/cons modal body (same
+ * markup/classes as products.css's card-back pros/cons, duplicated here for the same reason hub.js's file
+ * header gives for not importing site/js/components.js).
+ *
+ * Motion safety: nothing here sets opacity below 0.85 on text-bearing content, and no selector here uses
+ * a banned animated property (backdrop-filter/mix-blend-mode/filter/width/height/top/left/box-shadow/
+ * background-position). js/hub.js only ever creates its scroll scenes inside motion.js's motionScope
+ * (directly, or via scene()), so Calm mode/reduced-motion tears every one of them down to this file's
+ * plain, fully-visible authored layout.
+ */
+
+/* ============================================================================
+   Hero: portal accent rings (decorative — see js/hub.js:mountJourneyScene). Hidden by default; only
+   scene() ever reveals them (opacity 0 → 1 as the coin passes), so with no motion they just never show,
+   which is fine since they carry no content of their own.
+   ============================================================================ */
+
+.portal-ring {
+  fill: none;
+  stroke-width: 3;
+  opacity: 0;
+  pointer-events: none;
+  /* Lets GSAP's `scale` pivot around the ring's own centre without needing its `svgOrigin` option (found
+     in review to produce wildly wrong transform matrices on this markup when combined with `scale`). */
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ============================================================================
+   Risk vs. access map — inline SVG scatter (js/hub.js:mountGalaxy/mountScatterScene)
+   ============================================================================ */
+
+.scatter-wrap { overflow: visible; }
+.scatter-svg { width: 100%; height: auto; display: block; }
+.scatter-axis { stroke: var(--ink-2); stroke-width: 1.5; }
+.scatter-grid { stroke: var(--glass-border); stroke-width: 1; }
+.scatter-bubble { stroke: var(--surface); stroke-width: 1.5; cursor: pointer; }
+.scatter-point:focus-visible .scatter-bubble { stroke: var(--ink); stroke-width: 2.5; }
+.scatter-point {
+  cursor: pointer;
+  /* Same reasoning as .portal-ring above — the burst scene's `scale` pivots around each point's own
+     bounding box (its final resting spot), not `svgOrigin`. */
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.scatter-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  fill: var(--ink);
+  paint-order: stroke fill; /* a halo behind the letterforms keeps names legible over other bubbles */
+  stroke: var(--glass-bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.scatter-leader { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 1.4; }
+
+/* Below 768px there isn't room for 18 always-on, non-overlapping labels next to a compact chart (found
+   in review — js/hub.js:layoutScatterLabels still gives every label a collision-free SPOT, but that
+   spot can be a long way from a crowded bubble at this width). Labels/leaders default to hidden and
+   reveal on hover/focus of their OWN bubble group (nesting — see hub.js's comment on why the label lives
+   inside `.scatter-point` — makes this a plain descendant selector, no `:has()` needed); the `<details>`
+   table beneath the chart stays the always-visible, always-accurate full listing regardless. Calm mode /
+   reduced motion still shows every label permanently — law 6 requires content, not just a hover
+   affordance, once motion is off — matching the project's existing `.is-calm` override pattern
+   (see products.css's `.quest-token`). */
+@media (max-width: 767px) {
+  .scatter-label, .scatter-leader { opacity: 0; transition: opacity .15s ease; }
+  .scatter-point:hover .scatter-label, .scatter-point:hover .scatter-leader,
+  .scatter-point:focus .scatter-label, .scatter-point:focus .scatter-leader,
+  .scatter-point:focus-within .scatter-label, .scatter-point:focus-within .scatter-leader {
+    opacity: 1;
+  }
+}
+.is-calm .scatter-label, .is-calm .scatter-leader,
+html.is-calm .scatter-label, html.is-calm .scatter-leader { opacity: 1 !important; }
+@media (prefers-reduced-motion: reduce) {
+  .scatter-label, .scatter-leader { opacity: 1 !important; transition: none; }
+}
+
+/* ============================================================================
+   World cards: fan-out + flip slot (js/hub.js:mountWorldCardsScene). The scene animates the slot's
+   transform, never the `.world-card` anchor itself (fx.js's tilt/magnetic write inline transform on the
+   anchor directly, via data-tilt/data-magnetic).
+   ============================================================================ */
+
+/* `.world-card`'s own look (padding, border-top hue, count/teaser type) is already in visual.css's "Hub
+   page" section — only the new wrapper needs a rule here, and it's a plain pass-through. */
+.world-card-slot { display: block; }
+
+/* ============================================================================
+   Bubble pros/cons modal (js/hub.js:openBubbleModal) — same classes as products.css's card-back
+   pros/cons, duplicated here since this page doesn't load products.css.
+   ============================================================================ */
+
+.proscons-grid { display: grid; gap: 14px; grid-template-columns: 1fr; margin: 4px 0; }
+@media (min-width: 480px) { .proscons-grid { grid-template-columns: 1fr 1fr; } }
+.proscons-col h3 { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: .95rem; }
+.proscons-col ul { margin: 0; padding-left: 18px; font-size: .86rem; display: grid; gap: 4px; }
+.proscons-pros h3 { color: var(--good); }
+.proscons-cons h3 { color: var(--bad); }
+.best-for, .eligibility { font-size: .84rem; margin: 4px 0; }

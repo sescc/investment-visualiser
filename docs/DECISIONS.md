@@ -2,6 +2,7 @@
 
 Sessions of 22 Sep 2026: §1–8 session 1 (project creation), §9–10 session 2 (headless adapters, cost-model extensions).
 23–24 Sep 2026: §11 supercharge session loop adopted, §12 open follow-ups closed, §13 GitHub Pages hosting.
+25–28 Sep 2026: §14 visual edition.
 Earlier bullets superseded later are marked in place. Newest context last within each section.
 Format: **Decision** — why. Edge cases list what happens and where it's handled.
 
@@ -219,3 +220,131 @@ Format: **Decision** — why. Edge cases list what happens and where it's handle
 - **`deploy` job checks out `ref: ${{ github.ref_name }}`** (defaults to `main`) so a scheduled run picks up the
   data commit the `scrape` job just pushed, even though the triggering event's `github.ref` was already the
   default branch before that push.
+
+## 14. Visual edition (25–28 Sep 2026)
+- **A second edition at `site/visual/`, with identical content to the stable site** (user). Same entries,
+  providers, pros/cons, steps, glossary and quiz as `site/`; a second *rendering*, not a new data model
+  (`docs/architecture-map.md`'s "content parity" law).
+- **An edition-switch button on every page of both editions** (user). `site/js/edition-switch.js`, shared —
+  same href mapping (keeps the query string and hash), same component styled per edition.
+- **Shared pure modules `content.js`/`feeview.js`** (Claude), so both editions apply identical content and
+  fee-display rules instead of each holding its own copy that could drift. `feeLineInner`/`freshnessBadge`
+  (stable) and their visual-edition equivalents are now thin renderers over `feeview.js:feeSummary`.
+- **Static section copy (hero headline, intros) is duplicated verbatim in the visual HTML** (Claude) —
+  accepted duplication rather than extracting it into a shared JS module, since the stable pages would then
+  need JS just to show their own headline text. The independent verifier checks the two editions' copy
+  stays in sync; this is a deliberate exception to "no duplication," not an oversight.
+- **`scripts/build-site.mjs` is the single assembly step for both GitHub Pages and Vercel** (user wanted
+  Vercel previews in addition to Pages). Vercel Analytics is host-gated to `*.vercel.app` (Claude) — the
+  script itself doesn't know which host it's building for, so the gate lives in the loaded page
+  (`site/visual/js/analytics.js`), not the build step.
+- **WebGL removed entirely (user, 26 Sep 2026)**, after a headless-Edge perf baseline showed the original
+  Three.js particle stage was the dominant cost: scroll p95 67–150 ms and 55–99% of frames over 33 ms
+  across the 5 visual pages, vs. 17 ms / 0.3% on the stable reference pages taken in the same run.
+  **Supersedes** the original design (session of 25 Sep): a full-viewport Three.js particle field
+  (`stage.js`, ~16k particles, curl-noise drift, UnrealBloom in dark mode) loaded via a `<script
+  type="importmap">` pointing `three/addons/` at jsDelivr — both the Three.js stage and the jsDelivr CDN
+  exception are gone; cdnjs-only again (`CLAUDE.md`). Replaced by `backdrop.js`: three DOM blobs painted
+  with `radial-gradient`, no canvas, no render loop.
+- **Maximal scroll-driven animation (user, 26 Sep 2026)** — most sections pin and play as scroll-scrubbed
+  scenes instead of the original fire-and-forget reveal-on-load entrances.
+- **Motion performance rules, project law 7** (Claude, directly from the lag diagnosis): animate only
+  transform/opacity; never `backdrop-filter` (was re-blurring the glass panels over the moving canvas every
+  frame), `mix-blend-mode` (the grain overlay), CSS `filter`, or animated background-position (the aurora
+  wash) / width / height (race lanes, the fee jar) / top (the edition-switch button, fixed 28 Sep — see
+  below) / left (deck cards); no own `requestAnimationFrame` loops (the custom cursor's document-wide
+  pointermove and the WebGL render loop are both gone); no infinite CSS animation except hover/focus.
+- **Text never hidden/covered, and fee numbers never mid-tween — project law 6** (Claude + advisor). Text
+  may move but never drops below ~0.85 opacity or sits covered; a displayed fee total is always a real
+  `computeCost` result, never an interpolated value, so scroll may drive non-fee counts only.
+- **Interactive forms are never pinned; scenes below 768px scrub without pinning** (Claude) — pinning a
+  quiz, a calculator, a filter set, or the compare selection UI would trap keyboard/scroll focus inside an
+  input surface; mobile viewports drop the pin entirely (address-bar resize makes pinned heights unstable)
+  and just scrub the same timeline unpinned instead.
+- **The Fee Race is one persistent pinned scene, rebuilt via `tl.clear()` + a progress seek, not
+  destroy/recreate on every calculator result** (agent C) — recreating the ScrollTrigger on every result
+  was causing a visible scroll-position jump each time the calculator re-ranked; clearing and reseeking the
+  same timeline keeps the user's scroll position untouched.
+- **The Compare fee jar's pin start adapts between `'top top'` and `'bottom bottom'`** instead of reserving
+  a fixed 100vh spacer (Claude, review) — a fixed spacer left the jar scene unreachable by scroll on short
+  pages/datasets; the adaptive start always has enough room regardless of page length.
+- **`calc.css` consolidation** — the visual calculator's styling (shared by methods/brokers/compare, the
+  only 3 visual pages that mount it) was pulled into one `site/visual/css/calc.css` rather than duplicated
+  per page.
+- **Section→formation observer and `scrubOnEntry` consolidated into shared modules** (Claude, 27 Sep 2026)
+  — five near-identical per-page `IntersectionObserver`/`ScrollTrigger` copies for "switch the backdrop as
+  this section enters" became one observer built into `backdrop.js:mountBackdrop`; four near-identical
+  scrub-on-scroll helpers (a hero-headline explode duplicated in `hub.js`/`products.js`, a quiz deal-in, and
+  compare's radar/clash scrub) became one `motion.js:scrubOnEntry`.
+
+Edge cases:
+- **Headless-Edge frame-time regimes differ run to run** (vsync-capped ~16.7 ms vs. an uncapped ~7.7 ms
+  baseline) — perf numbers are only compared within one probe run, never across runs taken under different
+  capping, to avoid a false regression/improvement reading.
+- **The Browser pane throttles GSAP's `requestAnimationFrame` ticker when it loses focus** — `ScrollTrigger`
+  progress/`onEnter` callbacks silently stop firing (not an error), so scroll-linked behaviour is verified
+  in headless Edge (`playwright-core`), never the in-app Browser pane (`CLAUDE.md`).
+- **A backgrounded tab pausing its own animation work can't be emulated headless** — this is verified by
+  static analysis of the code (motionScope tears down on `visibilitychange`-driven or Calm-driven
+  disallowance) rather than by an automated "hide the tab and check" test.
+- **`svgOrigin` on an SVG `<g>` produced ~300,000px transform offsets** (GSAP's custom-origin compensation
+  blew up combined with `scale` on this markup) — replaced with plain `x`/`y`/`scale` and
+  `transform-box: fill-box; transform-origin: center` in CSS, which pivots correctly without an explicit
+  origin.
+- **`calc.js`'s market radio read the wrong form field name** — fixed; the calculator was silently stuck on
+  one market regardless of the radio selection.
+- **The calculator's FX cell lacked a freshness badge** — fixed; every other cost cell already linked to
+  its figure's freshness/source, the FX row was the one omission.
+- **The last pinned scene on a page could be unreachable if the page was short** — fixed by the adaptive
+  pin-start decision above (compare's fee jar) plus the same pattern applied wherever else it recurred.
+- **Law-6 opacity floor is 0.85** — the old stable-site `.is-risk-dim { opacity: .38 }` pattern (dimming
+  non-matching product cards during risk-filter highlighting) was replaced in the visual edition rather than
+  carried over, since it fell well under the floor.
+- **A hover-only `.clash-tag` tooltip duplicates content already in the always-visible legend** — allowed:
+  the legend already satisfies law 6 on its own, so the tooltip is a pure enhancement, not something a
+  reader ever depends on to read the data.
+- **Provider-table tag chips are an accepted additive difference** from the stable page, not a parity gap —
+  content parity requires the same data, not identical presentation; the visual edition may show more of
+  what's in the same dataset.
+- **The stable site overflowed horizontally at 375px on methods/brokers** — found during this reconciliation pass.
+  *(Superseded diagnosis: "the explainer SVG has a 640px minimum width" was wrong — its `.diagram-card` already
+  scrolls internally below 720px and stays inside the viewport.)* **Real cause (fixed 29 Sep 2026, Claude):**
+  `#methods-list` / `#brokers-list` are inline `display:grid` with no `grid-template-columns`, so the implicit
+  `auto` track grew to the min-content of each card wrapper (the providers table inside), ~372–375px in a 343px
+  container. Fix: `grid-template-columns:minmax(0,1fr)` added to both inline styles (`site/methods.html`,
+  `site/brokers.html`). Headless-Edge check at 375px and 1280px: `scrollWidth <= innerWidth` on all 5 stable
+  pages, no element past the viewport edge, every `.table-scroll` scrolls inside its card (none clipped by the
+  cards' `overflow:hidden`), diagrams unchanged. The one console error is a pre-existing `/favicon.ico` 404
+  (the browser's own request; `server.js` serves only `/site/**`) — unrelated, not fixed here.
+- **Text-coverage round (29 Sep 2026) — 5 scenes fixed, each below with where it's handled:**
+  - **Fighters deal-in dealt every card from a shared centre stack**, so cards covered each other mid-flight.
+    Now each card rises straight up from its own slot (`x` never changes during the tween) —
+    `brokers.js:mountFightersScene`.
+  - **Ownership diagram chips painted over the SVG's own text** (later in paint order than the text groups).
+    Moved the chip elements before all text groups in the markup, so text always paints on top —
+    `brokers.html`.
+  - **MRT map: pinning the whole section plus a clip/pan let labels overlap the heading**, and clamping
+    height inline on the pinned element fought `ScrollTrigger`'s own refresh cycle (a ~10/s layout loop);
+    the clip also hid the first lines once the scene reached its end state. Fixed by pinning only the map
+    viewport (not the whole section) and scaling the map to fit once, as a constant transform that never
+    changes with scroll — every scroll position, including the end, now shows the complete map —
+    `methods.js:mountMapScene`.
+  - **Hub scatter labels collided at rest** (no collision avoidance, unlike the stable chart's hover-only
+    tooltips). Added a measured collision layout with leader lines, run once the bubbles finish their
+    burst-into-place animation, so labels never appear mid-animation only to immediately need to move —
+    `hub.js:layoutScatterLabels`. **Exception (Claude):** below 768px there isn't room for always-on labels
+    without them overlapping each other regardless of layout, so labels there show on hover/focus/tap only
+    — matching the stable chart's own tooltip-only behaviour at that size — and the always-visible
+    `<details>` table still lists every product regardless of viewport. Calm/reduced-motion shows all
+    labels (no hover-only state without a pointer to hover with).
+  - **Products spectrum tags overlapped** (no wrap width was reserved for them) **and escaped above the box
+    into the header** (an absolutely-positioned child ignores its parent's `padding-top`). Fixed with a
+    fixed 78px wrap width matching the stable page's own spectrum, plus a greedy tier-placement algorithm
+    that sets each tag's `top` directly instead of relying on padding — `products.js:layoutSpectrumTags`.
+  - **Coverage-check pitfall found while re-verifying:** filtering `ScrollTrigger.getAll()` by `.pin` finds
+    nothing below 768px, where every scene is unpinned by design (scrubbed instead) — a coverage check
+    written against `.pin` alone would silently skip all mobile-width scenes. Match by trigger element
+    instead of the `pin` flag.
+  - **`.edition-switch-label` reports as "covered" (zero width/height) in a naive coverage sweep**, but it's
+    `visibility: hidden` until hover/focus by design (the label bubble only shows on interaction) — not a
+    violation, and the coverage check now excludes elements hidden via `visibility`, not just `display`.

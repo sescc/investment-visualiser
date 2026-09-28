@@ -1,0 +1,85 @@
+/* calc.css — the ONE copy of styling for markup site/visual/js/calc.js itself renders (the shared
+   "fee-drag machine" calculator: mountVisualCalculator). Every page that mounts it — methods.html,
+   brokers.html, compare.html — links this file. Previously these rules were duplicated verbatim (aside
+   from which `--world-*` hue they referenced) in methods.css and brokers.css; compare.html linked
+   neither, so its calculator had no styling at all — most visibly, `.bar-race-fill`'s `transform: scaleX`
+   had nothing to make it a visible bar (no size, no colour) without this file.
+
+   World colour: calc.js itself sets a per-row `--bar-color` inline (see `updateRace`) so each ranked
+   item's bar/name colour already matches its own world regardless of host page. The few remaining
+   page-level accents below (segmented/dial hover+focus rings) use `--calc-accent`/`--calc-accent-soft`,
+   which each host page sets once to its own world hue:
+     methods.css   → --calc-accent: var(--world-methods);  --calc-accent-soft: var(--world-methods-soft);
+     brokers.css   → --calc-accent: var(--world-brokers);  --calc-accent-soft: var(--world-brokers-soft);
+   compare.css doesn't set either yet (out of scope here — agent D owns that file); the fallback below
+   keeps compare.html's calculator fully usable and visible in the meantime.
+
+   Everything here layers on top of the frozen site/visual/css/visual.css tokens/utilities — no color,
+   spacing or font is redefined here that already exists there (`.glass`, `.chip*`, `.crown`, `.data-table`,
+   `.incomplete-list`, `.muted` all come from visual.css). Page-specific overrides of this markup (e.g. a
+   different mobile grid-template) stay in the page's own CSS, layered after this file's <link>. */
+
+.fee-machine { display: grid; gap: 16px; padding: 22px; }
+
+.segmented { display: flex; flex-wrap: wrap; gap: 6px; border: none; margin: 0; padding: 0; }
+.segmented-legend { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); width: 100%; margin-bottom: 2px; padding: 0; }
+.segmented-btn { position: relative; }
+.segmented-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.segmented-btn span {
+  display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 999px; font-size: .86rem; font-weight: 700;
+  background: var(--surface); border: 1px solid var(--glass-border); color: var(--ink-2); cursor: pointer; transition: background .15s ease, color .15s ease, transform .1s ease;
+}
+.segmented-btn input:checked + span { background: var(--ink); color: var(--bg); }
+.segmented-btn input:focus-visible + span { outline: 3px solid var(--calc-accent, var(--world-methods)); outline-offset: 2px; }
+.segmented-btn:hover span { transform: translateY(-1px); }
+
+.fee-machine-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.fee-machine-form { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.dial-field { display: flex; flex-direction: column; gap: 6px; }
+.dial-field label { font-size: .78rem; font-weight: 700; color: var(--muted); }
+.dial-control { display: flex; align-items: center; border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.dial-control input[type="number"] {
+  width: 84px; border: none; background: transparent; padding: 9px 4px; text-align: center; font-weight: 700; font-size: .95rem; color: var(--ink);
+  font-family: var(--font-visual-body); -moz-appearance: textfield;
+}
+.dial-control input[type="number"]::-webkit-outer-spin-button, .dial-control input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.dial-step {
+  width: 32px; height: 38px; border: none; background: var(--surface-2); color: var(--ink); font-size: 1.1rem; font-weight: 700; cursor: pointer; line-height: 1;
+}
+.dial-step:hover { background: var(--calc-accent-soft, var(--world-methods-soft)); color: var(--calc-accent, var(--world-methods)); }
+.dial-control input:focus-visible { outline: 2px solid var(--calc-accent, var(--world-methods)); outline-offset: -2px; }
+
+.fee-machine-headline { font-weight: 700; font-size: 1.02rem; display: flex; align-items: center; gap: 8px; }
+
+.bar-race { display: flex; flex-direction: column; gap: 10px; min-height: 40px; }
+.bar-race-row { display: grid; grid-template-columns: 26px minmax(110px, 1fr) minmax(0, 2.6fr) auto; align-items: center; gap: 12px; }
+.bar-race-rank { font-weight: 700; color: var(--muted); text-align: center; }
+.bar-race-row.is-first .bar-race-rank { color: var(--good); }
+.bar-race-name { font-weight: 700; font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* transform-origin left on the track itself: calc.js's first-entry reveal scrubs THIS element's own
+   scaleX 0→1 (a decorative "row grows in" flourish, so the reveal doesn't need to track the live pct of
+   whatever's inside it); overflow:hidden clips the fill the same way whether the track is scaled or not. */
+.bar-race-track { height: 16px; border-radius: 999px; background: var(--surface-2); overflow: hidden; transform-origin: left center; }
+/* width:100% + scaleX (never animated `width`, per the perf rule) — calc.js sets the inline
+   `transform: scaleX(pct/100)` to the correct final value at render time (never mid-tween), and only
+   re-tweens `transform` (never `width`) on a later result change. `--bar-color` is set per row by
+   calc.js itself (each ranked item's own world hue); the fallback below only applies before JS runs. */
+.bar-race-fill { height: 100%; width: 100%; border-radius: 999px; transform-origin: left center; transform: scaleX(0); background: var(--bar-color, var(--calc-accent, var(--world-methods))); box-shadow: 0 0 10px color-mix(in srgb, var(--bar-color, var(--calc-accent, var(--world-methods))) 50%, transparent); }
+.bar-race-total { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 560px) {
+  .bar-race-row { grid-template-columns: 22px 1fr auto; grid-template-areas: "rank name total" "rank track track"; row-gap: 6px; }
+  .bar-race-rank { grid-area: rank; }
+  .bar-race-name { grid-area: name; }
+  .bar-race-total { grid-area: total; }
+  .bar-race-track { grid-area: track; }
+}
+
+.fee-machine-fx { display: flex; align-items: center; gap: 6px; font-size: .84rem; }
+.fee-machine-incomplete .incomplete-heading { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+
+/* The "Show as table" fallback (<details class="chart-table">) — calc.js's own markup, previously
+   unstyled on every visual page (products.css has an equivalent rule, but methods/brokers/compare don't
+   link products.css). */
+.chart-table { margin-top: 14px; }
+.chart-table summary { cursor: pointer; font-weight: 700; color: var(--ink-2); font-size: .86rem; }

@@ -16,6 +16,7 @@ npm run scrape -- --dry  # run adapters, print report, write nothing
 npm run serve            # node server.js — http://127.0.0.1:5173, enables the site's "Refresh data" button
 npm test                 # cost-model unit checks (synthetic inputs)
 npm run check-links      # verify every authored link in data/baseline
+npm run build             # node scripts/build-site.mjs — assembles _site/ (the Pages artifact and what Vercel serves)
 ```
 The site needs the server: browsers block ES modules on `file://`, so opening `site/*.html` directly only shows a
 "run npm run serve" notice. Any static http server works for read-only viewing (the refresh button hides itself
@@ -26,6 +27,12 @@ when `/api/health` is absent).
 - `data/baseline/{products,methods,brokers}.json` hand-authored content (NO fee numbers)
 - `data/sgdata.json` / `data/sgdata.js` generated — never edit by hand
 - `site/` static pages; `site/js/cost.js` is the only place fees are turned into costs
+- `site/visual/` visual edition: the same 5 pages, scroll-driven, no WebGL — see "Visual edition motion
+  rules" below. `js/motion.js` holds the scene helpers (`scene`, `scrubOnEntry`, `batchReveal`,
+  `scrubHeading`), `js/backdrop.js` the DOM background + section→formation switching, `css/calc.css` the
+  shared calculator styling. `docs/visual/` documents it (start at `docs/visual/ARCHITECTURE.md`).
+- `scripts/build-site.mjs` + `npm run build` assemble `_site/` — the one artifact both the GitHub Pages
+  workflow and Vercel (`vercel.json`) deploy from.
 - `docs/DESIGN.md` visual/UX spec for the site
 - `.claude/skills/` project skills: `refresh-sg-data`, `add-sg-entry`
 - `docs/DECISIONS.md` log of every design decision and edge case so far — read before changing the cost model,
@@ -150,7 +157,34 @@ live = asOf ≤ 30 days · aging = 31–90 days · stale = > 90 days · missing 
 Opus: design, schema, specs, review. Sonnet subagents: routine code, adapters, content authoring from specs.
 
 ## Conventions
-- Plain HTML/CSS/JS, no build step. ES modules in browser (`<script type="module">`), except `data/sgdata.js` (classic script).
-- Chart.js from cdnjs only; fonts from Google Fonts. No other CDNs.
+- Plain HTML/CSS/JS, no build step for the pages themselves (`scripts/build-site.mjs` only assembles the
+  deploy artifact, it doesn't compile anything). ES modules in browser (`<script type="module">`), except
+  `data/sgdata.js` (classic script).
+- Scripts from cdnjs only (Chart.js; GSAP 3.15 + plugins in the visual edition); fonts from Google Fonts.
+  No other CDNs, no WebGL.
 - localStorage always wrapped in try/catch.
 - Plain English everywhere; jargon gets a `<abbr data-glossary="…">` tooltip.
+- Vercel Analytics loads only when `location.hostname` ends with `.vercel.app` — never on GitHub Pages or
+  local dev (`site/visual/js/analytics.js`).
+
+## Visual edition motion rules
+Performance rules (project law 7, `docs/architecture-map.md`):
+- Animate only `transform`/`opacity` (plus DrawSVG/MotionPath on small inline SVGs).
+- Never `backdrop-filter`, `mix-blend-mode`, CSS `filter`, or animated width/height/top/left/box-shadow/
+  background-position.
+- No own `requestAnimationFrame` loops (GSAP's ticker is fine); no infinite CSS animation except on
+  hover/focus; nothing does work while the page is idle.
+- `will-change` only on the backdrop blobs and the currently-active pinned scene.
+
+Content rules (project law 6):
+- Text is never hidden or covered — decorative parts (fills, chips, coins, drawn lines) may start
+  hidden; text never drops below ~0.85 opacity.
+- A displayed fee total is always a real `computeCost` result — never an interpolated/scroll-tied value
+  mid-tween.
+- Interactive forms (quiz, calculators, filters, selection UI) are never pinned.
+- `?calm=1`, reduced motion, or `?nogsap=1` each give the complete, static, fully readable page — no
+  pins, nothing hidden.
+
+**Verify scroll behaviour in headless Edge (`playwright-core`), not the in-app Browser pane** — the pane
+throttles GSAP's `requestAnimationFrame` ticker when it isn't focused, which silently breaks scroll-linked
+checks (ScrollTrigger progress/onEnter never fires) without an error.

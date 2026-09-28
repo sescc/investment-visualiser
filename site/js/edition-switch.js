@@ -54,9 +54,18 @@ function disclaimerBottom() {
   return rect.bottom;
 }
 
+// Writes a `transform: translateY()`-consumed custom property, NOT `top` (see app.css/visual.css's
+// `.edition-switch` rule: `top: 0; transform: translateY(var(--edition-switch-y, …))`). `top` is a
+// layout-triggering property — for a `position: fixed` element it doesn't affect other boxes, but the
+// browser still has to lay that box out again on every write. `transform` is compositor-only, so this
+// (still rAF-coalesced, still one read-then-one-write per frame) no longer costs a layout pass on
+// every scroll tick. The measurement side (headerBottom/disclaimerBottom, both real `getBoundingClientRect`
+// reads) is unavoidable: the disclaimer is ordinary in-flow content, not sticky, so its viewport
+// position genuinely changes continuously with scroll until it's dismissed or scrolled past — there is
+// no fixed "set once on resize" value that would substitute for tracking it.
 function positionSwitch(el) {
-  const top = Math.max(headerBottom(), disclaimerBottom()) + 12;
-  el.style.setProperty('--edition-switch-top', `${top}px`);
+  const y = Math.max(headerBottom(), disclaimerBottom()) + 12;
+  el.style.setProperty('--edition-switch-y', `${y}px`);
 }
 
 // rAF-throttled so scroll doesn't spam layout reads/writes.

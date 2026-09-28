@@ -16,7 +16,7 @@
 //                                             address bar, matching "random per visit").
 //   setSeedParam(seed)                       Replaces only the `seed` search param via
 //                                             history.replaceState, preserving every other param
-//                                             (group, market, ids, scenario, calm, nowebgl, …) and the
+//                                             (group, market, ids, scenario, calm, nogsap, …) and the
 //                                             hash (e.g. #calc-mount).
 //   mountRemix({ mount, seed, onRoll }) → { reroll(seed?), destroy() }
 //                                             Renders a 🎲 "Remix" button into `mount`. Click (or

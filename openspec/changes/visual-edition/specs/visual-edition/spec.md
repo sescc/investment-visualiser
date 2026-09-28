@@ -23,15 +23,45 @@ The visual edition SHALL show only scraped figures. It SHALL apply the same fee-
 - **THEN** it shows "Not available — check provider ↗" linking to the provider's page (or its incomplete reason), and is never shown as a winner or cheapest
 
 ### Requirement: Motion is optional
-The visual edition SHALL present complete, readable content when the reader prefers reduced motion, turns on Calm mode, or the browser cannot run WebGL or load the animation libraries.
+The visual edition SHALL present complete, readable content when the reader prefers reduced motion, turns on Calm mode, or the browser cannot load the animation library.
 
 #### Scenario: Reduced motion
-- **WHEN** the reader's system prefers reduced motion
-- **THEN** no WebGL canvas runs, nothing auto-animates or hijacks scrolling, and all content is visible
+- **WHEN** the reader's system prefers reduced motion, or Calm mode is on
+- **THEN** nothing auto-animates, no section pins or scrubs with scrolling, and all content is visible
 
-#### Scenario: No WebGL or library load failure
-- **WHEN** WebGL is unavailable or a CDN script fails to load
-- **THEN** the page shows a static background and all content remains usable
+#### Scenario: Animation library fails
+- **WHEN** the animation library fails to load
+- **THEN** the page shows a static background and the plain layout, and all content remains usable
+
+### Requirement: Scroll animations never hide or distort content
+Scroll-driven scenes SHALL keep every piece of text and data readable at every scroll position, and SHALL never show a fee amount that is not the real computed figure. Keyboard and assistive-technology users SHALL be able to reach every control without scrolling through a scene.
+
+#### Scenario: Scrolling through a pinned scene
+- **WHEN** a reader scrolls slowly through a pinned scene, such as the Fee Race
+- **THEN** the ranking, names, winner label and totals are readable at every point, and only decorative parts animate in
+
+#### Scenario: Keyboard focus lands inside an unfinished scene
+- **WHEN** a keyboard user tabs to a control inside a scene that has not finished playing
+- **THEN** the scene jumps to its finished state and the focused control is visible
+
+#### Scenario: Inputs change after the scene has played
+- **WHEN** the reader changes a calculator input and then scrolls back through the Fee Race or the fee jar
+- **THEN** the scene shows the new result, never the previous ranking or totals
+
+### Requirement: Motion stays light
+The visual edition SHALL scroll smoothly on an ordinary laptop and SHALL do no animation work while the reader is idle.
+
+#### Scenario: Scrolling a full page
+- **WHEN** a page is scrolled from top to bottom over about eight seconds in a desktop browser
+- **THEN** 95% of frames take 20 ms or less, and no more than 5% take over 33 ms
+
+#### Scenario: Idle page
+- **WHEN** the reader stops scrolling and does nothing for three seconds
+- **THEN** the page produces no long animation frames and leaves the browser's idle time essentially free
+
+#### Scenario: Tab in the background
+- **WHEN** the visual page's tab is hidden
+- **THEN** no animation keeps running until the tab is shown again
 
 ### Requirement: Disclaimer on every page
 Every visual-edition page SHALL show the "Educational only — not financial advice" disclaimer.

@@ -18,8 +18,8 @@ import { feeSummary, freshnessView } from '../../js/feeview.js';
 import { rankByCost, formatSGD, describeScenario, DEFAULT_SCENARIO } from '../../js/cost.js';
 import { icon } from '../../js/icons.js';
 import { mountShell, esc } from './shell.js';
-import { motionAllowed, motionScope, whenGsap, splitHeadline, reveal } from './motion.js';
-import { FORMATIONS } from './stage.js';
+import { motionAllowed, whenGsap, splitHeadline, scene, scrubHeading, refreshScenes } from './motion.js';
+import { FORMATIONS } from './backdrop.js'; // compat fix 2026-09-27: stage.js was deleted (WebGL removal); backdrop.js exports the same FORMATIONS array.
 import { onRemix } from './chaos.js';
 import { mountVisualCalculator } from './calc.js';
 
@@ -154,12 +154,25 @@ function lineColorOrder(roll) {
 
 const TRAIN_STYLE_CLASSES = ['mrt-train--fade-rise', 'mrt-train--scramble', 'mrt-train--slide-scale', 'mrt-train--flip-in'];
 function applyTrainStyle(entrance) {
+  // Static shape only (methods.css sets a different `r` per class) — the old infinite CSS animation
+  // per variant is gone; the chaos variant now only changes the train's static radius and its scrub
+  // easing (TRAIN_EASE_BY_ENTRANCE, read by mountMapScene below).
   const cls = `mrt-train--${entrance}`;
   document.querySelectorAll('.mrt-train').forEach(t => {
     t.classList.remove(...TRAIN_STYLE_CLASSES);
     t.classList.add(cls);
   });
 }
+
+// chaos.js roll.entrance → GSAP ease for the line-draw/train-ride scrub. Decoration only (never content):
+// this is the "express the chaos variant as a different easing… instead [of an infinite CSS animation]"
+// requirement from the rework brief.
+const TRAIN_EASE_BY_ENTRANCE = {
+  'fade-rise': 'power1.inOut',
+  scramble: 'steps(6)',
+  'slide-scale': 'power3.out',
+  'flip-in': 'power2.inOut',
+};
 
 function buildLineGeometry(count) {
   // Inset well clear of the track's own edges (not just the viewBox's) — the widest station label
@@ -197,48 +210,75 @@ function renderMap(mount, groups, roll, onOpen) {
   mount.querySelectorAll('.mrt-station').forEach(btn => {
     btn.addEventListener('click', () => onOpen(btn.dataset.id, btn));
   });
-
-  // The scroll-drawn line + riding train is decorative flourish, desktop only (the mobile layout drops
-  // the SVG entirely for a plain vertical line — see methods.css) — no point mounting ScrollTrigger
-  // instances for an svg that's `display:none`.
-  if (window.innerWidth >= 768) {
-    mount.querySelectorAll('.mrt-line').forEach(lineEl => mountLineAnimation(lineEl));
-  }
 }
 
-function mountLineAnimation(lineEl) {
-  motionScope(() => {
-    let ctx = null;
-    let cancelled = false;
-    (async () => {
-      const gsap = await whenGsap();
-      if (cancelled || !gsap || !window.DrawSVGPlugin || !window.MotionPathPlugin || !window.ScrollTrigger) return;
+// ============================================================================
+// Map scene — one pinned scroll sequence over the whole map: each line draws (DrawSVG) and its train
+// rides it (MotionPath) in turn, its stations popping (scale only — never opacity, so labels never dip
+// below their authored full visibility) as the train passes. Replaces the old per-line, unpinned,
+// desktop-only mountLineAnimation. Below 768px the SVG is `display:none` (methods.css) — the mobile
+// branch below never touches DrawSVG/MotionPath (measuring/animating a hidden path is at best wasted
+// work, at worst NaN from a zero-length getTotalLength()) and instead does a light scale-pop reveal of
+// the visible vertical station list.
+// ============================================================================
+
+const LINE_SEG = 1; // arbitrary GSAP time unit per line — only relative weight matters, scrub owns real time.
+
+function mountMapScene(mapViewportEl, mapMount, groups, entrance) {
+  const ease = TRAIN_EASE_BY_ENTRANCE[entrance] || 'none';
+
+  // Pins ONLY the map viewport, never the section heading above it (found in review: pinning the whole
+  // section put the heading in the same fixed screen slot the map's own space sits below, and whenever
+  // content there was hidden — the coverage check found the heading sitting at that content's own,
+  // temporarily invisible, geometric position, i.e. "text covered by the heading"). With only the
+  // viewport pinned, the heading scrolls away normally before the pin ever engages, so there is no shared
+  // screen region left for anything inside the pin to read as overlapping it.
+  return scene(mapViewportEl, (tl, { gsap, isMobile }) => {
+    const lineEls = Array.from(mapMount.querySelectorAll('.mrt-line'));
+
+    if (isMobile) {
+      const stations = Array.from(mapMount.querySelectorAll('.mrt-station'));
+      if (!stations.length) return;
+      gsap.set(stations, { scale: 0.8, transformOrigin: '50% 50%' });
+      tl.to(stations, { scale: 1, stagger: 0.03, ease: 'power2.out' });
+      return;
+    }
+
+    if (!window.DrawSVGPlugin || !window.MotionPathPlugin) return;
+
+    // Scale the WHOLE map to fit the pinned viewport's available height — a single, CONSTANT "zoom to
+    // fit" set once here, never animated or tied to scroll progress — instead of clipping + panning
+    // (found in review: a clip+pan necessarily hides the earlier lines once panned past them, which is
+    // exactly what law 6 forbids at the scene's END state — every pinned scene must end in the full
+    // authored layout). With a constant scale, every scroll position — including progress 0 and 1 — shows
+    // the exact same fully-visible layout; only the decorative line-draw/train-ride/station-pop below
+    // ever changes with scroll. `Math.min(1, …)` means a map that already fits gets no scale at all.
+    const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+    const available = Math.max(240, window.innerHeight - headerH - 24);
+    const mapH = mapMount.scrollHeight;
+    const ratio = Math.min(1, available / mapH);
+    gsap.set(mapMount, { scale: ratio, transformOrigin: 'top center' });
+
+    lineEls.forEach((lineEl, i) => {
       const path = lineEl.querySelector('.mrt-line-path');
       const train = lineEl.querySelector('.mrt-train');
+      const dots = Array.from(lineEl.querySelectorAll('.mrt-dot'));
       if (!path) return;
-      ctx = gsap.context(() => {
-        gsap.set(path, { drawSVG: '0%' });
-        gsap.to(path, {
-          drawSVG: '100%', ease: 'none',
-          scrollTrigger: { trigger: lineEl, start: 'top 88%', end: 'bottom 55%', scrub: 0.6 },
-        });
-        if (train) {
-          gsap.set(train, { opacity: 1 });
-          gsap.to(train, {
-            motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
-            ease: 'none',
-            scrollTrigger: { trigger: lineEl, start: 'top 88%', end: 'bottom 55%', scrub: 0.6 },
-          });
-        }
-      }, lineEl);
-    })();
-    return () => {
-      cancelled = true;
-      ctx?.revert();
-      const train = lineEl.querySelector('.mrt-train');
-      if (train) train.style.opacity = 0;
-    };
-  });
+
+      tl.addLabel(`line${i}`);
+      gsap.set(path, { drawSVG: '0%' });
+      gsap.set(dots, { scale: 0.75, transformOrigin: '50% 50%' });
+      tl.to(path, { drawSVG: '100%', duration: LINE_SEG, ease }, `line${i}`);
+      if (dots.length) tl.to(dots, { scale: 1, duration: LINE_SEG, stagger: LINE_SEG / dots.length, ease: 'power2.out' }, `line${i}`);
+      if (train) {
+        gsap.set(train, { opacity: 1 });
+        tl.to(train, {
+          motionPath: { path, align: path, alignOrigin: [0.5, 0.5] },
+          duration: LINE_SEG, ease,
+        }, `line${i}`);
+      }
+    });
+  }, { pin: true, length: Math.max(1, groups.length * 0.8) });
 }
 
 // ============================================================================
@@ -346,11 +386,31 @@ function openPlatformModal(entry, originEl, shellHandle, dataBundle) {
 const data = await getData();
 const shell = await mountShell({ page: 'methods.html', data });
 
-splitHeadline(document.getElementById('methods-headline'), {});
-reveal(document.querySelector('.methods-hero'), { from: { opacity: 0, y: 24 } });
+// Text stays ≥0.85 opacity throughout splitHeadline's own stagger-in (law 6); it reverts to the plain
+// text node ~1.2s after starting (see motion.js), so the hero drift-out scene below animates the whole
+// `.methods-hero` block, not individual chars, which no longer exist as separate elements by scroll time.
+splitHeadline(document.getElementById('methods-headline'), { opacity: 0.85 });
+
+// Hero drift-out — the headline/intro tilts and fades (never below opacity .85) as you scroll past the
+// hero. Replaces the old fire-and-forget reveal(), which started the hero at opacity:0 (a law-6
+// violation on its own, and would have fought this scene for the same element).
+scene(document.querySelector('.hero-section'), (tl, { gsap }) => {
+  const hero = document.querySelector('.methods-hero');
+  if (!hero) return;
+  tl.to(hero, { yPercent: -16, rotateX: 6, opacity: 0.85, ease: 'none' });
+}, { length: 1 });
+
+// Backdrop formation per section, as it enters — decorative only (shell.getStage()/backdrop.js).
+// backdrop.js's mountBackdrop() now auto-observes every `main section[data-formation]` on its own
+// (2026-09-27 dedup — this page used to run its own IntersectionObserver + initial-formation call; both
+// are gone, folded into the shared observer, since the hero section's own `data-formation="rings"` is
+// exactly what this page's initial formation used to be set to).
+
+document.querySelectorAll('h2.kinetic').forEach(h2 => scrubHeading(h2));
 
 const methods = data.methods.entries;
 const getEntry = id => methods.find(e => e.id === id) || null;
+const mapViewportEl = document.getElementById('mrt-map-viewport');
 const mapMount = document.getElementById('mrt-map');
 const emptyMount = document.getElementById('methods-empty');
 const hintEl = document.querySelector('[data-el="map-hint"]');
@@ -365,11 +425,16 @@ if (!methods.length) {
     if (entry) openPlatformModal(entry, el, shell, data);
   });
   applyTrainStyle(shell.roll.entrance);
+  let mapScene = mountMapScene(mapViewportEl, mapMount, groups, shell.roll.entrance);
 
   onRemix(({ roll }) => {
     const order = lineColorOrder(roll);
     document.querySelectorAll('.mrt-line').forEach((lineEl, i) => lineEl.style.setProperty('--line-color', PALETTE[order[i % order.length]]));
     applyTrainStyle(roll.entrance);
+    // Rebuild so the remix's new easing/train shape applies on the next scroll through the map.
+    mapScene.destroy();
+    mapScene = mountMapScene(mapViewportEl, mapMount, groups, roll.entrance);
+    refreshScenes();
   });
 
   if (hintEl) {
@@ -382,8 +447,4 @@ if (!methods.length) {
     items, fx: data.fx, initialGroup: 'robo', title: 'Fee-drag machine',
     getStage: () => shell.getStage(),
   });
-
-  const setRings = () => shell.getStage()?.setFormation('rings');
-  if (shell.getStage()) setRings();
-  window.addEventListener('sg:stageready', setRings, { once: true });
 }

@@ -1,22 +1,13 @@
-// shell.js — the visual edition's page chrome: header, disclaimer, footer, freshness pill/panel,
-// glossary modal + tooltips, theme/Calm/sound toggles, Remix button, the WebGL stage's lifecycle,
-// cursor/tilt/magnetic fx, the edition switch, and Vercel analytics. Every visual page calls
-// `mountShell(...)` once; nothing else needs to know how these pieces fit together.
+// shell.js — the visual edition's page chrome: header (incl. the scroll-progress bar), disclaimer,
+// footer, freshness pill/panel, glossary modal + tooltips, theme/Calm/sound toggles, Remix button, the
+// DOM backdrop's lifecycle, tilt/magnetic fx, the edition switch, and Vercel analytics. Every visual page
+// calls `mountShell(...)` once; nothing else needs to know how these pieces fit together.
 //
 // CANONICAL <head> — copy this order into every site/visual/*.html page (hub.html is the reference):
 //
 //   <meta charset="UTF-8">
 //   <meta name="viewport" content="width=device-width, initial-scale=1">
 //   <title>… — SGInvest Visualiser (visual edition)</title>
-//   <!-- Importmap MUST come before any <script type="module">. -->
-//   <script type="importmap">
-//   {
-//     "imports": {
-//       "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js",
-//       "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
-//     }
-//   }
-//   </script>
 //   <!-- Pre-paint: apply the stored theme + Calm state before first paint, so there's no flash. -->
 //   <script>
 //   (function () {
@@ -47,14 +38,16 @@
 //     `page`: the active nav href, e.g. 'index.html' (same value stable's renderChrome takes).
 //     `data`: the normalized dataset bundle from ../../js/data.js:getData().
 //     `glossary`: optional override for the {key: definition} map; defaults to content.js's GLOSSARY.
-//     Mounts everything into #app-header / #app-disclaimer / #app-footer, appends the grain overlay
-//     and (motion permitting) the WebGL stage to <body>, starts the render/interaction fx, calls the
-//     edition switch and analytics, and returns:
+//     Mounts everything into #app-header / #app-disclaimer / #app-footer, prepends the DOM backdrop
+//     (blobs + grain — see backdrop.js) to <body>, starts the interaction fx, calls the edition switch
+//     and analytics, and returns:
 //       { getStage(), roll, openModal(el, opts), closeModal(), esc(str), ls(key), lsSet(key,val),
 //         ss(key), ssSet(key,val), glossaryTooltips(root) }
-//     `getStage()` returns the live Stage from stage.js, or null before it's ready / when motion
-//     isn't allowed. Listen for `window.addEventListener('sg:stageready', e => e.detail.stage)` to
-//     react the moment it becomes available instead of polling.
+//     `getStage()` returns the live backdrop handle from backdrop.js (kept under its old stage.js name
+//     — `pulse`/`setFormation` — so every existing call site is unchanged). Unlike the old WebGL stage
+//     this is available synchronously as soon as `mountShell()` resolves, but `sg:stageready` still
+//     fires (deferred one tick via `setTimeout(0)`) for once-listeners registered right after
+//     `await mountShell(...)` returns, e.g. `window.addEventListener('sg:stageready', fn, { once: true })`.
 //   openModal(contentEl, { labelledBy, onClose, size } = {}) → close()
 //     Focus-trapped, Esc-to-close, restores focus, marks the rest of the page `inert` while open.
 //     Exported standalone too (not just via the mountShell handle) so Wave C pages that already hold
@@ -72,8 +65,8 @@ import { icon } from '../../js/icons.js';
 import { freshnessSummary, checkRefreshAvailable, triggerRefresh, invalidateCache } from '../../js/data.js';
 import { GLOSSARY as CONTENT_GLOSSARY } from '../../js/content.js';
 import { mountEditionSwitch } from '../../js/edition-switch.js';
-import { DEBUG, getCalm, setCalm, motionScope, motionAllowed } from './motion.js';
-import { initStage } from './stage.js';
+import { DEBUG, getCalm, setCalm, motionScope, motionAllowed, whenGsap } from './motion.js';
+import { mountBackdrop } from './backdrop.js';
 import { mountFx, confettiBurst, getSoundEnabled, setSoundEnabled, playBlip } from './fx.js';
 import { roll as rollChoreography, currentSeed, mountRemix, onChaosMode, initKonami } from './chaos.js';
 import { initAnalytics } from './analytics.js';
@@ -341,6 +334,44 @@ function setUpHeaderMenu(header) {
 }
 
 // ============================================================================
+// Header scroll-progress bar — a thin fill under the header, scaleX'd to overall scroll progress by
+// ONE page-wide scrubbed ScrollTrigger (same pattern as backdrop.js's parallax). Hidden under Calm/
+// reduced-motion (visual.css) since it has nothing meaningful to show without scroll tracking.
+// ============================================================================
+
+function mountProgressBar(header) {
+  const bar = document.createElement('div');
+  bar.className = 'header-progress';
+  bar.setAttribute('aria-hidden', 'true');
+  bar.innerHTML = '<div class="header-progress-fill"></div>';
+  header.appendChild(bar);
+  const fill = bar.querySelector('.header-progress-fill');
+
+  return motionScope(() => {
+    let ctx = null;
+    let cancelled = false;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger) return;
+      ctx = gsap.context(() => {
+        window.ScrollTrigger.create({
+          start: 0,
+          end: 'max',
+          scrub: true,
+          invalidateOnRefresh: true,
+          onUpdate: self => { fill.style.transform = `scaleX(${self.progress})`; },
+        });
+      });
+    })();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+      fill.style.transform = 'scaleX(0)';
+    };
+  });
+}
+
+// ============================================================================
 // mountShell
 // ============================================================================
 
@@ -348,22 +379,14 @@ export async function mountShell({ page, data, glossary = CONTENT_GLOSSARY } = {
   document.body.classList.add('visual-edition');
   initThemeSync();
 
-  // Grain overlay (decorative, behind content — see visual.css .grain-overlay).
-  if (!document.querySelector('.grain-overlay')) {
-    const grain = document.createElement('div');
-    grain.className = 'grain-overlay';
-    grain.setAttribute('aria-hidden', 'true');
-    document.body.prepend(grain);
-  }
-
   const header = document.getElementById('app-header');
   const discEl = document.getElementById('app-disclaimer');
   const footEl = document.getElementById('app-footer');
 
   // Bug found in review: without this class, #app-disclaimer has no `position`/`z-index`, and CSS
   // paints unpositioned in-flow boxes BEFORE (i.e. visually behind) any `position: fixed` sibling —
-  // including #stage-canvas and .grain-overlay — regardless of DOM order. The strip was in the DOM,
-  // hit-testable, and readable in devtools, but the stage canvas visually painted over it. `.disclaimer`
+  // including `.sg-backdrop` — regardless of DOM order. The strip was in the DOM, hit-testable, and
+  // readable in devtools, but the backdrop visually painted over it. `.disclaimer`
   // carries `position: relative; z-index: var(--z-content)` (see visual.css's "main, header, footer,
   // .visual-topbar, .disclaimer" rule) plus its own opaque `--warn-soft` background.
   discEl?.classList.add('disclaimer');
@@ -439,6 +462,8 @@ export async function mountShell({ page, data, glossary = CONTENT_GLOSSARY } = {
     }
     setHeaderHeightVar();
     window.addEventListener('resize', setHeaderHeightVar);
+
+    mountProgressBar(header);
   }
 
   if (discEl) {
@@ -486,23 +511,15 @@ export async function mountShell({ page, data, glossary = CONTENT_GLOSSARY } = {
   // ---- Analytics (Vercel only) ----
   initAnalytics();
 
-  // ---- fx: cursor / magnetic / tilt (one motionScope, torn down together under Calm/reduced-motion) ----
+  // ---- fx: magnetic / tilt (one motionScope, torn down together under Calm/reduced-motion) ----
   mountFx({});
 
-  // ---- WebGL stage lifecycle, gated on motion + WebGL availability ----
-  let stage = null;
-  motionScope(() => {
-    let disposed = false;
-    initStage({}).then(s => {
-      if (disposed) { s?.dispose(); return; }
-      stage = s;
-      if (stage) window.dispatchEvent(new CustomEvent('sg:stageready', { detail: { stage } }));
-    });
-    return () => {
-      disposed = true;
-      if (stage) { stage.dispose(); stage = null; window.dispatchEvent(new CustomEvent('sg:stagedispose')); }
-    };
-  });
+  // ---- Backdrop (DOM blobs + grain) — always mounted; only its scroll-parallax is gated on motion
+  // internally (backdrop.js). Synchronous, unlike the old WebGL stage's async initStage(), but
+  // `sg:stageready` still fires deferred so once-listeners added right after `await mountShell(...)`
+  // (brokers.js:451, compare.js:423, hub.js:130, methods.js:388) still catch it. ----
+  const stage = mountBackdrop();
+  setTimeout(() => window.dispatchEvent(new CustomEvent('sg:stageready', { detail: { stage } })), 0);
 
   // ---- Remix (seeded choreography) ----
   const seed = currentSeed();

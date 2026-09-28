@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare — SGInvest Visualiser (visual edition)</title>
+<meta name="description" content="Compare up to three products, methods or broker types side by side — risk, liquidity, complexity and real fees, staged as a head-to-head arena. Not financial advice.">
+<!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
+<script>
+(function () {
+  try { var t = localStorage.getItem('sgtheme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  try { var calm = new URLSearchParams(location.search).get('calm') === '1' || localStorage.getItem('sg-visual-calm') === '1'; if (calm) document.documentElement.classList.add('is-calm'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="css/visual.css">
+<link rel="stylesheet" href="css/calc.css">
+<link rel="stylesheet" href="css/compare.css">
+</head>
+<body class="visual-edition">
+<a class="sr-only" href="#main">Skip to content</a>
+<header id="app-header"></header>
+<div id="app-disclaimer" class="disclaimer" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Hero / intro — same heading + intro copy as stable's site/compare.html -->
+  <section class="visual-section hero-section" data-formation="nebula">
+    <div class="visual-wrap">
+      <div class="visual-section-head compare-hero">
+        <span class="chip" style="background:var(--world-brokers-soft); color:var(--world-brokers)">Head to head</span>
+        <h1 class="kinetic display-hero" id="compare-headline" style="margin-top:8px">Compare</h1>
+        <p class="muted">Pick up to three products, methods or broker types — from the quiz, or search below.</p>
+      </div>
+      <div id="compare-empty"></div>
+    </div>
+  </section>
+
+  <!-- 2. Versus arena: picker + fighters + attribute clash bars -->
+  <section class="visual-section arena-section" aria-labelledby="arena-heading" data-formation="grid">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="arena-heading" class="kinetic display-lg">The versus arena</h2>
+        <p class="muted">Search to add a fighter. Up to three enter the ring at once — remove one to make room for another.</p>
+      </div>
+
+      <div class="arena-picker glass">
+        <label class="sr-only" for="picker-input">Search to add to comparison</label>
+        <input id="picker-input" type="search" class="arena-search" placeholder="Search products, methods, brokers…" autocomplete="off">
+        <div class="chip-row" id="picker-suggestions"></div>
+      </div>
+
+      <div class="arena-stage" id="arena-stage" aria-label="Selected entries to compare"></div>
+
+      <div class="clash-wrap glass" id="clash-mount" aria-label="Attribute clash"></div>
+    </div>
+  </section>
+
+  <!-- 3. Morphing radar -->
+  <section class="visual-section" aria-labelledby="radar-heading" data-formation="rings">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="radar-heading" class="kinetic display-lg">Side by side</h2>
+        <p class="muted">Risk, liquidity, complexity and where the return comes from — one shape per fighter.</p>
+      </div>
+      <p class="muted radar-empty-note" id="radar-empty-note" hidden>Select at least one entry above to draw the radar.</p>
+      <div class="radar-wrap glass" id="radar-wrap"><canvas id="radar-canvas" role="img" aria-label="Radar comparison of selected entries"></canvas></div>
+      <div id="radar-table-mount"></div>
+    </div>
+  </section>
+
+  <!-- 4. Facts, side by side -->
+  <section class="visual-section" aria-labelledby="facts-heading" data-formation="rain">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="facts-heading" class="kinetic display-lg">The full picture</h2>
+        <p class="muted">Summary, fees, minimums, pros and cons for each fighter.</p>
+      </div>
+      <div class="facts-grid" id="facts-grid"></div>
+      <div id="facts-table-mount"></div>
+    </div>
+  </section>
+
+  <!-- 5. Fee-drag machine + fee jar -->
+  <section class="visual-section" aria-labelledby="calc-heading" data-formation="helix">
+    <div class="visual-wrap">
+      <div class="visual-section-head">
+        <h2 id="calc-heading" class="kinetic display-lg">Fee-drag machine</h2>
+        <p class="muted">Compares every provider across the whole site for your scenario. The jar below tracks the drag over time for whoever's cheapest right now.</p>
+      </div>
+      <div id="calc-mount"></div>
+      <div id="fee-jar" class="fee-jar" aria-labelledby="calc-heading"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="app-footer"></footer>
+
+<script>if (location.protocol === "file:") document.addEventListener("DOMContentLoaded", function () { var m = document.getElementById("main"); if (m) m.insertAdjacentHTML("afterbegin", "<div class=\"visual-wrap\" style=\"padding:24px 0\"><div class=\"panel\"><h3>Start the local server to use this site</h3><p>Browsers block this page's scripts when opened as a file. In the project folder run:</p><code>npm run serve</code><p>then open http://127.0.0.1:5173/site/visual/</p></div></div>"); });</script>
+<script src="../data/sgdata.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module" src="js/compare.js"></script>
+</body>
+</html>
