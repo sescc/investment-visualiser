@@ -82,4 +82,4 @@
   - `npm test` and `npm run build`.
 - [x] 4.2 `docs/visual/IMPLEMENTATION.md` rows → `docs/visual/STATUS.md`, then `docs/site/*` (shared modules, switch), `docs/STATUS.md` and `docs/architecture-map.md` (new component, laws 5–7). Write `docs/visual/reviews/review-visual-edition.md`. (`ARCHITECTURE.md` was revised before code, on 2026-09-26.)
 - [x] 4.3 CLAUDE.md: layout, cdnjs-only CDN rule, Vercel/build, motion performance rules. DECISIONS.md §14: decisions + edge cases.
-- [ ] 4.4 Drift check shows 0 dead rows, and `openspec validate visual-edition --strict` passes.
+- [x] 4.4 Drift check shows 0 dead rows, and `openspec validate visual-edition --strict` passes.
