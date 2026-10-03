@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Cross-document View Transition opt-in. MUST be inline and first in <head>: when it only arrived via visual.css the
+     new page was already past the point where the opt-in is read, so pagereveal.viewTransition was null and the
+     journey's title -> hero morph never ran (verified headed Edge: 0/12 hops with it in visual.css only, 12/12 inline). -->
+<style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 <title>Products — what to buy | SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Investment products available in Singapore: what they are, their risk and liquidity, and where their returns come from — the spectacle-first edition.">
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
@@ -28,7 +32,7 @@
     <div class="visual-wrap">
       <div class="visual-section-head" style="max-width:680px">
         <h1><span class="chip" style="background:var(--world-products-soft); color:var(--world-products)">What to buy</span></h1>
-        <h2 id="hero-headline" class="kinetic display-hero" style="margin-top:4px">Products</h2>
+        <h2 id="hero-headline" class="kinetic display-hero hero-headline" style="margin-top:4px">Products</h2>
         <p class="muted">The actual things you can own — bonds, ETFs, REITs, robo portfolios and more. Filter below, or
           scan the spectrum to see how each one leans between steady income and long-term growth.</p>
       </div>

@@ -107,6 +107,21 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Train into the portal (methods.js mountPortalTrain) — a decorative glyph that methods.js appends INSIDE the
+   page-end runway's sticky stage. The stage already clips (overflow: clip) and contains paint, so the glyph
+   can't leak; z-index 0 keeps it BELOW the runway title/teaser/link (z-index 1 in visual.css), so it can
+   never cover text. Only exists while the runway is live (motion on); transform/opacity driven by GSAP.
+--------------------------------------------------------------------------- */
+.mrt-exit-train { position: absolute; left: 0; top: 0; z-index: 0; width: 96px; pointer-events: none; color: var(--line-color, var(--world-methods)); }
+.mrt-exit-train svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mrt-exit-body { fill: currentColor; }
+.mrt-exit-windows rect { fill: var(--bg); opacity: .9; }
+.mrt-exit-wheel { fill: var(--ink); }
+.mrt-exit-trail rect { fill: currentColor; opacity: .45; }
+.journey-runway:not(.is-live) .mrt-exit-train { display: none; }
+@media (max-width: 640px) { .mrt-exit-train { width: 64px; } }
+
+/* ---------------------------------------------------------------------------
    Platform panel (station click → full-screen modal content)
 --------------------------------------------------------------------------- */
 .platform-panel { display: grid; gap: 18px; }

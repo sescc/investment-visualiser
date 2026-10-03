@@ -8,6 +8,9 @@
 //   <meta charset="UTF-8">
 //   <meta name="viewport" content="width=device-width, initial-scale=1">
 //   <title>… — SGInvest Visualiser (visual edition)</title>
+//   <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
+//     ^ the cross-document View Transition opt-in must be INLINE and FIRST in <head> (not only in visual.css), or
+//       the new page reveals before it is read and pagereveal.viewTransition is null (see journey.js).
 //   <!-- Pre-paint: apply the stored theme + Calm state before first paint, so there's no flash. -->
 //   <script>
 //   (function () {
@@ -56,6 +59,10 @@
 //     into innerHTML.
 //   ls(key)/lsSet(key,val), ss(key)/ssSet(key,val) — localStorage/sessionStorage, always try/catch.
 //
+// Journey: mountShell also calls journey.js:mountJourney({ page, stage, footEl }) once — the "Next stop"
+// runway after the footer (or the Compare finale), the HUD rail and the arrival warp-in. NAV_ITEMS lives in
+// stops.js (a leaf module) so shell.js <-> journey.js never import each other.
+//
 // Theme: reuses the stable site's exact localStorage key (`sgtheme`) and `sg:themechange` window
 // event, so the reader's light/dark choice follows them across editions — but the toggle logic is
 // re-implemented locally rather than imported from ../../js/components.js, which also renders the
@@ -70,6 +77,8 @@ import { mountBackdrop } from './backdrop.js';
 import { mountFx, confettiBurst, getSoundEnabled, setSoundEnabled, playBlip } from './fx.js';
 import { roll as rollChoreography, currentSeed, mountRemix, onChaosMode, initKonami } from './chaos.js';
 import { initAnalytics } from './analytics.js';
+import { NAV_ITEMS } from './stops.js';
+import { mountJourney } from './journey.js';
 
 function h(strings, ...vals) {
   return strings.reduce((acc, s, i) => acc + s + (vals[i] ?? ''), '');
@@ -213,14 +222,6 @@ function openGlossaryModal(glossary) {
 // ============================================================================
 // Freshness pill + panel (same text/format as stable, so both editions are diffable)
 // ============================================================================
-
-const NAV_ITEMS = [
-  { href: 'index.html', label: 'Hub' },
-  { href: 'products.html', label: 'Products' },
-  { href: 'methods.html', label: 'Methods' },
-  { href: 'brokers.html', label: 'Brokers' },
-  { href: 'compare.html', label: 'Compare' },
-];
 
 function updateFreshnessPill(data) {
   const pillText = document.querySelector('.freshness-pill-text');
@@ -520,6 +521,9 @@ export async function mountShell({ page, data, glossary = CONTENT_GLOSSARY } = {
   // (brokers.js:451, compare.js:423, hub.js:130, methods.js:388) still catch it. ----
   const stage = mountBackdrop();
   setTimeout(() => window.dispatchEvent(new CustomEvent('sg:stageready', { detail: { stage } })), 0);
+
+  // ---- Journey (runway after the footer / Compare finale, HUD rail, arrival warp-in) — see journey.js ----
+  mountJourney({ page, stage, footEl });
 
   // ---- Remix (seeded choreography) ----
   const seed = currentSeed();

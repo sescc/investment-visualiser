@@ -133,6 +133,9 @@
    so fx.js's tilt (`data-tilt`, its own inline `transform`) never fights it. */
 .tc-slot { display: flex; flex-direction: column; transform-style: preserve-3d; }
 .tc-slot .trading-card { flex: 1; width: 100%; }
+/* `.tc-skew` — the card's velocity-sway wrapper (js/products.js:wireDeckVelocity). Layout pass-through
+   (fills the slot exactly like the card used to); the only element whose transform that function writes. */
+.tc-skew { display: flex; flex-direction: column; flex: 1; min-height: 0; width: 100%; transform-style: preserve-3d; }
 
 /* ---- booster-pack band ---- */
 .pack-band {
@@ -149,7 +152,15 @@
   gap: 10px;
   padding: 18px 8px;
   box-shadow: var(--panel-shadow);
+  /* Booster-pack burst (js/products.js:wirePackBursts): the ring/shards are positioned inside the band and
+     clipped to it, so they can never reach a neighbouring card's text. */
+  position: relative;
+  overflow: hidden;
 }
+.pack-band-label, .pack-band-count { position: relative; z-index: 1; } /* text always paints above the burst */
+.pack-ring, .pack-shard { position: absolute; left: 50%; top: 50%; opacity: 0; pointer-events: none; }
+.pack-ring { width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .9); }
+.pack-shard { width: 8px; height: 22px; margin: -11px 0 0 -4px; border-radius: 2px; background: linear-gradient(135deg, #fff, rgba(255, 255, 255, .35) 55%, var(--world-methods)); }
 .pack-band-label { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 800; letter-spacing: .02em; font-size: 1rem; }
 .pack-band-count { writing-mode: vertical-rl; transform: rotate(180deg); font-size: .72rem; opacity: .85; }
 .deck-viewport[data-mode="grid"] .pack-band {

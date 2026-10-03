@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Cross-document View Transition opt-in. MUST be inline and first in <head>: when it only arrived via visual.css the
+     new page was already past the point where the opt-in is read, so pagereveal.viewTransition was null and the
+     journey's title -> hero morph never ran (verified headed Edge: 0/12 hops with it in visual.css only, 12/12 inline). -->
+<style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 <title>Brokers — who executes it — SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Broker types in Singapore — CDP-linked vs custodian vs international — staged as a choose-your-fighter select screen, with a live Fee Race calculator using real provider fees. Not financial advice.">
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
@@ -29,7 +33,7 @@
     <div class="visual-wrap">
       <div class="visual-section-head brokers-hero">
         <span class="chip" style="background:var(--world-brokers-soft); color:var(--world-brokers)">Who executes it</span>
-        <h1 class="kinetic display-hero" id="brokers-headline" style="margin-top:8px">Brokers</h1>
+        <h1 class="kinetic display-hero hero-headline" id="brokers-headline" style="margin-top:8px">Brokers</h1>
         <p class="muted">The single most important thing to understand before you sign up: whose name are your shares
           actually held in?</p>
       </div>

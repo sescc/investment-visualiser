@@ -687,6 +687,16 @@ html.is-calm *, html.is-calm *::before, html.is-calm *::after {
   }
   .visual-topbar { view-transition-name: visual-header; }
   .hero-headline { view-transition-name: visual-hero-headline; }
+
+  /* Journey (js/journey.js): the whole page scales up and fades out while the next one scales in from
+     slightly smaller — transform + opacity only. The runway title (which takes the hero's name in a
+     `pageswap` handler) morphs into the next page's hero headline through the named group. These apply to
+     every cross-document navigation, header links included. */
+  ::view-transition-old(root) { animation: journey-vt-out .45s cubic-bezier(.5, 0, .9, .4) both; }
+  ::view-transition-new(root) { animation: journey-vt-in .6s cubic-bezier(.1, .6, .2, 1) both; }
+  ::view-transition-group(visual-hero-headline) { animation-duration: .6s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+  @keyframes journey-vt-out { to { transform: scale(1.12); opacity: 0; } }
+  @keyframes journey-vt-in { from { transform: scale(.94); opacity: 0; } }
 }
 
 /* ============================================================================
@@ -762,3 +772,67 @@ html.is-calm *, html.is-calm *::before, html.is-calm *::after {
 .world-products .card-top, .world-card.world-products { border-top: 4px solid var(--world-products); }
 .world-card.world-methods { border-top: 4px solid var(--world-methods); }
 .world-card.world-brokers { border-top: 4px solid var(--world-brokers); }
+
+/* ============================================================================
+   Journey (js/journey.js) — runway after the footer, HUD rail, Compare finale.
+   Default = a plain short section (what Calm / reduced motion / ?nogsap=1 / GSAP failure get). The
+   `.is-live` class (added only when motion is allowed) makes the runway 1.2 viewport heights with a
+   CSS-sticky stage (not a GSAP pin) for the scrubbed warp. Law 6: no opacity:0 on text anywhere here;
+   decorative rings/veil are the only things that start hidden. Law 7: transform/opacity only, no will-change.
+   ============================================================================ */
+
+.journey-runway { position: relative; z-index: var(--z-content); padding: 48px 16px 64px; }
+.journey-stage { position: relative; display: grid; justify-items: center; align-content: center; gap: 14px; text-align: center; max-width: var(--maxw, 1180px); margin: 0 auto; }
+.journey-veil, .journey-rings { display: none; }
+.journey-title { margin: 0; font-family: var(--font-display); font-weight: 800; line-height: 1; color: var(--ink); position: relative; z-index: 1; display: grid; gap: 6px; justify-items: center; }
+.journey-kicker { font-size: clamp(.95rem, 2.4vw, 1.25rem); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.journey-dest { font-size: clamp(2.4rem, 9vw, 5.6rem); }
+.journey-teaser { margin: 0; color: var(--ink-2); position: relative; z-index: 1; }
+.journey-nav { position: relative; z-index: 1; }
+.journey-next { font-size: 1.05rem; padding: 12px 24px; }
+
+.journey-runway.is-live { height: 120vh; padding: 0; }
+.journey-runway.is-live .journey-stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; max-width: none; margin: 0;
+  overflow: clip; contain: paint; padding: 0 16px;
+}
+.journey-runway.is-live .journey-veil { display: block; position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
+.journey-runway.is-live .journey-rings { display: block; position: absolute; inset: 0; pointer-events: none; }
+.journey-rings i {
+  position: absolute; left: 50%; top: 50%; width: 60vmin; height: 60vmin; margin: -30vmin 0 0 -30vmin;
+  border: 3px solid var(--world-products); border-radius: 50%; opacity: 0;
+}
+.journey-rings i:nth-child(2) { border-color: var(--world-methods); }
+.journey-rings i:nth-child(3) { border-color: var(--world-brokers); }
+.journey-rings i:nth-child(4) { border-color: var(--ink-2); border-width: 1px; }
+
+/* HUD rail — fixed bottom-left (the only corner free of fixed UI: header is sticky top, the edition switch is
+   fixed top-right under it). Decorative: aria-hidden, no pointer events. */
+.journey-hud {
+  position: fixed; left: 12px; bottom: 12px; z-index: 45; display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px; background: var(--glass-bg); border: 1px solid var(--glass-border);
+  color: var(--ink-2); font-size: .72rem; font-weight: 700; pointer-events: none; transition: opacity .25s;
+}
+.journey-hud.is-away { opacity: 0; }
+body.modal-open .journey-hud { opacity: 0; visibility: hidden; }
+.journey-hud-dots { display: inline-flex; gap: 5px; }
+.journey-hud-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--muted); }
+.journey-hud-dots i.is-done { background: var(--muted); }
+.journey-hud-dots i.is-current { background: var(--ink); border-color: var(--ink); }
+.journey-hud-label { white-space: nowrap; }
+.journey-hud-bar { display: none; width: 48px; height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; }
+.journey-hud.is-live .journey-hud-bar { display: block; }
+.journey-hud-bar i { display: block; height: 100%; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, var(--world-products), var(--world-methods), var(--world-brokers)); }
+@media (max-width: 479px) { .journey-hud { display: none; } }
+
+/* Compare finale */
+.journey-finale { position: relative; z-index: var(--z-content); padding: 40px 0 88px; }
+.journey-finale-inner { max-width: 640px; margin: 0 auto; text-align: center; display: grid; gap: 18px; justify-items: center; }
+.journey-finale-title { margin: 0; font-family: var(--font-display); font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; color: var(--ink); }
+.journey-recap { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
+.journey-recap a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--glass-border); background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 700; font-size: .92rem; }
+.journey-recap a:hover { background: var(--surface-2); }
+.journey-recap li[aria-current="page"] a { background: var(--ink); color: var(--bg); }
+.journey-recap-n { opacity: .75; }
+.journey-finale-note { margin: 0; color: var(--ink-2); font-size: .92rem; }
+.journey-finale-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }

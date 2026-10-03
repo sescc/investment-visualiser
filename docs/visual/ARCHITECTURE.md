@@ -32,6 +32,9 @@ decorative state of DOM that already holds the content.
 | batchReveal / scrubHeading | Elements → entrance on scroll | same partiality as `scene`; end state = authored layout |
 | animate | DOM × Choreography → DOM | decorative only: content is in the DOM and readable before and without it |
 | analytics | host → script load | defined only when host ends with `.vercel.app`; otherwise no request |
+| nextStop | Page → JourneyStop \| ⊥ | from `shell.js:NAV_ITEMS` order (Hub → Products → Methods → Brokers → Compare); ⊥ for Compare (finale instead) |
+| runway | ScrollProgress × RunwayArmed → decorative state ⊕ navigate | after the footer; armed only by a fresh downward scroll into it this page view (never on `pageshow`/restore); progress ≥ 0.98 ∧ armed ∧ moving down ⇒ navigate(nextStop). ¬motion ⇒ link only, never auto-navigates |
+| scene ordering | Scenes → refresh order | triggers refreshed in document order (`refreshPriority`), re-sorted after async mounts, so a late scene can't shift an earlier one's start |
 
 ## Transmissions
 | Trm | From → To | Notes |
@@ -40,6 +43,9 @@ decorative state of DOM that already holds the content.
 | sessionStorage formation handoff | page → next page | try/catch; absent ⇒ start from a fresh formation |
 | CDN script load | cdnjs only (GSAP 3.15 core + the plugins actually used; Chart.js) | failure (or `?nogsap=1`) ⇒ static layout, content intact |
 | Vercel insights | page → Vercel | `*.vercel.app` only |
+| journey navigate | page → next visual page | same-origin navigation carrying the View Transition; runway title and next hero share `view-transition-name` (current hero relinquishes it first); carries `?seed=`/`?calm=` only |
+| prefetch | page → next page | `<link rel="prefetch">` on runway approach; not prerender (entrances must not play hidden) |
+| journey arrival flag | page → next page | one-shot `sessionStorage` `sg-journey-arrival` (try/catch) ⇒ warp-in entrance variant |
 
 ## Coherence (§4.5) this component must keep
 1. Single source of fee truth — no figure in `site/visual/`.

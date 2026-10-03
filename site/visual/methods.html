@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Cross-document View Transition opt-in. MUST be inline and first in <head>: when it only arrived via visual.css the
+     new page was already past the point where the opt-in is read, so pagereveal.viewTransition was null and the
+     journey's title -> hero morph never ran (verified headed Edge: 0/12 hops with it in visual.css only, 12/12 inline). -->
+<style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 <title>Methods — how to invest — SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Ways to invest in Singapore — robo-advisors, regular savings plans, CPFIS, SRS and more — plotted as an MRT-style line map, with real provider fees. Not financial advice.">
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
@@ -29,7 +33,7 @@
     <div class="visual-wrap">
       <div class="visual-section-head methods-hero">
         <span class="chip" style="background:var(--world-methods-soft); color:var(--world-methods)">How to invest</span>
-        <h1 class="kinetic display-hero" id="methods-headline" style="margin-top:8px">Methods</h1>
+        <h1 class="kinetic display-hero hero-headline" id="methods-headline" style="margin-top:8px">Methods</h1>
         <p class="muted">The channel your money flows through before it becomes an investment — and which account it
           comes from.</p>
         <p class="methods-diagram-note" data-el="map-hint" hidden></p>

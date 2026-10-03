@@ -30,7 +30,8 @@ when `/api/health` is absent).
 - `site/visual/` visual edition: the same 5 pages, scroll-driven, no WebGL — see "Visual edition motion
   rules" below. `js/motion.js` holds the scene helpers (`scene`, `scrubOnEntry`, `batchReveal`,
   `scrubHeading`), `js/backdrop.js` the DOM background + section→formation switching, `css/calc.css` the
-  shared calculator styling. `docs/visual/` documents it (start at `docs/visual/ARCHITECTURE.md`).
+  shared calculator styling, `js/journey.js` + `js/stops.js` the page-to-page runway (Hub → … → Compare
+  finale), HUD and arrival warp. `docs/visual/` documents it (start at `docs/visual/ARCHITECTURE.md`).
 - `scripts/build-site.mjs` + `npm run build` assemble `_site/` — the one artifact both the GitHub Pages
   workflow and Vercel (`vercel.json`) deploy from.
 - `docs/DESIGN.md` visual/UX spec for the site
@@ -174,7 +175,16 @@ Performance rules (project law 7, `docs/architecture-map.md`):
   background-position.
 - No own `requestAnimationFrame` loops (GSAP's ticker is fine); no infinite CSS animation except on
   hover/focus; nothing does work while the page is idle.
-- `will-change` only on the backdrop blobs and the currently-active pinned scene.
+- `will-change` only on the backdrop blobs and the currently-active pinned scene — plus velocity effects
+  (e.g. the products deck skew), which promote only while live and clear it again.
+- The cross-document view-transition opt-in (`@view-transition { navigation: auto; }`, inside a
+  `prefers-reduced-motion: no-preference` query) lives **inline at the top of each visual page's `<head>`**,
+  before any stylesheet or script. When it only arrives via `visual.css` the new page reveals first and
+  `pagereveal.viewTransition` is null (DECISIONS §15).
+- Never tween or `reveal()` the transform of an element that is a `scene()` trigger or pin.
+- Idle means idle: after scrolling and waiting, a page should schedule only a handful of rAF frames in 1.5 s.
+  Don't add permanent GSAP ticker listeners (e.g. load InertiaPlugin, `repeat: -1`); `motion.js` also stops
+  ScrollTrigger's own endless `_rafBugFix` loop outside WebKit.
 
 Content rules (project law 6):
 - Text is never hidden or covered — decorative parts (fills, chips, coins, drawn lines) may start

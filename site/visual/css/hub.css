@@ -103,3 +103,64 @@ html.is-calm .scatter-label, html.is-calm .scatter-leader { opacity: 1 !importan
 .proscons-pros h3 { color: var(--good); }
 .proscons-cons h3 { color: var(--bad); }
 .best-for, .eligibility { font-size: .84rem; margin: 4px 0; }
+
+
+/* ============================================================================
+   hub marquee — journey strip between the hero and the quiz (js/hub.js:mountMarquee).
+   Decorative (aria-hidden) duplicate of the nav labels. DEFAULT = the static single row (Calm, reduced
+   motion, ?nogsap=1, GSAP failure); hub.js adds `.is-live` only while its scroll-velocity motion runs,
+   which reveals the second lane and the looping duplicate rows. Height is reserved for two lanes either
+   way so going live shifts nothing. Transform/opacity only; no will-change, no animation of its own.
+   ============================================================================ */
+
+.journey-marquee {
+  position: relative;
+  z-index: var(--z-content);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-size: clamp(1.5rem, 6.5vw, 5rem);
+  min-height: calc(2.1em + .7em);
+  padding: .35em 0;
+  margin: 12px 0;
+  background: var(--surface);
+  border-block: 3px solid var(--ink);
+  pointer-events: none;
+  user-select: none;
+}
+.jm-skew { width: 100%; }
+.jm-track { display: flex; justify-content: center; }
+.jm-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; row-gap: .1em; flex: none; }
+.jm-word {
+  --jm-c: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--jm-c);
+}
+.jm-word[data-stop="products"] { --jm-c: var(--world-products); }
+.jm-word[data-stop="methods"] { --jm-c: var(--world-methods); }
+.jm-word[data-stop="brokers"] { --jm-c: var(--world-brokers); }
+.jm-dot {
+  flex: none;
+  width: .26em;
+  height: .26em;
+  margin: 0 .5em;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--world-products), var(--world-brokers));
+}
+/* static: one row, no trailing separator, no second lane, no duplicate rows */
+.journey-marquee:not(.is-live) .jm-lane-b,
+.journey-marquee:not(.is-live) .jm-row[data-dup] { display: none; }
+.journey-marquee:not(.is-live) .jm-dot:last-child { display: none; }
+/* live: two lanes, each an endless strip of identical rows */
+.journey-marquee.is-live .jm-track { width: max-content; justify-content: flex-start; }
+.journey-marquee.is-live .jm-row { flex-wrap: nowrap; }
+.journey-marquee.is-live .jm-lane { height: 1.05em; }
+/* lane A: all ink; lane B: each stop in its own world colour (solid fills — outlined text on this variable
+   font shows its internal contour overlaps, so no -webkit-text-stroke) */
+.journey-marquee.is-live .jm-lane-a .jm-word { color: var(--ink); }
+@media (max-width: 480px) { .journey-marquee { border-block-width: 2px; } }

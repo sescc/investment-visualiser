@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Cross-document View Transition opt-in. MUST be inline and first in <head>: when it only arrived via visual.css the
+     new page was already past the point where the opt-in is read, so pagereveal.viewTransition was null and the
+     journey's title -> hero morph never ran (verified headed Edge: 0/12 hops with it in visual.css only, 12/12 inline). -->
+<style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 <title>Compare — SGInvest Visualiser (visual edition)</title>
 <meta name="description" content="Compare up to three products, methods or broker types side by side — risk, liquidity, complexity and real fees, staged as a head-to-head arena. Not financial advice.">
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
@@ -29,7 +33,7 @@
     <div class="visual-wrap">
       <div class="visual-section-head compare-hero">
         <span class="chip" style="background:var(--world-brokers-soft); color:var(--world-brokers)">Head to head</span>
-        <h1 class="kinetic display-hero" id="compare-headline" style="margin-top:8px">Compare</h1>
+        <h1 class="kinetic display-hero hero-headline" id="compare-headline" style="margin-top:8px">Compare</h1>
         <p class="muted">Pick up to three products, methods or broker types — from the quiz, or search below.</p>
       </div>
       <div id="compare-empty"></div>

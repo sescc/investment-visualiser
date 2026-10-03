@@ -18,7 +18,7 @@ import { feeSummary, freshnessView } from '../../js/feeview.js';
 import { rankByCost, formatSGD, describeScenario, DEFAULT_SCENARIO } from '../../js/cost.js';
 import { icon } from '../../js/icons.js';
 import { mountShell, esc } from './shell.js';
-import { motionAllowed, whenGsap, splitHeadline, scene, scrubHeading, refreshScenes } from './motion.js';
+import { motionAllowed, motionScope, whenGsap, splitHeadline, scene, scrubHeading, refreshScenes, scheduleSceneRefresh } from './motion.js';
 import { FORMATIONS } from './backdrop.js'; // compat fix 2026-09-27: stage.js was deleted (WebGL removal); backdrop.js exports the same FORMATIONS array.
 import { onRemix } from './chaos.js';
 import { mountVisualCalculator } from './calc.js';
@@ -278,7 +278,82 @@ function mountMapScene(mapViewportEl, mapMount, groups, entrance) {
         }, `line${i}`);
       }
     });
+
+    // The last line's train doesn't just stop at the terminus: it keeps going and leaves the map (past the
+    // end of the line; `.mrt-line-track { overflow-x: hidden }` clips it, so it visibly rides out of the
+    // frame). Its twin reappears at the page-end runway — see mountPortalTrain below. Scroll-scrubbed, so
+    // scrolling back brings it back onto the line.
+    const lastTrain = lineEls.at(-1)?.querySelector('.mrt-train');
+    if (lastTrain) tl.to(lastTrain, { x: '+=260', duration: 0.35, ease: 'power2.in' }, '>');
   }, { pin: true, length: Math.max(1, groups.length * 0.8) });
+}
+
+// ============================================================================
+// Train into the portal (signature spectacle, visual-journey task 3.3) — a small train glyph in the colour
+// of the LAST line rides in from the left across the top of the page-end runway's sticky stage, arcs down
+// toward the portal rings behind the "Next stop" title and shrinks to a point as the reader reaches the end
+// of the page. Hand-off with journey.js is DOM-only: the glyph is appended INSIDE the runway's own stage
+// (`.journey-runway.is-live .journey-stage`, which already clips and contains paint), so it can never leak
+// into the footer or off-screen, and journey.js is neither imported nor edited. If the runway isn't there or
+// isn't live (Calm, reduced motion, ?nogsap=1, GSAP failure) this mounts nothing.
+//   - law 6: aria-hidden, text-free, painted BELOW the runway title/teaser/link (z-index 0 vs their 1).
+//   - law 7: transform + opacity only, one scrubbed timeline, no rAF of its own, no will-change.
+// ============================================================================
+
+const TRAIN_SVG = `<svg viewBox="0 0 96 30" width="96" height="30" aria-hidden="true" focusable="false">
+  <g class="mrt-exit-trail"><rect x="0" y="9" width="22" height="3" rx="1.5"/><rect x="6" y="15" width="18" height="3" rx="1.5"/><rect x="2" y="21" width="20" height="3" rx="1.5"/></g>
+  <rect class="mrt-exit-body" x="26" y="3" width="68" height="22" rx="10"/>
+  <g class="mrt-exit-windows"><rect x="34" y="8" width="11" height="8" rx="2"/><rect x="49" y="8" width="11" height="8" rx="2"/><rect x="64" y="8" width="11" height="8" rx="2"/><rect x="79" y="8" width="9" height="8" rx="3"/></g>
+  <circle class="mrt-exit-wheel" cx="40" cy="26" r="3"/><circle class="mrt-exit-wheel" cx="80" cy="26" r="3"/>
+</svg>`;
+
+function mountPortalTrain(mapMount) {
+  let el = null;
+  const syncColor = () => {
+    const lastLine = Array.from(mapMount.querySelectorAll('.mrt-line')).at(-1);
+    const c = lastLine?.style.getPropertyValue('--line-color');
+    if (el && c) el.style.setProperty('--line-color', c);
+  };
+  const scope = motionScope(() => {
+    let cancelled = false;
+    let ctx = null;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger || !motionAllowed()) return;
+      const runway = document.querySelector('.journey-runway.is-live');
+      const stage = runway?.querySelector('.journey-stage');
+      if (!stage) return;
+      el = document.createElement('div');
+      el.className = 'mrt-exit-train';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = TRAIN_SVG;
+      stage.appendChild(el);
+      syncColor();
+      const W = () => stage.clientWidth;
+      const H = () => stage.clientHeight;
+      ctx = gsap.context(() => {
+        // Same progress definition as journey.js's warp: 0 when the runway's top meets the viewport bottom,
+        // 1 at the end of the page (runway bottom at the viewport bottom). Function-based values +
+        // invalidateOnRefresh so a resize re-measures. The tween order is the story: ride in, descend toward
+        // the portal, then shrink to nothing as the rings blow up.
+        const tl = gsap.timeline({ scrollTrigger: { trigger: runway, start: 'top bottom', end: 'bottom bottom', scrub: 0.5, invalidateOnRefresh: true } });
+        tl.fromTo(el, { x: () => -(el.offsetWidth + 24) }, { x: () => W() / 2 - el.offsetWidth / 2, duration: 0.8, ease: 'power1.inOut' }, 0.15)
+          .fromTo(el, { y: () => H() * 0.12 }, { y: () => H() * 0.27, duration: 0.8, ease: 'power2.in' }, 0.15)
+          .fromTo(el, { rotate: 0 }, { rotate: 10, duration: 0.8, ease: 'power2.in' }, 0.15)
+          .to(el, { scale: 0.12, opacity: 0, duration: 0.13, ease: 'power2.in' }, 0.82)
+          .to({}, { duration: 0.05 }, 0.95); // pad to exactly 1.0 so timeline progress == runway progress
+      }, runway);
+      scheduleSceneRefresh();
+    })();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+      el?.remove();
+      el = null;
+      scheduleSceneRefresh();
+    };
+  });
+  return { syncColor, destroy: () => scope.destroy() };
 }
 
 // ============================================================================
@@ -426,10 +501,12 @@ if (!methods.length) {
   });
   applyTrainStyle(shell.roll.entrance);
   let mapScene = mountMapScene(mapViewportEl, mapMount, groups, shell.roll.entrance);
+  const portalTrain = mountPortalTrain(mapMount);
 
   onRemix(({ roll }) => {
     const order = lineColorOrder(roll);
     document.querySelectorAll('.mrt-line').forEach((lineEl, i) => lineEl.style.setProperty('--line-color', PALETTE[order[i % order.length]]));
+    portalTrain.syncColor();
     applyTrainStyle(roll.entrance);
     // Rebuild so the remix's new easing/train shape applies on the next scroll through the map.
     mapScene.destroy();

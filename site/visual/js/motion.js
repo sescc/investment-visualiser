@@ -33,9 +33,19 @@
 //                                     also runs `ScrollTrigger.config({ ignoreMobileResize: true,
 //                                     limitCallbacks: true })` once, and refreshes ScrollTrigger after
 //                                     `document.fonts.ready` (layout can shift once webfonts swap in).
-//   refreshScenes() → void         `ScrollTrigger.refresh()` if GSAP/ScrollTrigger loaded; no-op
-//                                   otherwise. Call after re-rendering content that scenes measure
-//                                   against (new data, a filter/sort change, etc.).
+//   refreshScenes() → void         `orderTriggers()` then `ScrollTrigger.refresh()` if GSAP/ScrollTrigger
+//                                   loaded; no-op otherwise. Synchronous. Call after re-rendering content
+//                                   that scenes measure against (new data, a filter/sort change, etc.).
+//   scheduleSceneRefresh(ms=60)    Debounced (setTimeout — NOT rAF, which the Browser pane throttles)
+//                                   `orderTriggers()` + `ScrollTrigger.refresh()`. scene(), scrubOnEntry(),
+//                                   scrubHeading() and batchReveal() call it themselves after their async
+//                                   creation (and scene() after teardown), reveal() after its tween
+//                                   completes (a pinned trigger measured mid-entrance is off by the
+//                                   entrance offset); also fires on fonts.ready and window `load`. Call it yourself after any ASYNC mount that creates or
+//                                   removes a pin (products.js does after building the deck).
+//   orderTriggers() → void         Sets `refreshPriority` on EVERY live ScrollTrigger from its trigger
+//                                   element's document order and calls `ScrollTrigger.sort()` — see the
+//                                   TRIGGER ORDERING note on scene() below.
 //   reveal(el, gsapVars) → void    Fire-and-forget entrance animation. No-op (element keeps its normal,
 //                                   fully-visible styling — nothing in visual.css ever sets opacity:0 on
 //                                   content) when motion isn't allowed or GSAP failed to load.
@@ -70,6 +80,21 @@
 //                                   Safe no-op (authored layout stays exactly as written) under
 //                                   !motionAllowed() or a failed/`?nogsap=1` GSAP load. `destroy()`
 //                                   reverts everything (`gsap.context().revert()` + matchMedia revert).
+//                                   TRIGGER ORDERING (added 2026-10-03): a pin inserts a spacer, so every
+//                                   trigger BELOW it must be measured AFTER it. Triggers are created
+//                                   asynchronously (GSAP loads lazily; products.js's deck is rebuilt on
+//                                   every filter/Remix), so creation order is NOT document order — before
+//                                   this, #liquid-row pinned at ~y=4000 over the Bonds & cash deck after
+//                                   any deck rebuild. Now, after every scene creation/teardown (debounced),
+//                                   on fonts.ready/load, and on refreshScenes(): ALL ScrollTriggers (also
+//                                   those made outside scene() — deck pin, scrubHeading, scrubOnEntry,
+//                                   batchReveal, ScrollTrigger.create) get a refreshPriority from the
+//                                   document order of their trigger element (earlier = refreshed first;
+//                                   containerAnimation children after their container; page-level
+//                                   triggers with no element / `end:'max'` last), then sort + refresh.
+//                                   Callers need do nothing, except: if you create/remove a pin from your
+//                                   own async code, call scheduleSceneRefresh() afterwards. A new scene
+//                                   built on scene() (e.g. a page-end runway) is ordered automatically.
 //   batchReveal(elements, variant, { decorative } = {}) → { destroy() }
 //                                   `ScrollTrigger.batch(elements, { once: true, ... })`, animating only
 //                                   transform/opacity, staggered. `variant` is one of chaos.js's
@@ -101,8 +126,10 @@
 //                                   load; torn down and rebuilt automatically as Calm/reduced-motion
 //                                   toggles.
 //   scrubHeading(el) → { destroy() }
-//                                   Splits `el` into chars (SplitText, `aria: 'auto'` so the heading
-//                                   stays announced as one string) and scrubs them from
+//                                   Splits `el` into words+chars (SplitText `type: 'words,chars'`: chars
+//                                   nested in inline-block word boxes so lines only wrap between words,
+//                                   punctuation stays attached; `aria: 'auto'` so the heading
+//                                   stays announced as one string) and scrubs the chars from
 //                                   { y: '40%', opacity: 0.85, rotateX: -30 } to their resting position
 //                                   between 'top 90%' and 'top 55%'. Deliberately NOT a fully-clipped
 //                                   "chars rise from y:100%" reveal — that would start the heading text
@@ -202,13 +229,13 @@ const GSAP_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/';
 const GSAP_CORE = 'gsap.min.js';
 // Only plugins actually referenced anywhere under site/visual/js (grep-verified 2026-09-27).
 // ScrollTrigger, SplitText, DrawSVGPlugin, MotionPathPlugin are kept regardless — Wave 2's page scenes
-// use them. Flip (calc.js, compare.js), Draggable + InertiaPlugin (hub.js quiz fling) are used today.
+// use them. Flip (calc.js, compare.js) and Draggable (hub.js quiz fling) are used today. InertiaPlugin is deliberately\n// NOT loaded (3 Oct 2026): Draggable auto-tracks with it whenever it is present, and each tracker holds a permanent\n// GSAP ticker listener, so the hub's ticker ran every frame while idle (law 7).
 // Dropped: MorphSVGPlugin, ScrambleTextPlugin, CustomEase — no `window.X` reference to any of them
 // exists in site/visual/js (the "scramble" strings in chaos.js/CSS are just an entrance-variant name,
 // not a use of ScrambleTextPlugin).
 const GSAP_PLUGINS = [
   'ScrollTrigger', 'SplitText', 'DrawSVGPlugin', 'MotionPathPlugin',
-  'Flip', 'Draggable', 'InertiaPlugin',
+  'Flip', 'Draggable',
 ];
 
 function loadScript(src) {
@@ -229,8 +256,30 @@ function timeoutAfter(ms) {
 let _gsapPromise = null;
 
 function refreshAfterFontsReady() {
-  if (typeof document === 'undefined' || !document.fonts?.ready) return;
-  document.fonts.ready.then(() => { window.ScrollTrigger?.refresh(); }).catch(() => { /* ignore */ });
+  if (typeof document === 'undefined') return;
+  // Fonts swapping in shifts layout; so does the window `load` event (late images/iframes). Both go
+  // through the same ordered, debounced settle as scene creation does.
+  if (document.fonts?.ready) document.fonts.ready.then(() => scheduleSceneRefresh()).catch(() => { /* ignore */ });
+  if (document.readyState !== 'complete') window.addEventListener('load', () => scheduleSceneRefresh(), { once: true });
+}
+
+// ScrollTrigger 3.x starts a `_rafBugFix` loop at init — a requestAnimationFrame callback that re-queues itself
+// forever (a workaround for an iOS/Safari rAF quirk). On every other engine it is pure idle work: one rAF per
+// frame on a page that is doing nothing, against law 7 ("nothing does work while idle"). While the plugins load
+// we hand the first `_rafBugFix` callback a no-op rAF, so the loop never starts; the real rAF is restored right
+// after. WebKit (Safari, every iOS browser) keeps the workaround. The callback is recognised by function name,
+// which the minified cdnjs build preserves; if a future build renames it the shim simply does nothing.
+function suppressScrollTriggerRafLoop() {
+  const ua = navigator.userAgent || '';
+  const webkit = (/Safari/.test(ua) && !/Chrome|Chromium|Edg|Android|OPR/.test(ua))
+    || /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  if (webkit) return () => {};
+  const real = window.requestAnimationFrame;
+  window.requestAnimationFrame = function (cb) {
+    if (cb && cb.name === '_rafBugFix') return 0;
+    return real.call(window, cb);
+  };
+  return () => { if (window.requestAnimationFrame !== real) window.requestAnimationFrame = real; };
 }
 
 export function whenGsap() {
@@ -240,15 +289,22 @@ export function whenGsap() {
     try {
       const result = await Promise.race([
         (async () => {
-          await loadScript(GSAP_BASE + GSAP_CORE);
-          if (!window.gsap) throw new Error('window.gsap missing after core load');
-          await Promise.allSettled(GSAP_PLUGINS.map(p => loadScript(`${GSAP_BASE}${p}.min.js`)));
-          const gsap = window.gsap;
-          const toRegister = GSAP_PLUGINS.map(p => window[p]).filter(Boolean);
-          if (toRegister.length) gsap.registerPlugin(...toRegister);
-          window.ScrollTrigger?.config({ ignoreMobileResize: true, limitCallbacks: true });
-          refreshAfterFontsReady();
-          return gsap;
+          let unshim = () => {};
+          try {
+            await loadScript(GSAP_BASE + GSAP_CORE);
+            if (!window.gsap) throw new Error('window.gsap missing after core load');
+            // After the core: gsap caches window.requestAnimationFrame at load and must keep the real one.
+            unshim = suppressScrollTriggerRafLoop();
+            await Promise.allSettled(GSAP_PLUGINS.map(p => loadScript(`${GSAP_BASE}${p}.min.js`)));
+            const gsap = window.gsap;
+            const toRegister = GSAP_PLUGINS.map(p => window[p]).filter(Boolean);
+            if (toRegister.length) gsap.registerPlugin(...toRegister);
+            window.ScrollTrigger?.config({ ignoreMobileResize: true, limitCallbacks: true });
+            refreshAfterFontsReady();
+            return gsap;
+          } finally {
+            unshim();
+          }
         })(),
         timeoutAfter(8000),
       ]);
@@ -263,9 +319,73 @@ export function whenGsap() {
 
 export const loadGsap = whenGsap;
 
-/** ScrollTrigger.refresh() if loaded; no-op otherwise. Call after re-rendering measured content. */
+// ---------------------------------------------------------------------------
+// Trigger ordering + settle (see scene()'s header comment for the "why").
+// ---------------------------------------------------------------------------
+
+// Priority tiers (ScrollTrigger refreshes HIGHER refreshPriority first):
+//   element-bound triggers: ELEMENT_BASE - rank, rank = document order of the trigger element, so a
+//     trigger earlier in the page (and the pin-spacer it adds) is always measured before any later one;
+//   containerAnimation children (deck card tilt): 0 — after every element-bound trigger, i.e. after
+//     their container's own trigger;
+//   page-level triggers (no trigger element, e.g. header progress bar / backdrop parallax with
+//     `end: 'max'`): -1 — last, because they depend on the final page height.
+const ELEMENT_BASE = 100000;
+
+/**
+ * Assigns every live ScrollTrigger a refreshPriority from its trigger element's document order and sorts.
+ * Covers triggers created outside scene() too (the products deck pin, scrubHeading, scrubOnEntry,
+ * batchReveal, ScrollTrigger.create in shell/backdrop/compare). Safe no-op without ScrollTrigger.
+ */
+export function orderTriggers() {
+  const ST = window.ScrollTrigger;
+  if (!ST) return;
+  const all = ST.getAll();
+  const bound = [];
+  for (const st of all) {
+    const el = st.trigger;
+    const pageLevel = !(el instanceof Element) || st.vars.end === 'max';
+    if (pageLevel) st.vars.refreshPriority = -1;
+    else if (st.vars.containerAnimation) st.vars.refreshPriority = 0;
+    else bound.push(st);
+  }
+  // Array.prototype.sort is stable: triggers on the same element keep creation order; an ancestor
+  // (e.g. a pinned section) sorts before its descendants.
+  bound.sort((a, b) => {
+    if (a.trigger === b.trigger) return 0;
+    const pos = a.trigger.compareDocumentPosition(b.trigger);
+    if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1; // b after a
+    if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+    return 0;
+  });
+  bound.forEach((st, i) => { st.vars.refreshPriority = ELEMENT_BASE - i; });
+  ST.sort();
+}
+
+let _settleTimer = null;
+
+/**
+ * Debounced (setTimeout, not rAF — the Browser pane throttles rAF) orderTriggers() + ScrollTrigger.refresh().
+ * Call after creating or destroying anything that adds/removes a pin-spacer or changes page height
+ * asynchronously (scene(), scrubOnEntry(), scrubHeading(), batchReveal() and products.js' deck already do);
+ * also fires on fonts.ready and window `load`.
+ */
+export function scheduleSceneRefresh(delayMs = 60) {
+  if (typeof window === 'undefined') return;
+  clearTimeout(_settleTimer);
+  _settleTimer = setTimeout(() => {
+    _settleTimer = null;
+    if (!window.ScrollTrigger) return;
+    orderTriggers();
+    window.ScrollTrigger.refresh();
+  }, delayMs);
+}
+
+/** ordered ScrollTrigger.refresh() if loaded; no-op otherwise. Call after re-rendering measured content. */
 export function refreshScenes() {
-  window.ScrollTrigger?.refresh();
+  if (!window.ScrollTrigger) return;
+  orderTriggers();
+  window.ScrollTrigger.refresh();
 }
 
 // ---------------------------------------------------------------------------
@@ -286,7 +406,13 @@ export async function reveal(el, vars = {}) {
   const gsap = await whenGsap();
   if (!gsap || !motionAllowed()) return;
   const { from = {}, ...rest } = vars;
-  const tween = gsap.from(el, { y: 24, opacity: 0, duration: 0.6, ease: 'power3.out', ...from, ...rest });
+  const userDone = rest.onComplete;
+  const tween = gsap.from(el, {
+    y: 24, opacity: 0, duration: 0.6, ease: 'power3.out', ...from, ...rest,
+    // A scene may have measured `el` (or something inside it) while it was still offset by the entrance
+    // transform; re-measure once it has settled (e.g. the index hero card is a pinned scene's trigger).
+    onComplete: function (...a) { userDone?.apply(this, a); scheduleSceneRefresh(); },
+  });
   setTimeout(() => tween.progress(1), ENTRANCE_SAFETY_MS);
 }
 
@@ -411,6 +537,7 @@ export function scene(section, build, opts = {}) {
         requestAnimationFrame(() => { if (currentSt && currentSt.progress < 1) window.scrollTo(0, currentSt.end); });
       };
       section.addEventListener('focusin', onFocusIn);
+      scheduleSceneRefresh();
     })();
 
     return () => {
@@ -421,6 +548,7 @@ export function scene(section, build, opts = {}) {
       section.style.willChange = '';
       currentTl = null;
       currentSt = null;
+      scheduleSceneRefresh(); // reverting removed a pin-spacer: re-measure everything below it
     };
   });
 
@@ -460,6 +588,7 @@ export function scrubOnEntry(el, build, opts = {}) {
         const tl = gsap.timeline({ scrollTrigger: { trigger: el, start, end, scrub, once } });
         extraCleanup = build(tl, { gsap, isMobile }) || null;
       }, el);
+      scheduleSceneRefresh();
     })();
     return () => {
       cancelled = true;
@@ -516,6 +645,7 @@ export function batchReveal(elements, variant = 'fade-rise', { decorative = fals
           }),
         });
       });
+      scheduleSceneRefresh();
     })();
     return () => {
       cancelled = true;
@@ -545,7 +675,9 @@ export function scrubHeading(el) {
       const gsap = await whenGsap();
       if (cancelled || !gsap || !window.SplitText || !window.ScrollTrigger) return;
       if (!motionAllowed()) return;
-      split = new window.SplitText(el, { type: 'chars', aria: 'auto' });
+      // 'words,chars': chars sit inside inline-block word boxes, so a line can only wrap BETWEEN words
+      // (with 'chars' alone every char is its own inline-block and the heading broke mid-word).
+      split = new window.SplitText(el, { type: 'words,chars', aria: 'auto' });
       const chars = split.chars?.length ? split.chars : [el];
       tween = gsap.fromTo(chars,
         { y: '40%', opacity: 0.85, rotateX: -30 },
@@ -555,6 +687,7 @@ export function scrubHeading(el) {
         },
       );
       st = tween.scrollTrigger;
+      scheduleSceneRefresh();
     })();
     return () => {
       cancelled = true;

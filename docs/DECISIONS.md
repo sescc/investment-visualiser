@@ -2,7 +2,7 @@
 
 Sessions of 22 Sep 2026: §1–8 session 1 (project creation), §9–10 session 2 (headless adapters, cost-model extensions).
 23–24 Sep 2026: §11 supercharge session loop adopted, §12 open follow-ups closed, §13 GitHub Pages hosting.
-25–28 Sep 2026: §14 visual edition.
+25–28 Sep 2026: §14 visual edition. 3 Oct 2026: §15 visual journey.
 Earlier bullets superseded later are marked in place. Newest context last within each section.
 Format: **Decision** — why. Edge cases list what happens and where it's handled.
 
@@ -348,3 +348,115 @@ Edge cases:
   - **`.edition-switch-label` reports as "covered" (zero width/height) in a naive coverage sweep**, but it's
     `visibility: hidden` until hover/focus by design (the label bubble only shows on interaction) — not a
     violation, and the coverage check now excludes elements hidden via `visibility`, not just `display`.
+
+- **Heading wrap + pin ordering round (3 Oct 2026, Claude).**
+  - **`scrubHeading` split `'chars'` only, so every char was its own inline-block and lines wrapped mid-word**
+    ("Which path suits me" / "?", "Growth ↔ income spe/ctrum"). Now `'words,chars'` (chars nested in word boxes);
+    headless-Edge sweep of every `main section h2.kinetic` + hero heading, 5 pages x 375/768/1280: 22/60 headings
+    broke differently from their plain text before, 0/60 after (line contents equal, no word wraps internally).
+    Modal headings (in `body`, not `main section`) are outside the sweep.
+  - **Trigger creation order is not document order.** Fresh load was fine, but every `rebuildDeck()` (category chip,
+    beginner toggle, Remix) killed the deck pin and re-created it last, after `refreshScenes()` had already run, so
+    `#liquid-row` kept a start measured without the deck spacer (4041 vs correct ~10360) and pinned over the Bonds &
+    cash cards. Fix in `motion.js`: `orderTriggers()` gives EVERY ScrollTrigger a `refreshPriority` from its trigger
+    element's document order (containerAnimation children after their container; page-level `end:'max'` triggers
+    last) then `ScrollTrigger.sort()`; `scheduleSceneRefresh()` is a debounced (setTimeout) ordered refresh fired
+    after every async scene/scrubOnEntry/scrubHeading/batchReveal creation, scene teardown, `reveal()` completion,
+    the products deck build/teardown, `fonts.ready` and `load`. `refreshScenes()` stays synchronous and uses the same
+    ordering. `scene()` API unchanged; behaviour documented in motion.js header.
+  - **Edge case:** `ScrollTrigger.refresh()` on products is not idempotent (deck end alternates by ~57px between
+    two values on successive refreshes); pins stay aligned, left as is.
+  - **Edge case (fixed, hub.js):** the index hero card (`.diagram-card`, trigger of a pinned scene) kept a
+    `translateY(30px)` from `reveal()` at some viewports, so its natural position at `st.start` was 30px off the pin
+    line (pinned top itself was at the header line). ~~Earlier explanation: the pin start was measured mid-entrance
+    by a refresh~~ — **superseded:** a trace showed the entrance finishing (~1.0 s), then the pin build
+    saving/restoring the pinned element's inline style, which put the stale `translateY(30px)` (captured while the
+    tween was still at its from-state) back on the trigger element; a later refresh could not fix it because GSAP's
+    own cache no longer matched. **Fix:** `hub.js:mountHero` now calls `reveal()` on the card's `.diagram-svg`
+    child instead of the card, so no entrance transform is ever applied to a scene trigger/pin element. The card
+    box paints from first paint; only its picture eases in. Verified: index pins 9/9 pass (pinned top = natural =
+    header line, no overlaps) at 768x900/1024x768/1280x800; law-6 sweep on index passes. The `reveal()`-completion
+    `scheduleSceneRefresh()` in motion.js stays (harmless, generic). **Rule:** never `reveal()`/tween the
+    transform of an element that is itself a `scene()` trigger or pin.
+
+## 15. Visual journey (3 Oct 2026, OpenSpec change `visual-journey`)
+- **Auto page-to-page journey, Compare is the end** (user). Scrolling past the end of Hub, Products, Methods or Brokers
+  carries the reader to the next page (`stops.js:NAV_ITEMS` order). Compare has no runway: it ends with a "Journey
+  complete" finale (recap links, disclaimer sentence, "Start again (Hub)", "Back to the normal site", credits rising,
+  one capped confetti burst). Content parity holds: runway and finale add navigation only.
+- **Runway after the footer** (Claude). About 1.2 viewport heights, a CSS-sticky stage (not a GSAP pin), so the
+  footer, disclaimer, freshness and glossary links stay reachable above it. The "Next: <Label> →" link is rendered by
+  the shell without GSAP and is always present.
+- **Motion off means link only, never auto-navigate** (Claude, from the Calm/reduced-motion/`?nogsap=1` contract).
+  The runway is a short plain section; the scroll/wheel/key listeners are never attached; GSAP failure falls back to the
+  same state (`is-live` is removed again).
+- **Arming and back-bounce** (Claude). Pressing Back lands the reader at the bottom of the previous page, inside the
+  runway, so a naive "progress >= 0.98 at the bottom" rule would bounce them forward again. Design:
+  - **User-intent gate.** The runway arms only on a downward crossing from above to inside it, with a wheel / touch /
+    PageDown-style key (not Tab) in the last 400 ms. Scroll restoration, late pin spacers, scroll anchoring and focus
+    scroll-into-view never arm it. Side benefit: the perf probe's `scrollTo` loop can never navigate.
+  - **0.5V line.** With a 1.2V runway the last element of the page is the runway, so "above" must not mean "runway
+    below the viewport". "Above" is runway top >= 0.5 x viewport height; scrolling up one viewport from the bottom
+    gives 0.8V and clears it.
+  - **`pageshow` reset** (also bfcache `persisted`): disarm, clear the fired flag, reset the warp, undo the
+    view-transition-name handoff, take the first position sample after pageshow plus one frame (never at mount).
+  - **Hysteresis.** Fire needs progress >= 0.98, moving down, >= 400 ms after arming (a flick or the End key can't fire
+    it), not within 500 ms of a height-only resize (a width change disarms), not after focus entered the runway, and at
+    most once per page view. At the very bottom no more scroll events arrive, so a fresh wheel / key / touch gesture
+    (>= 180 ms quiet gap, which filters trackpad inertia) also counts.
+  - `sessionStorage` is not used for arming, so every page view decides for itself.
+- **Query carry-over: `seed` and `calm` only** (Claude). `group`, `market`, `ids`, `scenario` and the hash are page
+  specific and would mislead the next page. Read from `location.search` at navigation time because Remix rewrites
+  `?seed=` with `history.replaceState`.
+- **`stops.js` is a leaf module** (Claude). `shell.js` imports `journey.js`; if `journey.js` imported `NAV_ITEMS` from
+  `shell.js` the cycle would read an uninitialised `const` and fail every page. Both import it from `stops.js`.
+- **The runway uses an IntersectionObserver plus a scroll sampler, not ScrollTrigger** (Claude). A trigger created in
+  `mountShell` is measured before the page's pins insert their spacers (the Products bug class), so it would mismeasure.
+  The sampler reads `getBoundingClientRect()` once per scroll event through a rAF scheduled by that event (never a
+  standing loop) and only while the runway is within one viewport.
+- **The cross-document view-transition opt-in must be inline and first in `<head>`** (Claude, found in verification).
+  `@view-transition { navigation: auto; }` arriving only through `visual.css` reached the new page after its reveal, so
+  `pagereveal.viewTransition` was null and the runway title never morphed into the next hero. Headed Edge:
+  0/12 hops with the opt-in only in `visual.css`, 12/12 with it inline at the top of `<head>`; headless now also works.
+  `<link rel="expect" href="#main" blocking="render">` had no effect (0/12 alone). The opt-in sits in a
+  `prefers-reduced-motion: no-preference` media query. The four non-Hub hero headlines carry the `.hero-headline` class
+  (the name `visual-hero-headline`), and the handoff (hero gives up the name, runway title takes it) happens in a
+  `pageswap` listener so link clicks and keyboard activation are covered; it is undone on `pageshow`.
+- **Journey HUD at bottom-left** (Claude). The only corner free of fixed UI (header sticky top, edition switch fixed
+  top-right under it). Hidden below 480px, while the runway stage is in view (it would cover the Next link) and while a
+  modal is open. Static, without the progress fill, when motion is off. It can momentarily overlap page text like any
+  fixed overlay; accepted.
+- **Brokers photo finish** (Claude). `brokers.js:mountFeeRace` (`firePhoto`/`playPhoto`/`killPhoto`). Leaders are every
+  lane within half a cent of `ranked[0]`; a tie shows DEAD HEAT; the pit lane (incomplete data) never leads. The old
+  winner yoyo was replaced by a punch-in. If the leaders cross while the panel is off-screen the one-shot is deferred
+  (`pfPending`) until it is seen. Opacity-only flash, glow behind the text.
+- **Methods portal train lives inside the runway stage** (Claude, `methods.js:mountPortalTrain`). A fixed train glyph
+  would cover footer text.
+- **Hub marquee** (Claude, `hub.js:mountMarquee`): driven by ScrollTrigger `onUpdate` with `gsap.quickTo`, so it settles
+  to idle.
+- **Products pack bursts and deck velocity** (Claude). `wirePackBursts` derives its burst state from the trigger's
+  progress, because `limitCallbacks` drops enter/leave callbacks on scroll jumps. `wireDeckVelocity` skews non-promoted
+  cards with scroll velocity; that costs a repaint per frame, so `will-change` is applied only while it is live.
+- **Never `-webkit-text-stroke` on the variable display font** (Claude): it strokes the glyph's overlapping contours and
+  draws interior artefacts.
+- **Idle ticker (law 7 fix, Claude).** Measured with a rAF counter over 1.5 s idle after scrolling the whole page:
+  ~200 frames on every page before, 6 after (the ScrollTrigger scroll handler's own trailing frames) on all 5 pages.
+  Two causes, neither the backdrop parallax or the journey tweens (scrub / `quickTo` tweens end and were not active at
+  idle):
+  - ScrollTrigger 3.x starts an endless `_rafBugFix` rAF loop (an iOS/Safari workaround) at init. `motion.js` now hands
+    that callback a no-op rAF while the plugins register (`suppressScrollTriggerRafLoop`, after the core loads so GSAP
+    keeps the real rAF), except on WebKit (Safari, iOS) where the workaround stays. The callback is recognised by its
+    function name, which the minified cdnjs build keeps.
+  - On the hub, `Draggable` with InertiaPlugin present adds a permanent GSAP ticker listener per tracked draggable, so
+    GSAP's ticker ran every frame. InertiaPlugin is no longer loaded and `Draggable` is created with `inertia: false`
+    (the quiz only reads `this.x` at release). Idle CDP task time per 3 s dropped from ~250-380 ms to ~110-230 ms.
+- **Edge cases**
+  - **Headless pagereveal null before the fix** (see the opt-in above): Playwright also disables PaintHolding and
+    bfcache by default; neither was the cause.
+  - **Back with bfcache off** (Playwright default) reloads and restores scroll after mount: covered by the intent gate;
+    tested with bfcache on and off (`journey-verify.mjs`).
+  - **Scrollbar-drag** may not count as user intent: it simply doesn't arm and the link remains.
+  - **`rel=prefetch`** can't be shown to help on the dev server (no cache headers).
+  - **Root view-transition animations** (scale + fade) also play on header-nav clicks; accepted.
+  - **Never `reveal()` or tween the transform of a scene trigger or pin element** (see §14 hub fix); the runway title is
+    scaled by its own timeline, never a pinned trigger.

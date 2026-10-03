@@ -154,3 +154,43 @@
 /* The winner's end-of-race "stamp" accent (transform only, one-shot via the scene's own timeline) — see
    brokers.js. No CSS animation/transition needed here; GSAP drives it directly. */
 .fee-race-lane.is-winner { transform-origin: center; }
+
+/* ---------------------------------------------------------------------------
+   PHOTO FINISH (brokers.js) — flash + viewfinder brackets + stamp when the cheapest lane(s) cross the
+   line. GSAP drives opacity/transform only; the CSS defaults below are the HIDDEN resting state, so the
+   static page (Calm / reduced motion / ?nogsap=1) is exactly the authored race with none of it.
+   Law 6: every overlay is text-free or sits BEHIND the content; the stamp lives in the heading row, in
+   flow, so it can never cover the banner, a lane name or a total.
+--------------------------------------------------------------------------- */
+.fee-race { position: relative; }
+/* Everything in the panel paints above the glow (z-index 0), so the flash can only ever tint the panel
+   background behind the text, never sit over it. */
+.fee-race > * { position: relative; z-index: 1; }
+.fee-race > .pf-glow {
+  position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at 50% 35%, var(--world-brokers), transparent 72%);
+}
+.fee-race-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.fee-race-head h3 { margin: 0; }
+
+/* Stamp: hidden unless the scrubbed race scene is live (brokers.js adds .is-pf-live) — decorative, aria-hidden. */
+.pf-stamp {
+  display: none; align-items: center; gap: 6px; padding: 3px 10px; border: 2px solid var(--world-brokers); border-radius: 6px;
+  background: var(--surface); color: var(--world-brokers); font-family: var(--font-display); font-weight: 800; font-size: .7rem;
+  letter-spacing: .16em; white-space: nowrap; transform-origin: center; pointer-events: none;
+}
+.pf-stamp[hidden] { display: none !important; }
+.fee-race.is-pf-live .pf-stamp { display: inline-flex; }
+.pf-aperture { flex: none; }
+
+/* Leader lane overlays. Brackets are border-only, set OUTSIDE the lane box (clear of rank/name/total text). */
+.fee-race-lane { position: relative; }
+.fee-race-lane[data-leader] { transform-origin: center; }
+.pf-frame { position: absolute; inset: -7px -8px; z-index: 0; pointer-events: none; opacity: 0; }
+.pf-frame i { position: absolute; width: 8px; height: 8px; border: 2px solid var(--world-brokers); }
+.pf-frame i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.pf-frame i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.pf-frame i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.pf-frame i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+/* The shutter flash lives INSIDE the strip (no text in there), so a white flash can't wash out any text. */
+.pf-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }

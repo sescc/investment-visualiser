@@ -17,7 +17,7 @@ import { getData } from '../../js/data.js';
 import { feeSummary, freshnessView } from '../../js/feeview.js';
 import { icon } from '../../js/icons.js';
 import { mountShell, esc } from './shell.js';
-import { motionAllowed, motionScope, whenGsap, DEBUG, scene, scrubOnEntry, batchReveal, scrubHeading, refreshScenes } from './motion.js';
+import { motionAllowed, motionScope, whenGsap, DEBUG, scene, scrubOnEntry, batchReveal, scrubHeading, refreshScenes, scheduleSceneRefresh } from './motion.js';
 import { playBlip } from './fx.js';
 import { onRemix, mulberry32 } from './chaos.js';
 
@@ -402,17 +402,20 @@ function cardBackHtml(entry) {
 
 // `.tc-slot` is the layout/sizing/animation target (deck flex sizing lives on it in products.css, and
 // the deck's per-card rotateY/scale scene below animates it) — `.trading-card` itself is left alone for
-// fx.js's tilt (`data-tilt`) and `flipCard`'s `.tc-inner` rotate, so no two things ever fight over the
-// same element's `transform`.
+// fx.js's tilt (`data-tilt`) and `flipCard`'s `.tc-inner` rotate. `.tc-skew` is the one element nothing
+// else transforms: wireDeckVelocity() shears/rolls it with scroll velocity, so no two things ever fight
+// over the same element's `transform`.
 function cardHtml(entry) {
   return h`
     <div class="tc-slot">
-      <article class="trading-card foil-card" data-tilt data-entry-id="${esc(entry.id)}" data-risk="${entry.riskLevel ?? ''}" data-category="${esc(entry.category || '')}" id="card-${esc(entry.id)}">
-        <div class="tc-inner">
-          ${cardFrontHtml(entry)}
-          ${cardBackHtml(entry)}
-        </div>
-      </article>
+      <div class="tc-skew">
+        <article class="trading-card foil-card" data-tilt data-entry-id="${esc(entry.id)}" data-risk="${entry.riskLevel ?? ''}" data-category="${esc(entry.category || '')}" id="card-${esc(entry.id)}">
+          <div class="tc-inner">
+            ${cardFrontHtml(entry)}
+            ${cardBackHtml(entry)}
+          </div>
+        </article>
+      </div>
     </div>`;
 }
 
@@ -420,11 +423,15 @@ function cardHtml(entry) {
 // hue-rotate(...)` (a banned animated/static property under the project's motion rules — hue-rotate on a
 // static value isn't itself "animated", but it's still the banned property, so it's replaced outright).
 const PACK_BAND_HUES = ['--world-products', '--world-brokers', '--world-methods'];
+// Decorative foil shards + a ring behind the band label for wirePackBursts(); invisible (opacity 0 in
+// products.css) in every mode except the instant the burst plays.
+const PACK_SHARDS = 8;
 function packBandHtml(category, count, index) {
   const a = PACK_BAND_HUES[index % PACK_BAND_HUES.length];
   const b = PACK_BAND_HUES[(index + 1) % PACK_BAND_HUES.length];
   return h`
     <div class="pack-band" style="background:linear-gradient(160deg, var(${a}), var(${b}))">
+      <span class="pack-ring" aria-hidden="true"></span>${'<i class="pack-shard" aria-hidden="true"></i>'.repeat(PACK_SHARDS)}
       <span class="pack-band-label kinetic">${esc(category)}</span>
       <span class="pack-band-count">${count} ${count === 1 ? 'card' : 'cards'}</span>
     </div>`;
@@ -530,6 +537,114 @@ function wireDeckCardTilt(gsap, track, containerTween) {
   });
 }
 
+// Booster-pack burst: as each category band reaches the right edge of the screen its label pops
+// (scale/rotate overshoot, never below opacity 0.85 — law 6) while a ring and a few foil shards fly out
+// BEHIND it (z-order in products.css; the band clips them to itself, so they can never cross a card).
+// Band 0 is already on screen when the pin starts, so it fires on its own vertical entry instead of on
+// the container animation. The label state is derived from each trigger's progress (see sync() below),
+// so a deep link / reload / jump mid-deck lands on the finished label, never the small one.
+// Transform/opacity only; one paused timeline per band, driven by a trigger — no per-frame work.
+function wirePackBursts(gsap, track, containerTween) {
+  track.querySelectorAll('.pack-band').forEach((band, bi) => {
+    const label = band.querySelector('.pack-band-label');
+    const count = band.querySelector('.pack-band-count');
+    const ring = band.querySelector('.pack-ring');
+    const shards = Array.from(band.querySelectorAll('.pack-shard'));
+    if (!label) return;
+    const N = shards.length || 1;
+    const angle = i => (i / N) * Math.PI * 2 + bi * 0.55;
+    const dist = i => 52 + ((i * 29) % 5) * 16;
+    const tl = gsap.timeline({ paused: true });
+    // The band's label/count carry a CSS `rotate(180deg)` (vertical text): restate it so GSAP's own
+    // `rotation` keeps the same orientation instead of snapping to 0.
+    tl.fromTo(label, { scale: 0.35, rotation: 156, opacity: 0.85 },
+      { scale: 1, rotation: 180, opacity: 1, duration: 0.75, ease: 'back.out(2.8)' }, 0);
+    if (count) tl.fromTo(count, { y: 14, rotation: 180 }, { y: 0, rotation: 180, duration: 0.5, ease: 'power3.out' }, 0.1);
+    if (ring) {
+      tl.fromTo(ring, { scale: 0.2, opacity: 0 }, { scale: 0.9, opacity: 1, duration: 0.08, ease: 'none' }, 0)
+        .to(ring, { scale: 2.6, opacity: 0, duration: 0.62, ease: 'power2.out' }, 0.08);
+    }
+    if (shards.length) {
+      tl.fromTo(shards, { x: 0, y: 0, scale: 0.3, opacity: 0, rotation: i => (angle(i) * 180) / Math.PI },
+        { scale: 1, opacity: 1, duration: 0.08, ease: 'none', stagger: 0.015 }, 0.04)
+        .to(shards, {
+          x: i => Math.cos(angle(i)) * dist(i) * 0.4,
+          y: i => Math.sin(angle(i)) * dist(i) * 1.3,
+          rotation: i => (angle(i) * 180) / Math.PI + 140,
+          opacity: 0, duration: 0.8, ease: 'power2.out', stagger: 0.015,
+        }, 0.12);
+    }
+    // State follows the trigger's progress, not its callbacks: every callback (and every refresh) funnels
+    // through sync(), so jumping past a band, scrolling back, a reload or a deep link mid-deck always ends
+    // on the right label (`limitCallbacks` can swallow onEnter on a jump; callbacks don't fire at creation).
+    let fired = false;
+    const sync = (self, instant) => {
+      const want = self.progress > 0;
+      if (want === fired) return;
+      fired = want;
+      if (!want) tl.reverse();
+      else if (instant) tl.progress(1);
+      else tl.play();
+    };
+    // onUpdate fires on any progress change, including a jump clean over the band that fires no enter/leave.
+    const cbs = { onEnter: s => sync(s), onLeave: s => sync(s), onEnterBack: s => sync(s), onLeaveBack: s => sync(s), onUpdate: s => sync(s), onRefresh: s => sync(s, true) };
+    if (bi === 0 || !containerTween) {
+      window.ScrollTrigger.create({ trigger: band, start: 'center 92%', ...cbs });
+    } else {
+      window.ScrollTrigger.create({ trigger: band, containerAnimation: containerTween, start: 'left 92%', end: 'right left', ...cbs });
+    }
+  });
+}
+
+// Scroll-velocity sway: every card's `.tc-skew` shears (skewX) and rolls (rotation) a few degrees against
+// the scroll direction, then eases back to rest when scrolling stops. One quickTo on a plain proxy number
+// drives all cards through quickSetters, so a scroll event costs one tween retarget; with no scrolling
+// nothing runs (the quickTo finishes, the ticker sleeps; ScrollTrigger's `scrollEnd` releases the skew).
+// `.tc-skew` is a wrapper nothing else transforms — NOT `.tc-slot` (the deck's rotateY/scale scene),
+// `.trading-card` (fx.js tilt) or `.tc-inner` (flipCard).
+function wireDeckVelocity(gsap, track) {
+  const items = Array.from(track.querySelectorAll('.tc-skew')).map((el, i) => ({
+    skew: gsap.quickSetter(el, 'skewX', 'deg'),
+    roll: gsap.quickSetter(el, 'rotation', 'deg'),
+    k: 0.9 + ((i * 37) % 5) / 20, // 0.9–1.1: neighbours don't move in lockstep, but never by enough to close the 22px gap
+    el,
+  }));
+  const state = { s: 0 };
+  const apply = () => { for (const it of items) { it.skew(state.s * it.k); it.roll(-state.s * 0.3 * it.k); } };
+  // A skewed card that is NOT its own compositor layer is repainted every frame the track moves (measured:
+  // scroll p95 8.5 -> 23 ms with a steady skew). So while the sway is live the cards are promoted
+  // (`will-change: transform` — the deck is the active pinned scene) and the promotion is dropped again
+  // the moment the sway has settled back to 0, so nothing stays promoted (or runs) at rest.
+  let promoted = false;
+  const promote = on => { if (promoted === on) return; promoted = on; for (const it of items) it.el.style.willChange = on ? 'transform' : ''; };
+  const sTo = gsap.quickTo(state, 's', {
+    duration: 0.6, ease: 'power3.out', onUpdate: apply,
+    onComplete: () => { if (Math.abs(state.s) < 0.005) promote(false); },
+  });
+  let lastY = window.scrollY, lastT = performance.now(), vel = 0;
+  const release = () => { vel = 0; lastY = window.scrollY; lastT = performance.now(); sTo(0); };
+  window.ScrollTrigger.addEventListener('scrollEnd', release);
+  return {
+    update(self) {
+      const y = self.scroll();
+      const now = performance.now();
+      const dy = y - lastY;
+      const dt = Math.max(8, now - lastT);
+      lastY = y; lastT = now;
+      if (!dy) return;
+      vel = vel * 0.6 + (dy / dt * 1000) * 0.4;
+      promote(true);
+      sTo(Math.max(-5, Math.min(5, -vel / 500)));
+    },
+    release,
+    destroy() {
+      window.ScrollTrigger?.removeEventListener('scrollEnd', release);
+      promote(false);
+      gsap.set(items.map(it => it.el), { clearProps: 'transform' });
+    },
+  };
+}
+
 function setupDeckMotion() {
   const viewport = document.getElementById('deck-viewport');
   const track = document.getElementById('deck-track');
@@ -542,6 +657,7 @@ function setupDeckMotion() {
   setDeckMode('pinned');
   let cancelled = false;
   let ctx = null;
+  let velocity = null;
   (async () => {
     const gsap = await whenGsap();
     if (cancelled) return;
@@ -561,18 +677,28 @@ function setupDeckMotion() {
           scrub: 0.4,
           pin: true,
           invalidateOnRefresh: true,
+          onUpdate: self => velocity?.update(self),
+          onToggle: self => { if (!self.isActive) velocity?.release(); },
         },
       });
       deckContainerST = tween.scrollTrigger;
       wireDeckCardTilt(gsap, track, tween);
+      wirePackBursts(gsap, track, tween);
+      velocity = wireDeckVelocity(gsap, track);
     });
+    // The deck pin (and its spacer) now exists, created AFTER whatever sits below it (the returns scene)
+    // on a rebuild: re-measure everything in document order (motion.js:orderTriggers).
+    scheduleSceneRefresh();
   })();
   return () => {
     cancelled = true;
+    velocity?.destroy();
+    velocity = null;
     ctx?.revert();
     deckContainerST = null;
     if (track) track.style.transform = '';
     setDeckMode('grid');
+    scheduleSceneRefresh(); // the pin spacer is gone: triggers below it must be re-measured
   };
 }
 

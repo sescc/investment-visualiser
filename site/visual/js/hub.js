@@ -18,9 +18,10 @@ import { getData, isEmpty, buildCompareUrl } from '../../js/data.js';
 import { WORLD_META, teaserData, QUESTIONS, pickQuizResult } from '../../js/content.js';
 import { icon } from '../../js/icons.js';
 import { mountShell, esc } from './shell.js';
-import { motionAllowed, whenGsap, reveal, scene, scrubOnEntry, scrubHeading, refreshScenes } from './motion.js';
+import { motionAllowed, motionScope, whenGsap, reveal, scene, scrubOnEntry, scrubHeading, refreshScenes, scheduleSceneRefresh } from './motion.js';
 import { confettiBurst, playBlip } from './fx.js';
 import { onRemix } from './chaos.js';
+import { NAV_ITEMS } from './stops.js';
 
 // ============================================================================
 // Local scroll-scene helpers (see file header for why these aren't imported from motion.js — Wave 2
@@ -138,6 +139,7 @@ function scatterR(complexity) {
 const data = await getData();
 const shellHandle = await mountShell({ page: 'index.html', data });
 
+mountMarquee(); // before mountHero(): the strip sits right after the hero section, ahead of every pin below it
 mountHero();
 mountQuiz(data);
 mountGalaxy(data, shellHandle);
@@ -158,7 +160,12 @@ onRemix(() => { if (motionAllowed()) playBlip({ freq: 600 }); });
 
 function mountHero() {
   const headline = document.getElementById('hero-headline');
-  reveal(document.querySelector('.diagram-card'), { from: { opacity: 0, y: 30 }, delay: 0.15 });
+  // Reveal the diagram INSIDE the card, never the card itself: the card is the trigger/pin of
+  // mountJourneyScene() below, and ScrollTrigger's pin save/restores the pinned element's inline style —
+  // that clobbered the entrance mid-tween and left a stale translateY(30px) on the card (its pin start
+  // measured 30px off). The card box paints from first paint; only its picture eases in.
+  const card = document.querySelector('.diagram-card');
+  reveal(card?.querySelector('.diagram-svg') || card, { from: { opacity: 0, y: 30 }, delay: 0.15 });
   heroExplode(headline, '.hero-section');
   mountJourneyScene();
 }
@@ -193,6 +200,108 @@ function mountJourneyScene() {
     pulseRing('ring-brokers', 0.55);
     pulseRing('ring-products', 0.9);
   }, { pin: true, length: 1.5 });
+}
+
+// ============================================================================
+// 1b. Journey marquee — a bold kinetic strip of the five journey stops between the hero and the quiz.
+//     Decorative duplicate of the nav labels (stops.js:NAV_ITEMS — no new content), aria-hidden.
+//     Two lanes slide in opposite directions as you scroll and the whole strip shears with scroll
+//     VELOCITY. Everything runs off one ScrollTrigger onUpdate + gsap.quickTo (transform only); with no
+//     scroll there is no work at all — no ticker callback, no timer (the quickTo tweens finish and the
+//     ticker sleeps; the skew is released by ScrollTrigger's `scrollEnd`). With motion off (Calm,
+//     reduced motion, ?nogsap=1, GSAP failure) it stays the static single row the markup/CSS describes.
+// ============================================================================
+
+function mountMarquee() {
+  const hero = document.querySelector('.hero-section');
+  if (!hero || document.querySelector('.journey-marquee')) return;
+  const rowHtml = (dup) => `<span class="jm-row"${dup ? ' data-dup' : ''}>${NAV_ITEMS.map(n =>
+    `<span class="jm-word" data-stop="${esc(n.href.replace(/\.html$/, '').replace(/^index$/, 'hub'))}">${esc(n.label)}</span><i class="jm-dot"></i>`).join('')}</span>`;
+  // 3 identical rows per lane: the track slides within one row-width and is re-seated by exactly one row
+  // width (visually identical) whenever it would run out, so it loops without ever tweening backwards.
+  const lane = (cls) => `<div class="jm-lane ${cls}"><div class="jm-track">${rowHtml(false)}${rowHtml(true)}${rowHtml(true)}</div></div>`;
+  const root = document.createElement('div');
+  root.className = 'journey-marquee';
+  root.setAttribute('aria-hidden', 'true');
+  root.innerHTML = `<div class="jm-skew">${lane('jm-lane-a')}${lane('jm-lane-b')}</div>`;
+  hero.after(root);
+
+  motionScope(() => {
+    let cancelled = false;
+    let ctx = null;
+    let st = null;
+    let onEnd = null;
+    (async () => {
+      const gsap = await whenGsap();
+      if (cancelled || !gsap || !window.ScrollTrigger || !motionAllowed()) return;
+      const skewEl = root.querySelector('.jm-skew');
+      const lanes = [
+        { track: root.querySelector('.jm-lane-a .jm-track'), sign: -1 }, // A travels against the scroll
+        { track: root.querySelector('.jm-lane-b .jm-track'), sign: 1 },  // B travels with it
+      ];
+      ctx = gsap.context(() => {
+        let period = 1;
+        const measure = () => {
+          const row = lanes[0].track.querySelector('.jm-row');
+          period = parseFloat(getComputedStyle(row).width) || row.offsetWidth || 1;
+          // The track must span one period plus the viewport; render only that many rows (usually 2, not 3),
+          // so the promoted layers — and the first-paint raster of their big type — stay as small as possible.
+          const need = Math.max(2, Math.ceil((period + root.clientWidth) / period));
+          lanes.forEach(l => l.track.querySelectorAll('.jm-row').forEach((r, i) => { r.style.display = i < need ? '' : 'none'; }));
+        };
+        root.classList.add('is-live');
+        measure();
+        lanes.forEach((l, i) => {
+          l.pos = -period / 2;
+          gsap.set(l.track, { x: l.pos });
+          l.xTo = gsap.quickTo(l.track, 'x', { duration: 0.5, ease: 'power3.out' });
+        });
+        const skewTo = gsap.quickTo(skewEl, 'skewX', { duration: 0.6, ease: 'power3.out' });
+
+        let lastY = window.scrollY, lastT = performance.now(), vel = 0;
+        const move = (dx) => {
+          lanes.forEach(l => {
+            l.pos += dx * l.sign;
+            // Re-seat by exactly one row width, then retarget from the re-seated position (quickTo's
+            // resetTo re-reads the live value), so the loop seam never tweens backwards.
+            while (l.pos < -period) { l.pos += period; gsap.set(l.track, { x: `+=${period}` }); }
+            while (l.pos > 0) { l.pos -= period; gsap.set(l.track, { x: `-=${period}` }); }
+            l.xTo(l.pos);
+          });
+        };
+        st = window.ScrollTrigger.create({
+          trigger: root,
+          start: 'top bottom',
+          end: 'bottom top',
+          onRefresh: () => { measure(); },
+          onUpdate: self => {
+            const y = self.scroll();
+            const now = performance.now();
+            const dy = y - lastY;
+            const dt = Math.max(8, now - lastT);
+            lastY = y; lastT = now;
+            if (!dy) return;
+            vel = vel * 0.6 + (dy / dt * 1000) * 0.4; // px/s, lightly smoothed
+            // Faster scrolling travels disproportionately further: velocity, not just distance.
+            move(dy * (0.8 + Math.min(Math.abs(vel), 3000) / 3000 * 1.2));
+            skewTo(Math.max(-12, Math.min(12, -vel / 220)));
+          },
+        });
+        onEnd = () => { vel = 0; lastY = window.scrollY; lastT = performance.now(); skewTo(0); };
+        window.ScrollTrigger.addEventListener('scrollEnd', onEnd);
+      }, root);
+      scheduleSceneRefresh(); // is-live can change the strip's height; re-measure everything below in document order
+    })();
+    return () => {
+      cancelled = true;
+      if (onEnd) window.ScrollTrigger?.removeEventListener('scrollEnd', onEnd);
+      st?.kill();
+      ctx?.revert();
+      root.classList.remove('is-live');
+      root.querySelectorAll('.jm-skew, .jm-track').forEach(el => { el.style.transform = ''; });
+      scheduleSceneRefresh();
+    };
+  });
 }
 
 // ============================================================================
@@ -251,7 +360,10 @@ function mountQuiz(data) {
       if (!gsap || !window.Draggable || !motionAllowed()) return;
       Draggable.create(card, {
         type: 'x',
-        inertia: !!window.InertiaPlugin,
+        // No `inertia`: InertiaPlugin's VelocityTracker adds a permanent GSAP ticker listener per tracked
+        // draggable, which kept the ticker (a rAF every frame) running on the hub while idle — law 7. The
+        // decision below only reads this.x at release, so a throw adds nothing.
+        inertia: false,
         onDragEnd() {
           const threshold = 100;
           if (this.x > threshold) selectOption(step, step.options.length - 1, card);

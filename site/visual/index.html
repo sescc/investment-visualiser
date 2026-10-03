@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Cross-document View Transition opt-in. MUST be inline and first in <head>: when it only arrived via visual.css the
+     new page was already past the point where the opt-in is read, so pagereveal.viewTransition was null and the
+     journey's title -> hero morph never ran (verified headed Edge: 0/12 hops with it in visual.css only, 12/12 inline). -->
+<style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
 <title>SGInvest Visualiser — visual edition</title>
 <meta name="description" content="A visual, jargon-free guide to investment products, methods and brokers in Singapore — the spectacle-first edition. Not financial advice.">
 <!-- Pre-paint: apply the stored theme + Calm state before first paint (no flash of the wrong look). -->
